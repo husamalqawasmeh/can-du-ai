@@ -89,13 +89,36 @@
     margin:0;
     line-height:1;
   }
-  .wordmark .dot{color:var(--c-community);font-weight:400}
+  /* Each separator is a copper disc that reads as a dot from across the room
+     and as a letter up close: CAN-ada-DU-B-AI carries CANADA and DUBAI. */
+  .wordmark .micro{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:.4em;
+    height:.4em;
+    margin:0 .05em;
+    border-radius:50%;
+    background:var(--c-community);
+    vertical-align:.14em;
+    line-height:1;
+    overflow:hidden;
+  }
+  .wordmark .micro span{
+    color:var(--ground);
+    font-weight:700;
+    font-stretch:100%;
+    letter-spacing:0;
+    line-height:1;
+  }
+  .wordmark .micro.ada span{font-size:.115em}
+  .wordmark .micro.bee span{font-size:.17em}
   /* width is matched to the wordmark by fitByline() at the foot of the script */
   .byline{
     display:inline-block;
     margin:1rem 0 0;
     font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-    font-size:clamp(.78rem,.6rem + .58vw,1.12rem);
+    font-size:clamp(.92rem,.7rem + .68vw,1.34rem);
     font-weight:700;
     letter-spacing:.1em;
     white-space:nowrap;
@@ -160,12 +183,18 @@
     margin:0;
     line-height:1.2;
   }
+  /* never taller than two lines, whatever the viewport does to the wrap */
   .tile-desc{
     margin:0;
     font-size:.925rem;
     line-height:1.5;
     color:var(--ink-soft);
     max-width:38ch;
+    display:-webkit-box;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:2;
+    line-clamp:2;
+    overflow:hidden;
   }
   .tile-go{
     margin-top:.35rem;
@@ -198,7 +227,7 @@
   .crumb:hover,.crumb:focus-visible{color:var(--ink);border-bottom-color:var(--accent)}
   .crumb:focus-visible{outline:none}
 
-  .cat-head{margin:1.5rem 0 0}
+  .cat-head{margin:1.1rem 0 0}
   .cat-title{
     font-size:clamp(1.8rem,1.3rem + 2.2vw,2.6rem);
     font-weight:700;
@@ -211,7 +240,7 @@
   .cat-rule{
     width:3.5rem;height:2px;
     background:var(--accent);
-    margin:1rem 0 1.1rem;
+    margin:.8rem 0 .9rem;
   }
   .cat-desc{
     margin:0;
@@ -223,12 +252,19 @@
 
   .list{
     list-style:none;
-    margin:2rem 0 0;
+    margin:1.5rem 0 0;
     padding:0;
     display:flex;
     flex-direction:column;
-    gap:.75rem;
+    gap:.7rem;
   }
+  /* two entries per line, each two lines tall — same rhythm as the main menu */
+  .list.two-col{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:.7rem;
+  }
+  @media (max-width:640px){ .list.two-col{grid-template-columns:1fr} }
   .row{
     display:grid;
     grid-template-columns:minmax(0,1fr) auto;
@@ -296,6 +332,29 @@
   }
   a.row:hover .arrow{transform:translate(3px,-3px)}
 
+  /* compact card: title line, then one description line. Nothing taller. */
+  .row.compact{
+    display:flex;
+    flex-direction:column;
+    gap:.3rem;
+    padding:.95rem 1.15rem;
+  }
+  .row.compact .row-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:.75rem;
+  }
+  .row.compact .row-name{margin:0;font-size:1rem}
+  .row.compact .row-desc{
+    max-width:none;
+    font-size:.85rem;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .row.compact .badge{flex:0 0 auto}
+
   .row.empty{border-style:dashed;background:transparent}
   .row.empty .row-name{color:var(--ink-soft);font-weight:500}
   .row.empty code{
@@ -322,7 +381,7 @@
 <div class="page">
 
   <header class="masthead">
-    <h1 class="wordmark">CAN<span class="dot">&middot;</span>DU<span class="dot">&middot;</span>AI</h1>
+    <h1 class="wordmark">CAN<span class="micro ada"><span>ada</span></span>DU<span class="micro bee"><span>B</span></span>AI</h1>
     <p class="byline">By Husam Al-Qawasmeh</p>
   </header>
 
@@ -343,7 +402,7 @@ const SITE = {
   community: {
     accent: "var(--c-community)",
     title: "Community Apps",
-    blurb: "Free tools for neighbours, schools and families — the things worth building whether or not anyone pays for them.",
+    blurb: "Free tools for neighbours, schools and families.",
     items: [
       {
         name: "Janna-Zad",
@@ -356,8 +415,10 @@ const SITE = {
       {
         name: "Dubai School Scanner",
         desc: "Point it at a school's fee sheet and inspection record, get a plain-language answer for parents.",
-        href: "https://school-scanner.can-du-ai.com",
-        dest: "school-scanner.can-du-ai.com",
+        href: "https://github.com/husamalqawasmeh/dxb_school_scanner",
+        dest: "github.com/husamalqawasmeh/dxb_school_scanner",
+        label: "Source &middot; GitHub",
+        external: true,
         status: "live"
       }
     ]
@@ -365,20 +426,57 @@ const SITE = {
   commercial: {
     accent: "var(--c-commercial)",
     title: "Commercial Apps",
-    blurb: "Products with a price tag and a paying customer on the other side of them.",
+    blurb: "Products with a price tag and a paying customer.",
     items: []
   },
   enterprise: {
     accent: "var(--c-enterprise)",
     title: "Enterprise Solutions",
-    blurb: "Systems that sit inside an organisation's workflow — integrated, audited and supported.",
+    blurb: "Systems that run inside an organisation's workflow.",
     items: []
   },
   lab: {
     accent: "var(--c-lab)",
     title: "Tool Test Lab",
-    blurb: "Benchmarks, half-finished experiments and models still on the bench. Nothing here is a promise.",
-    items: []
+    blurb: "Benchmarks and experiments still on the bench.",
+    compact: true,
+    items: [
+      {
+        name: "n8n",
+        desc: "Self-hosted agent and workflow automation.",
+        href: "https://n8n.can-du-ai.com",
+        dest: "n8n.can-du-ai.com",
+        status: "soon"
+      },
+      {
+        name: "Netlify",
+        desc: "Static hosting, measured against Cloudflare.",
+        href: "https://netlify.can-du-ai.com",
+        dest: "netlify.can-du-ai.com",
+        status: "soon"
+      },
+      {
+        name: "Lovable",
+        desc: "Prompt to app — how far before a developer.",
+        href: "https://lovable.can-du-ai.com",
+        dest: "lovable.can-du-ai.com",
+        status: "soon"
+      },
+      {
+        name: "Azure AI Foundry",
+        desc: "Agent platform: models, guardrails, cost.",
+        href: "https://azure-foundry.can-du-ai.com",
+        dest: "azure-foundry.can-du-ai.com",
+        status: "soon"
+      },
+      {
+        name: "NotebookLM",
+        desc: "Research grounded in the sources you give it.",
+        href: "https://notebooklm.can-du-ai.com",
+        dest: "notebooklm.can-du-ai.com",
+        status: "soon"
+      }
+    ]
   }
 };
 
@@ -399,22 +497,31 @@ function renderHome() {
   }).join("") + '</div>';
 }
 
-function projectRow(item) {
+function projectRow(item, compact) {
   const live = item.status === "live";
+  // item.label overrides the badge text — e.g. an entry that links to source
   const badge = live
-    ? '<span class="badge live">' + (item.external ? "Live &middot; External" : "Live") + '</span>'
-    : '<span class="badge">In build</span>';
-  const inner =
-    '<div>' +
-      '<p class="row-name">' + esc(item.name) + '</p>' +
-      '<p class="row-desc">' + esc(item.desc) + '</p>' +
-    '</div>' +
-    '<div class="row-meta">' + badge + (live ? '<span class="arrow">&#8599;</span>' : '') + '</div>' +
-    '<p class="row-dest">' + esc(item.dest) + '</p>';
+    ? '<span class="badge live">' + (item.label || (item.external ? "Live &middot; External" : "Live")) + '</span>'
+    : '<span class="badge">' + (item.label || "In build") + '</span>';
 
-  if (!live) return '<li><div class="row">' + inner + '</div></li>';
+  const inner = compact
+    ? '<div class="row-head">' +
+        '<p class="row-name">' + esc(item.name) + '</p>' + badge +
+      '</div>' +
+      '<p class="row-desc">' + esc(item.desc) + '</p>'
+    : '<div>' +
+        '<p class="row-name">' + esc(item.name) + '</p>' +
+        '<p class="row-desc">' + esc(item.desc) + '</p>' +
+      '</div>' +
+      '<div class="row-meta">' + badge + (live ? '<span class="arrow">&#8599;</span>' : '') + '</div>' +
+      '<p class="row-dest">' + esc(item.dest) + '</p>';
+
+  const cls = compact ? "row compact" : "row";
+  const tip = compact ? ' title="' + esc(item.dest) + '"' : '';
+
+  if (!live) return '<li><div class="' + cls + '"' + tip + '>' + inner + '</div></li>';
   const target = item.external ? ' target="_blank" rel="noopener"' : '';
-  return '<li><a class="row" href="' + esc(item.href) + '"' + target + '>' + inner + '</a></li>';
+  return '<li><a class="' + cls + '" href="' + esc(item.href) + '"' + target + tip + '>' + inner + '</a></li>';
 }
 
 function emptyRow(key) {
@@ -430,7 +537,10 @@ function emptyRow(key) {
 function renderCategory(key) {
   const cat = SITE[key];
   document.title = cat.title + " — Can-Du-AI";
-  const rows = cat.items.length ? cat.items.map(projectRow).join("") : emptyRow(key);
+  const compact = !!cat.compact;
+  const rows = cat.items.length
+    ? cat.items.map(item => projectRow(item, compact)).join("")
+    : emptyRow(key);
   view.innerHTML =
     '<div class="anim" style="--accent:' + cat.accent + '">' +
       '<a class="crumb" href="#/">&larr; All categories</a>' +
@@ -439,7 +549,7 @@ function renderCategory(key) {
         '<div class="cat-rule"></div>' +
         '<p class="cat-desc">' + esc(cat.blurb) + '</p>' +
       '</div>' +
-      '<ul class="list">' + rows + '</ul>' +
+      '<ul class="list' + (compact ? ' two-col' : '') + '">' + rows + '</ul>' +
     '</div>';
 }
 
