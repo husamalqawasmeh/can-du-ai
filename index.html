@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Can-Du-AI — an AI portfolio by Husam Al-Qawasmeh: community apps, commercial apps, enterprise solutions and a tool test lab.">
+<!--ARTIFACT-START-->
+<title>Can-Du-AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..700&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --ground:#F0E4CF;
+    --ink:#241C10;
+    --ink-soft:#6A5B45;
+    --line:rgba(36,28,16,.16);
+    --card:rgba(255,252,246,.78);
+    --card-hover:#FFFDF9;
+    --shadow:0 1px 2px rgba(60,44,20,.06), 0 14px 30px -18px rgba(60,44,20,.45);
+
+    --c-community:#B25A2A;
+    --c-commercial:#2F6F76;
+    --c-enterprise:#3A4E7A;
+    --c-lab:#8A6C1F;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#181209;
+      --ink:#F3E8D5;
+      --ink-soft:#B0A08A;
+      --line:rgba(243,232,213,.18);
+      --card:rgba(255,255,255,.05);
+      --card-hover:rgba(255,255,255,.09);
+      --shadow:0 1px 2px rgba(0,0,0,.45), 0 16px 34px -18px rgba(0,0,0,.85);
+      --c-community:#E5924F;
+      --c-commercial:#5FA8AE;
+      --c-enterprise:#8B9FD6;
+      --c-lab:#D2AE44;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#181209;
+    --ink:#F3E8D5;
+    --ink-soft:#B0A08A;
+    --line:rgba(243,232,213,.18);
+    --card:rgba(255,255,255,.05);
+    --card-hover:rgba(255,255,255,.09);
+    --shadow:0 1px 2px rgba(0,0,0,.45), 0 16px 34px -18px rgba(0,0,0,.85);
+    --c-community:#E5924F;
+    --c-commercial:#5FA8AE;
+    --c-enterprise:#8B9FD6;
+    --c-lab:#D2AE44;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    min-height:100vh;
+    font-family:"Archivo","Helvetica Neue",Arial,sans-serif;
+    color:var(--ink);
+    background:var(--ground);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* the whole composition sits centred in the viewport */
+  .page{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:2.5rem 0;
+  }
+
+  /* ---------- masthead ---------- */
+  .masthead{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    padding:0 1.5rem;
+  }
+  .wordmark{
+    display:inline-block;
+    font-size:clamp(1.6rem,1.1rem + 2.4vw,2.9rem);
+    font-weight:700;
+    font-stretch:125%;
+    letter-spacing:.12em;
+    margin:0;
+    line-height:1;
+  }
+  .wordmark .dot{color:var(--c-community);font-weight:400}
+  /* width is matched to the wordmark by fitByline() at the foot of the script */
+  .byline{
+    display:inline-block;
+    margin:1rem 0 0;
+    font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    font-size:clamp(.78rem,.6rem + .58vw,1.12rem);
+    font-weight:700;
+    letter-spacing:.1em;
+    white-space:nowrap;
+    color:var(--ink);
+  }
+
+  /* ---------- view shell ---------- */
+  main{
+    flex:0 0 auto;
+    width:100%;
+    max-width:62rem;
+    margin:0 auto;
+    padding:clamp(2.25rem,6vh,3.5rem) 1.5rem 0;
+  }
+
+  /* ---------- category grid ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:1rem;
+  }
+  @media (max-width:640px){ .grid{grid-template-columns:1fr} }
+
+  .tile{
+    --accent:var(--ink);
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    gap:.6rem;
+    padding:1.55rem 1.6rem 1.45rem;
+    border:1px solid var(--line);
+    border-radius:2px;
+    background:var(--card);
+    color:inherit;
+    text-decoration:none;
+    transition:background .22s ease, transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+  }
+  .tile::before{
+    content:"";
+    position:absolute;
+    left:-1px; top:-1px; bottom:-1px;
+    width:2px;
+    background:var(--accent);
+    transform:scaleY(0);
+    transform-origin:top;
+    transition:transform .28s cubic-bezier(.2,.7,.3,1);
+  }
+  .tile:hover,.tile:focus-visible{
+    background:var(--card-hover);
+    border-color:color-mix(in srgb,var(--accent) 40%,var(--line));
+    box-shadow:var(--shadow);
+    transform:translateY(-2px);
+  }
+  .tile:hover::before,.tile:focus-visible::before{transform:scaleY(1)}
+  .tile:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+  .tile-title{
+    font-size:clamp(1.2rem,1rem + .55vw,1.45rem);
+    font-weight:600;
+    font-stretch:105%;
+    letter-spacing:-.01em;
+    margin:0;
+    line-height:1.2;
+  }
+  .tile-desc{
+    margin:0;
+    font-size:.925rem;
+    line-height:1.5;
+    color:var(--ink-soft);
+    max-width:38ch;
+  }
+  .tile-go{
+    margin-top:.35rem;
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:.72rem;
+    letter-spacing:.1em;
+    color:var(--accent);
+    opacity:0;
+    transform:translateX(-4px);
+    transition:opacity .22s ease, transform .22s ease;
+  }
+  .tile:hover .tile-go,.tile:focus-visible .tile-go{opacity:1;transform:none}
+
+  /* ---------- secondary screen ---------- */
+  .crumb{
+    display:inline-flex;
+    align-items:center;
+    gap:.5rem;
+    align-self:flex-start;
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:.72rem;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    text-decoration:none;
+    padding:.4rem 0;
+    border-bottom:1px solid transparent;
+    transition:color .18s ease,border-color .18s ease;
+  }
+  .crumb:hover,.crumb:focus-visible{color:var(--ink);border-bottom-color:var(--accent)}
+  .crumb:focus-visible{outline:none}
+
+  .cat-head{margin:1.5rem 0 0}
+  .cat-title{
+    font-size:clamp(1.8rem,1.3rem + 2.2vw,2.6rem);
+    font-weight:700;
+    font-stretch:110%;
+    letter-spacing:-.02em;
+    line-height:1.05;
+    margin:0;
+    text-wrap:balance;
+  }
+  .cat-rule{
+    width:3.5rem;height:2px;
+    background:var(--accent);
+    margin:1rem 0 1.1rem;
+  }
+  .cat-desc{
+    margin:0;
+    color:var(--ink-soft);
+    font-size:1.02rem;
+    line-height:1.55;
+    max-width:52ch;
+  }
+
+  .list{
+    list-style:none;
+    margin:2rem 0 0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:.75rem;
+  }
+  .row{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    align-items:start;
+    gap:.2rem 1.5rem;
+    padding:1.15rem 1.4rem;
+    border:1px solid var(--line);
+    border-radius:2px;
+    background:var(--card);
+    color:inherit;
+    text-decoration:none;
+    transition:background .2s ease,border-color .2s ease,transform .2s ease,box-shadow .2s ease;
+  }
+  a.row:hover,a.row:focus-visible{
+    background:var(--card-hover);
+    border-color:color-mix(in srgb,var(--accent) 45%,var(--line));
+    box-shadow:var(--shadow);
+    transform:translateY(-2px);
+  }
+  a.row:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .row-name{
+    font-size:1.08rem;
+    font-weight:600;
+    letter-spacing:-.01em;
+    margin:0 0 .3rem;
+  }
+  .row-desc{margin:0;font-size:.9rem;line-height:1.5;color:var(--ink-soft);max-width:48ch}
+  .row-dest{
+    grid-column:1;
+    margin:.6rem 0 0;
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:.74rem;
+    color:var(--accent);
+    overflow-wrap:anywhere;
+  }
+  .row-meta{
+    grid-column:2;
+    grid-row:1 / span 2;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:.55rem;
+    white-space:nowrap;
+  }
+  .badge{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:.62rem;
+    letter-spacing:.13em;
+    text-transform:uppercase;
+    padding:.28rem .55rem;
+    border:1px solid var(--line);
+    border-radius:999px;
+    color:var(--ink-soft);
+  }
+  .badge.live{
+    color:var(--accent);
+    border-color:color-mix(in srgb,var(--accent) 45%,transparent);
+  }
+  .arrow{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:1rem;
+    line-height:1;
+    color:var(--accent);
+    transition:transform .2s ease;
+  }
+  a.row:hover .arrow{transform:translate(3px,-3px)}
+
+  .row.empty{border-style:dashed;background:transparent}
+  .row.empty .row-name{color:var(--ink-soft);font-weight:500}
+  .row.empty code{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:.85em;
+    color:var(--accent);
+  }
+
+  /* ---------- motion ---------- */
+  @keyframes riseIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .anim > *{animation:riseIn .5s cubic-bezier(.2,.7,.3,1) both}
+  .anim > *:nth-child(1){animation-delay:.02s}
+  .anim > *:nth-child(2){animation-delay:.08s}
+  .anim > *:nth-child(3){animation-delay:.14s}
+  .anim > *:nth-child(4){animation-delay:.20s}
+  .anim > *:nth-child(5){animation-delay:.26s}
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none !important;transition:none !important}
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="masthead">
+    <h1 class="wordmark">CAN<span class="dot">&middot;</span>DU<span class="dot">&middot;</span>AI</h1>
+    <p class="byline">By Husam Al-Qawasmeh</p>
+  </header>
+
+  <main id="view"></main>
+
+</div>
+
+<script>
+/* -------------------------------------------------------------------
+   EDIT HERE — every screen on this site is generated from SITE below.
+     category key -> the URL hash for its screen (#/community)
+     item.href    -> full destination URL
+     item.external-> true opens in a new tab (off-domain, e.g. Janna-Zad)
+     item.status  -> "live" (clickable) or "soon" (listed, not clickable)
+   Add a project by copying an item block into a category's items array.
+--------------------------------------------------------------------*/
+const SITE = {
+  community: {
+    accent: "var(--c-community)",
+    title: "Community Apps",
+    blurb: "Free tools for neighbours, schools and families — the things worth building whether or not anyone pays for them.",
+    items: [
+      {
+        name: "Janna-Zad",
+        desc: "Provisions and planning for the journey. The app this whole portfolio grew out of.",
+        href: "https://jannazad.com",
+        dest: "jannazad.com",
+        external: true,
+        status: "live"
+      },
+      {
+        name: "Dubai School Scanner",
+        desc: "Point it at a school's fee sheet and inspection record, get a plain-language answer for parents.",
+        href: "https://school-scanner.can-du-ai.com",
+        dest: "school-scanner.can-du-ai.com",
+        status: "live"
+      }
+    ]
+  },
+  commercial: {
+    accent: "var(--c-commercial)",
+    title: "Commercial Apps",
+    blurb: "Products with a price tag and a paying customer on the other side of them.",
+    items: []
+  },
+  enterprise: {
+    accent: "var(--c-enterprise)",
+    title: "Enterprise Solutions",
+    blurb: "Systems that sit inside an organisation's workflow — integrated, audited and supported.",
+    items: []
+  },
+  lab: {
+    accent: "var(--c-lab)",
+    title: "Tool Test Lab",
+    blurb: "Benchmarks, half-finished experiments and models still on the bench. Nothing here is a promise.",
+    items: []
+  }
+};
+
+const ORDER = ["community", "commercial", "enterprise", "lab"];
+const view = document.getElementById("view");
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function renderHome() {
+  document.title = "Can-Du-AI";
+  view.innerHTML = '<div class="grid anim">' + ORDER.map(key => {
+    const cat = SITE[key];
+    return '<a class="tile" style="--accent:' + cat.accent + '" href="#/' + key + '">' +
+      '<h2 class="tile-title">' + esc(cat.title) + '</h2>' +
+      '<p class="tile-desc">' + esc(cat.blurb) + '</p>' +
+      '<span class="tile-go">Open &rarr;</span>' +
+      '</a>';
+  }).join("") + '</div>';
+}
+
+function projectRow(item) {
+  const live = item.status === "live";
+  const badge = live
+    ? '<span class="badge live">' + (item.external ? "Live &middot; External" : "Live") + '</span>'
+    : '<span class="badge">In build</span>';
+  const inner =
+    '<div>' +
+      '<p class="row-name">' + esc(item.name) + '</p>' +
+      '<p class="row-desc">' + esc(item.desc) + '</p>' +
+    '</div>' +
+    '<div class="row-meta">' + badge + (live ? '<span class="arrow">&#8599;</span>' : '') + '</div>' +
+    '<p class="row-dest">' + esc(item.dest) + '</p>';
+
+  if (!live) return '<li><div class="row">' + inner + '</div></li>';
+  const target = item.external ? ' target="_blank" rel="noopener"' : '';
+  return '<li><a class="row" href="' + esc(item.href) + '"' + target + '>' + inner + '</a></li>';
+}
+
+function emptyRow(key) {
+  return '<li><div class="row empty">' +
+    '<div>' +
+      '<p class="row-name">Nothing published here yet</p>' +
+      '<p class="row-desc">Add entries to the <code>' + esc(key) + '</code> list in the SITE object at the top of index.html.</p>' +
+    '</div>' +
+    '<div class="row-meta"><span class="badge">Empty</span></div>' +
+    '</div></li>';
+}
+
+function renderCategory(key) {
+  const cat = SITE[key];
+  document.title = cat.title + " — Can-Du-AI";
+  const rows = cat.items.length ? cat.items.map(projectRow).join("") : emptyRow(key);
+  view.innerHTML =
+    '<div class="anim" style="--accent:' + cat.accent + '">' +
+      '<a class="crumb" href="#/">&larr; All categories</a>' +
+      '<div class="cat-head">' +
+        '<h2 class="cat-title">' + esc(cat.title) + '</h2>' +
+        '<div class="cat-rule"></div>' +
+        '<p class="cat-desc">' + esc(cat.blurb) + '</p>' +
+      '</div>' +
+      '<ul class="list">' + rows + '</ul>' +
+    '</div>';
+}
+
+function route() {
+  const key = location.hash.replace(/^#\/?/, "").trim();
+  if (Object.prototype.hasOwnProperty.call(SITE, key)) renderCategory(key);
+  else renderHome();
+  window.scrollTo(0, 0);
+}
+
+window.addEventListener("hashchange", route);
+route();
+
+/* Set the byline's tracking so its line measures exactly as wide as the
+   wordmark above it, at any viewport size. */
+function fitByline() {
+  const mark = document.querySelector(".wordmark");
+  const line = document.querySelector(".byline");
+  if (!mark || !line) return;
+
+  const chars = line.textContent.length;
+  if (chars < 2) return;
+
+  line.style.letterSpacing = "0px";
+  line.style.marginRight = "0px";
+
+  const trailing = parseFloat(getComputedStyle(mark).letterSpacing) || 0;
+  const target = mark.getBoundingClientRect().width - trailing;
+  const base = line.getBoundingClientRect().width;
+  if (!target || !base) return;
+
+  const spacing = (target - base) / (chars - 1);
+  line.style.letterSpacing = spacing.toFixed(3) + "px";
+  line.style.marginRight = (-spacing).toFixed(3) + "px";
+}
+
+fitByline();
+window.addEventListener("resize", fitByline);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitByline);
+</script>
+</body>
+</html>
