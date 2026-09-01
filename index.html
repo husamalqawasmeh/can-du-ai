@@ -14,13 +14,18 @@
      page holds its own look whatever theme the browser is set to. */
   :root{
     color-scheme:light;
-    --ground:#F0E4CF;
+    --ground:#E7D6B6;
     --ink:#241C10;
-    --ink-soft:#6A5B45;
-    --line:rgba(36,28,16,.16);
-    --card:rgba(255,252,246,.78);
+    --ink-soft:#655741;
+    --line:rgba(36,28,16,.18);
+    --card:rgba(255,252,246,.88);
     --card-hover:#FFFDF9;
     --shadow:0 1px 2px rgba(60,44,20,.06), 0 14px 30px -18px rgba(60,44,20,.45);
+
+    /* the three navigation buttons */
+    --btn:#1F3A63;
+    --btn-hover:#2B4E82;
+    --btn-ink:#F6ECD8;
 
     --c-community:#B25A2A;
     --c-commercial:#2F6F76;
@@ -39,8 +44,19 @@
     -webkit-font-smoothing:antialiased;
   }
 
+  /* dunes sit behind everything, pinned to the viewport */
+  .dunes{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+  }
+  .dunes svg{width:100%;height:100%;display:block}
+
   /* Masthead and bottom bar are pinned; only the middle pane changes. */
   .page{
+    position:relative;
+    z-index:1;
     height:100vh;
     height:100dvh;
     display:flex;
@@ -197,28 +213,43 @@
   .crumb{
     display:inline-flex;
     align-items:center;
-    gap:.5rem;
+    gap:.55rem;
     align-self:flex-start;
     font-family:"IBM Plex Mono",ui-monospace,monospace;
-    font-size:.72rem;
+    font-size:.84rem;
     font-weight:700;
-    letter-spacing:.12em;
+    letter-spacing:.1em;
     text-transform:uppercase;
-    color:var(--ink);
+    color:var(--btn-ink);
     text-decoration:none;
-    padding:.55rem 1.15rem;
-    border:1px solid var(--line);
+    padding:.85rem 2rem;
+    min-width:13.5rem;
+    max-width:100%;
+    justify-content:center;
+    border:1px solid var(--btn);
     border-radius:999px;
-    background:var(--card);
-    transition:color .18s ease,border-color .18s ease,background .18s ease,transform .18s ease;
+    background:var(--btn);
+    box-shadow:var(--shadow);
+    transition:background .18s ease,border-color .18s ease,transform .18s ease;
   }
   .crumb:hover,.crumb:focus-visible{
-    color:var(--accent);
-    border-color:color-mix(in srgb,var(--accent) 50%,var(--line));
-    background:var(--card-hover);
-    transform:translateX(-2px);
+    background:var(--btn-hover);
+    border-color:var(--btn-hover);
+    transform:translateX(-3px);
   }
-  .crumb:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .crumb:focus-visible{outline:3px solid var(--btn);outline-offset:3px}
+  .crumb-arrow{
+    font-size:1.95em;
+    line-height:0;
+    font-weight:700;
+    position:relative;
+    top:.07em;
+    transition:transform .18s ease;
+  }
+  .crumb:hover .crumb-arrow{transform:translateX(-3px)}
+  @media (max-width:640px){
+    .crumb{min-width:0;width:100%;padding:.85rem 1.5rem}
+  }
 
   .cat-head{margin:1rem 0 0}
   .cat-title{
@@ -374,31 +405,37 @@
     flex:0 0 auto;
     display:flex;
     justify-content:center;
-    gap:.6rem;
+    gap:1.1rem;
     flex-wrap:wrap;
     padding:.9rem 1.5rem clamp(1.1rem,3vh,1.75rem);
   }
   .bar-btn{
     font-family:"IBM Plex Mono",ui-monospace,monospace;
-    font-size:.72rem;
+    font-size:.84rem;
     font-weight:700;
-    letter-spacing:.12em;
+    letter-spacing:.1em;
     text-transform:uppercase;
-    color:var(--ink);
-    background:var(--card);
-    border:1px solid var(--line);
+    color:var(--btn-ink);
+    background:var(--btn);
+    border:1px solid var(--btn);
     border-radius:999px;
-    padding:.55rem 1.3rem;
+    padding:.85rem 2rem;
+    min-width:13.5rem;
+    max-width:100%;
+    text-align:center;
     cursor:pointer;
-    transition:color .18s ease,border-color .18s ease,background .18s ease,transform .18s ease;
+    box-shadow:var(--shadow);
+    transition:background .18s ease,border-color .18s ease,transform .18s ease;
+  }
+  @media (max-width:640px){
+    .bar-btn{min-width:0;width:100%;padding:.85rem 1.5rem}
   }
   .bar-btn:hover,.bar-btn:focus-visible{
-    color:var(--c-community);
-    border-color:color-mix(in srgb,var(--c-community) 50%,var(--line));
-    background:var(--card-hover);
-    transform:translateY(-1px);
+    background:var(--btn-hover);
+    border-color:var(--btn-hover);
+    transform:translateY(-2px);
   }
-  .bar-btn:focus-visible{outline:2px solid var(--c-community);outline-offset:3px}
+  .bar-btn:focus-visible{outline:3px solid var(--btn);outline-offset:3px}
 
   /* ---------- modals ---------- */
   .modal{
@@ -518,6 +555,21 @@
 </style>
 </head>
 <body>
+
+<div class="dunes" aria-hidden="true">
+  <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice" role="presentation" focusable="false">
+    <rect x="0" y="0" width="1600" height="900" fill="#E7D6B6"/>
+    <path fill="#E2D0AD" d="M0 452 Q300 386 640 440 Q980 494 1290 418 Q1460 376 1600 428 L1600 900 L0 900 Z"/>
+    <path fill="#DBC8A3" d="M0 566 Q340 486 700 548 Q1040 608 1330 534 Q1480 496 1600 542 L1600 900 L0 900 Z"/>
+    <path fill="#D4C09A" d="M0 682 Q400 600 820 660 Q1200 714 1600 642 L1600 900 L0 900 Z"/>
+    <path fill="#CCB78F" d="M0 794 Q460 722 940 774 Q1300 812 1600 752 L1600 900 L0 900 Z"/>
+    <g fill="none" stroke="#B9A176" stroke-opacity=".28" stroke-width="1.5">
+      <path d="M0 470 Q300 404 640 458 Q980 512 1290 436 Q1460 394 1600 446"/>
+      <path d="M0 596 Q340 516 700 578 Q1040 638 1330 564 Q1480 526 1600 572"/>
+      <path d="M0 712 Q400 630 820 690 Q1200 744 1600 672"/>
+    </g>
+  </svg>
+</div>
 
 <div class="page">
 
@@ -803,7 +855,7 @@ function renderCategory(key) {
     : emptyRow(key);
   view.innerHTML =
     '<div class="pane"><div class="anim" style="--accent:' + cat.accent + '">' +
-      '<a class="crumb" href="#/">&larr; All categories</a>' +
+      '<a class="crumb" href="#/"><span class="crumb-arrow">&larr;</span> All categories</a>' +
       '<div class="cat-head">' +
         '<h2 class="cat-title">' + esc(cat.title) + '</h2>' +
         '<div class="cat-rule"></div>' +
