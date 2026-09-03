@@ -32,6 +32,7 @@
     --c-enterprise:#3A4E7A;
     --c-agents:#4E6B35;
     --c-llm:#7A4468;
+    --c-multimodal:#2F6B4F;
     --c-lab:#8A6C1F;
   }
 
@@ -184,19 +185,6 @@
     margin:0;
     line-height:1.2;
   }
-  /* never taller than two lines, whatever the viewport does to the wrap */
-  .tile-desc{
-    margin:0;
-    font-size:.875rem;
-    line-height:1.5;
-    color:var(--ink-soft);
-    max-width:38ch;
-    display:-webkit-box;
-    -webkit-box-orient:vertical;
-    -webkit-line-clamp:2;
-    line-clamp:2;
-    overflow:hidden;
-  }
   .tile-go{
     margin-top:.2rem;
     font-family:"IBM Plex Mono",ui-monospace,monospace;
@@ -214,7 +202,6 @@
     display:inline-flex;
     align-items:center;
     gap:.55rem;
-    align-self:flex-start;
     font-family:"IBM Plex Mono",ui-monospace,monospace;
     font-size:.84rem;
     font-weight:700;
@@ -266,14 +253,6 @@
     background:var(--accent);
     margin:.7rem 0 .8rem;
   }
-  .cat-desc{
-    margin:0;
-    color:var(--ink-soft);
-    font-size:.98rem;
-    line-height:1.55;
-    max-width:52ch;
-  }
-
   .list{
     list-style:none;
     margin:1.25rem 0 0;
@@ -581,6 +560,7 @@
   <main id="view"></main>
 
   <div class="bottom-bar">
+    <span id="backSlot"></span>
     <button type="button" class="bar-btn" id="linksOpen">Useful links</button>
     <button type="button" class="bar-btn" id="commentOpen">Leave a comment</button>
   </div>
@@ -648,7 +628,6 @@ const SITE = {
   community: {
     accent: "var(--c-community)",
     title: "Community Apps",
-    blurb: "Free tools for neighbours, schools and families.",
     items: [
       {
         name: "Janna-Zad",
@@ -664,27 +643,25 @@ const SITE = {
         href: "https://dubai-schools.can-du-ai.com",
         dest: "dubai-schools.can-du-ai.com",
         status: "live"
-      }
-    ]
-  },
-  commercial: {
-    accent: "var(--c-commercial)",
-    title: "Commercial Apps",
-    blurb: "Products with a price tag and a paying customer.",
-    hideBlurb: true,
-    items: [
-      {
-        name: "Online SuperStore",
-        desc: "Catalogue, checkout and fulfilment end to end.",
-        href: "https://superstore.can-du-ai.com",
-        dest: "superstore.can-du-ai.com",
-        status: "soon"
       },
       {
         name: "Nol Chat-Bot",
         desc: "Balance, top-ups and routes in plain words.",
         href: "https://nol-bot.can-du-ai.com",
         dest: "nol-bot.can-du-ai.com",
+        status: "soon"
+      }
+    ]
+  },
+  commercial: {
+    accent: "var(--c-commercial)",
+    title: "Commercial Apps",
+    items: [
+      {
+        name: "Online SuperStore",
+        desc: "Catalogue, checkout and fulfilment end to end.",
+        href: "https://superstore.can-du-ai.com",
+        dest: "superstore.can-du-ai.com",
         status: "soon"
       },
       {
@@ -699,7 +676,6 @@ const SITE = {
   enterprise: {
     accent: "var(--c-enterprise)",
     title: "Enterprise Solutions",
-    blurb: "Systems that run inside an organisation's workflow.",
     items: [
       {
         name: "Self-Learning Organization",
@@ -720,7 +696,6 @@ const SITE = {
   agents: {
     accent: "var(--c-agents)",
     title: "Agent AI",
-    blurb: "Frameworks for agents that plan, call tools and hand off.",
     compact: true,
     items: [
       {
@@ -739,17 +714,20 @@ const SITE = {
       }
     ]
   },
+  multimodal: {
+    accent: "var(--c-multimodal)",
+    title: "Multi-Modal: Video, Voice and Image",
+    items: []
+  },
   llm: {
     accent: "var(--c-llm)",
     title: "LLM Reviews",
-    blurb: "Models put to the same tasks and compared honestly.",
     compact: true,
     items: []
   },
   lab: {
     accent: "var(--c-lab)",
     title: "Tool Test Lab",
-    blurb: "Benchmarks and experiments still on the bench.",
     compact: true,
     items: [
       {
@@ -791,7 +769,7 @@ const SITE = {
   }
 };
 
-const ORDER = ["community", "commercial", "enterprise", "agents", "llm", "lab"];
+const ORDER = ["community", "commercial", "enterprise", "agents", "multimodal", "llm", "lab"];
 
 /* Useful links — add a line to this list and it appears in the modal. */
 const LINKS = [
@@ -810,7 +788,6 @@ function renderHome() {
     const cat = SITE[key];
     return '<a class="tile" style="--accent:' + cat.accent + '" href="#/' + key + '">' +
       '<h2 class="tile-title">' + esc(cat.title) + '</h2>' +
-      '<p class="tile-desc">' + esc(cat.blurb) + '</p>' +
       '<span class="tile-go">Open &rarr;</span>' +
       '</a>';
   }).join("") + '</div></div>';
@@ -861,11 +838,9 @@ function renderCategory(key) {
     : emptyRow(key);
   view.innerHTML =
     '<div class="pane"><div class="anim" style="--accent:' + cat.accent + '">' +
-      '<a class="crumb" href="#/"><span class="crumb-arrow">&larr;</span> All categories</a>' +
       '<div class="cat-head">' +
         '<h2 class="cat-title">' + esc(cat.title) + '</h2>' +
         '<div class="cat-rule"></div>' +
-        (cat.hideBlurb ? "" : '<p class="cat-desc">' + esc(cat.blurb) + '</p>') +
       '</div>' +
       '<ul class="list' + (compact ? ' two-col' : '') + '">' + rows + '</ul>' +
     '</div></div>';
@@ -873,8 +848,16 @@ function renderCategory(key) {
 
 function route() {
   const key = location.hash.replace(/^#\/?/, "").trim();
-  if (Object.prototype.hasOwnProperty.call(SITE, key)) renderCategory(key);
-  else renderHome();
+  const onCategory = Object.prototype.hasOwnProperty.call(SITE, key);
+  if (onCategory) renderCategory(key); else renderHome();
+
+  // the back button joins the bottom row, ahead of the other two
+  const slot = document.getElementById("backSlot");
+  if (slot) {
+    slot.innerHTML = onCategory
+      ? '<a class="crumb" href="#/"><span class="crumb-arrow">&larr;</span> All categories</a>'
+      : "";
+  }
   view.scrollTop = 0;
 }
 
