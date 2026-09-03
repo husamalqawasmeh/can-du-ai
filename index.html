@@ -671,6 +671,7 @@ const SITE = {
     accent: "var(--c-commercial)",
     title: "Commercial Apps",
     blurb: "Products with a price tag and a paying customer.",
+    hideBlurb: true,
     items: [
       {
         name: "Online SuperStore",
@@ -685,6 +686,13 @@ const SITE = {
         href: "https://nol-bot.can-du-ai.com",
         dest: "nol-bot.can-du-ai.com",
         status: "soon"
+      },
+      {
+        name: "AI Education Marketplace",
+        desc: "Learn anything with a one-to-one tutor.",
+        href: "https://e-du-ai.can-du-ai.com",
+        dest: "e-du-ai.can-du-ai.com",
+        status: "live"
       }
     ]
   },
@@ -857,7 +865,7 @@ function renderCategory(key) {
       '<div class="cat-head">' +
         '<h2 class="cat-title">' + esc(cat.title) + '</h2>' +
         '<div class="cat-rule"></div>' +
-        '<p class="cat-desc">' + esc(cat.blurb) + '</p>' +
+        (cat.hideBlurb ? "" : '<p class="cat-desc">' + esc(cat.blurb) + '</p>') +
       '</div>' +
       '<ul class="list' + (compact ? ' two-col' : '') + '">' + rows + '</ul>' +
     '</div></div>';
