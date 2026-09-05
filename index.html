@@ -67,7 +67,42 @@
     flex-direction:column;
   }
 
-  /* ---------- masthead (fixed) ----------
+  /* ---------- the top row (fixed) ----------
+     Three columns: the way back on the left, the mark in the middle, the two
+     standing buttons on the right. The middle column is sized to the mark and
+     the two outer ones share what is left equally, which is what keeps the
+     mark on the centre of the page rather than on the centre of the gap
+     between the buttons. */
+  .topline{
+    flex:0 0 auto;
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+    gap:1rem;
+    padding:.85rem 1.5rem 0;
+  }
+  .top-left{justify-self:start;min-width:0}
+  .top-right{
+    justify-self:end;
+    display:flex;
+    gap:.9rem;
+    min-width:0;
+  }
+  /* Not enough width for three across: the mark takes its own line and the
+     buttons sit under it, still in their order. */
+  @media (max-width:1040px){
+    .topline{
+      grid-template-columns:1fr;
+      justify-items:center;
+      gap:.55rem;
+      padding-bottom:.2rem;
+    }
+    .masthead{order:-1}
+    .top-left,.top-right{justify-self:center}
+    .top-right{flex-wrap:wrap;justify-content:center}
+  }
+
+  /* ---------- masthead ----------
      It carries the finished mark — the same markup the landing page builds,
      with the story already over. CAN sits above the word and the name below
      it, both out of flow, so the padding here is what reserves their room,
@@ -76,7 +111,7 @@
     flex:0 0 auto;
     display:flex;
     justify-content:center;
-    padding:clamp(.7rem,2vh,1.2rem) 1.5rem .2rem;
+    padding:clamp(.5rem,1.6vh,1rem) 0 .2rem;
   }
   .mast-mark{
     display:inline-block;
@@ -102,6 +137,7 @@
     flex:1 1 auto;
     min-height:0;
     overflow-y:auto;
+    padding-bottom:clamp(.75rem,2.5vh,1.5rem);
     width:100%;
     display:flex;
     flex-direction:column;
@@ -193,8 +229,8 @@
     text-transform:uppercase;
     color:var(--btn-ink);
     text-decoration:none;
-    padding:.85rem 2rem;
-    min-width:13.5rem;
+    padding:.62rem 1.65rem;
+    min-width:11.5rem;
     max-width:100%;
     justify-content:center;
     border:1px solid var(--btn);
@@ -219,7 +255,7 @@
   }
   .crumb:hover .crumb-arrow{transform:translateX(-3px)}
   @media (max-width:640px){
-    .crumb{min-width:0;width:100%;padding:.85rem 1.5rem}
+    .crumb{min-width:0;width:100%;padding:.62rem 1.2rem}
   }
 
   .cat-head{margin:1rem 0 0}
@@ -371,15 +407,6 @@
     color:var(--accent);
   }
 
-  /* ---------- bottom bar (fixed) ---------- */
-  .bottom-bar{
-    flex:0 0 auto;
-    display:flex;
-    justify-content:center;
-    gap:1.1rem;
-    flex-wrap:wrap;
-    padding:.9rem 1.5rem clamp(1.1rem,3vh,1.75rem);
-  }
   .bar-btn{
     font-family:"IBM Plex Mono",ui-monospace,monospace;
     font-size:.84rem;
@@ -390,8 +417,8 @@
     background:var(--btn);
     border:1px solid var(--btn);
     border-radius:999px;
-    padding:.85rem 2rem;
-    min-width:13.5rem;
+    padding:.62rem 1.65rem;
+    min-width:11.5rem;
     max-width:100%;
     text-align:center;
     cursor:pointer;
@@ -399,7 +426,7 @@
     transition:background .18s ease,border-color .18s ease,transform .18s ease;
   }
   @media (max-width:640px){
-    .bar-btn{min-width:0;width:100%;padding:.85rem 1.5rem}
+    .bar-btn{min-width:0;flex:1 1 9rem;padding:.62rem 1.2rem}
   }
   .bar-btn:hover,.bar-btn:focus-visible{
     background:var(--btn-hover);
@@ -806,10 +833,12 @@
   /* Landing: until the mark has drawn itself the masthead is empty and the
      bar at the foot is out of the way. */
   .is-intro .masthead .lg-mark{opacity:0}
-  .is-intro .bottom-bar{opacity:0;pointer-events:none}
+  .is-intro .top-left,
+  .is-intro .top-right{opacity:0;pointer-events:none}
   .is-intro .lg-replay{display:none}
   .is-intro.is-landed .masthead .lg-mark{opacity:1;transition:opacity .25s ease}
-  .is-intro.is-landed .bottom-bar{opacity:1;transition:opacity .5s ease .12s}
+  .is-intro.is-landed .top-left,
+  .is-intro.is-landed .top-right{opacity:1;transition:opacity .5s ease .12s}
   /* on the way up it stops being a puzzle and goes back to being a name */
   .is-flying .by-l.is-home{color:inherit;transition:color .7s ease}
 
@@ -892,18 +921,21 @@
 
 <div class="page">
 
-  <header class="masthead">
-    <h1 class="sr-only">Can-Du-AI — an AI portfolio by Husam Al-Qawasmeh</h1>
-    <a class="mast-mark" href="#/" id="mastLink" aria-label="Can-Du-AI, by Husam Al-Qawasmeh"></a>
-  </header>
+  <div class="topline">
+    <div class="top-left"><span id="backSlot"></span></div>
+
+    <header class="masthead">
+      <h1 class="sr-only">Can-Du-AI — an AI portfolio by Husam Al-Qawasmeh</h1>
+      <a class="mast-mark" href="#/" id="mastLink" aria-label="Can-Du-AI, by Husam Al-Qawasmeh"></a>
+    </header>
+
+    <div class="top-right">
+      <button type="button" class="bar-btn" id="linksOpen">Useful links</button>
+      <button type="button" class="bar-btn" id="commentOpen">Leave a comment</button>
+    </div>
+  </div>
 
   <main id="view"></main>
-
-  <div class="bottom-bar">
-    <span id="backSlot"></span>
-    <button type="button" class="bar-btn" id="linksOpen">Useful links</button>
-    <button type="button" class="bar-btn" id="commentOpen">Leave a comment</button>
-  </div>
 
 </div>
 
@@ -1531,7 +1563,7 @@ function renderCategory(key) {
     '</div></div>';
 }
 
-// the back button joins the bottom row, ahead of the other two
+// the way back sits at the left of the top row, and only where there is one
 function setBack(on) {
   const slot = document.getElementById("backSlot");
   if (slot) {
