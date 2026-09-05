@@ -813,6 +813,11 @@
   .anim > *:nth-child(5){animation-delay:.26s}
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{animation:none !important;transition:none !important}
+    /* One exception, and only for the hand-over from the middle of the page
+       to the masthead: the preference is about movement, and this is a
+       cross-fade between two things that never move. */
+    .is-intro .masthead .lg-mark,
+    .is-intro .logo-stage .lg-mark{transition:opacity .4s ease !important}
   }
 </style>
 </head>
@@ -1398,7 +1403,7 @@ function finishIntro(stage) {
     document.body.classList.remove("is-intro", "is-landed");
     renderHome();
     setBack(false);
-  }, 260));
+  }, 420));                                   // long enough for the fade to finish
 }
 
 function playLogo(intro) {
@@ -1406,11 +1411,15 @@ function playLogo(intro) {
   const stage = document.getElementById("logoStage");
   if (!stage) return;
 
-  // With motion turned down there is no story to tell, only the mark.
+  /* With motion turned down there is no story to tell, only the mark — but
+     it still forms in the middle of the page before it goes up. It arrives
+     there whole rather than assembling itself, holds long enough to be read,
+     and hands over by fading. What the preference rules out is the
+     travelling and the scaling, not the order of events. */
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     stage.className = "logo-stage is-set";
     fitName(stage.querySelector(".lg-mark"));
-    if (intro) finishIntro(stage);
+    if (intro) logoTimers.push(setTimeout(() => finishIntro(stage), 1600));
     return;
   }
 
