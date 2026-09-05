@@ -67,58 +67,34 @@
     flex-direction:column;
   }
 
-  /* ---------- masthead (fixed) ---------- */
+  /* ---------- masthead (fixed) ----------
+     It carries the finished mark — the same markup the landing page builds,
+     with the story already over. CAN sits above the word and the name below
+     it, both out of flow, so the padding here is what reserves their room,
+     and it is set in em of the mark so it holds at every size. */
   .masthead{
     flex:0 0 auto;
     display:flex;
-    flex-direction:column;
-    align-items:center;
-    text-align:center;
-    padding:clamp(1.5rem,4.5vh,2.75rem) 1.5rem .25rem;
-  }
-  .wordmark{
-    display:inline-block;
-    font-size:clamp(1.6rem,1.1rem + 2.4vw,2.9rem);
-    font-weight:700;
-    font-stretch:125%;
-    letter-spacing:.12em;
-    margin:0;
-    line-height:1;
-  }
-  /* Each separator is a copper disc that reads as a dot from across the room
-     and as a letter up close: CAN-ada-DU-B-AI carries CANADA and DUBAI. */
-  .wordmark .micro{
-    display:inline-flex;
-    align-items:center;
     justify-content:center;
-    width:.4em;
-    height:.4em;
-    margin:0 .05em;
-    border-radius:50%;
-    background:var(--c-community);
-    vertical-align:.14em;
-    line-height:1;
-    overflow:hidden;
+    padding:clamp(.7rem,2vh,1.2rem) 1.5rem .2rem;
   }
-  .wordmark .micro span{
-    color:var(--ground);
-    font-weight:700;
-    font-stretch:100%;
-    letter-spacing:0;
-    line-height:1;
-  }
-  .wordmark .micro.ada span{font-size:.115em}
-  .wordmark .micro.bee span{font-size:.17em}
-  /* width is matched to the wordmark by fitByline() at the foot of the script */
-  .byline{
+  .mast-mark{
     display:inline-block;
-    margin:.85rem 0 0;
-    font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-    font-size:clamp(.92rem,.7rem + .68vw,1.34rem);
-    font-weight:700;
-    letter-spacing:.1em;
+    font-size:clamp(1.5rem,1.05rem + 1.9vw,2.45rem);
+    padding:.52em 0 .95em;
+    text-decoration:none;
+    color:inherit;
+    border-radius:2px;
+  }
+  .mast-mark:focus-visible{outline:2px solid var(--mark-ink);outline-offset:4px}
+  .sr-only{
+    position:absolute;
+    width:1px;height:1px;
+    padding:0;margin:-1px;
+    overflow:hidden;
+    clip:rect(0 0 0 0);
     white-space:nowrap;
-    color:var(--ink);
+    border:0;
   }
 
   /* ---------- the pane that changes ---------- */
@@ -609,14 +585,16 @@
   .is-land .lg-globe{opacity:0;transition:opacity .1s linear}
   .is-land .lg-b-globe{opacity:1;transition:opacity .1s linear}
 
+  /* No size of its own: the masthead sets one and the landing page sets a
+     much larger one, and everything inside the mark is in em of it. */
   .lg-mark{
     position:relative;
-    font-size:clamp(2.1rem,9.5vmin,5.2rem);
     font-weight:700;
     font-stretch:125%;
     line-height:1;
     color:var(--mark-ink);
   }
+  .logo-stage .lg-mark{font-size:clamp(2.1rem,9.5vmin,5.2rem)}
   .lg-word{
     display:inline-flex;
     align-items:center;
@@ -799,6 +777,30 @@
      sand. */
   .by-l.is-home{color:#17612f}
 
+  /* The finished mark with no story attached: what the masthead carries,
+     and where the landing page leaves off. */
+  .is-set .lg-side{opacity:1;transform:none}
+  .is-set .lg-b{width:.4em;height:.4em;top:.02em;margin:0 .05em}
+  .is-set .lg-b > .lg-letter{
+    opacity:1;
+    font-size:.17em;
+    text-shadow:0 0 .18em #fff,0 0 .4em rgba(255,255,255,.85);
+  }
+  .is-set .lg-b-globe{opacity:1}
+  .is-set .lg-can{opacity:1;transform:translate(0,0)}
+  .is-set .lg-by{opacity:1}
+  .is-set .by-l{opacity:1}
+
+  /* Landing: until the mark has drawn itself the masthead is empty and the
+     bar at the foot is out of the way. */
+  .is-intro .masthead .lg-mark{opacity:0}
+  .is-intro .bottom-bar{opacity:0;pointer-events:none}
+  .is-intro .lg-replay{display:none}
+  .is-intro.is-landed .masthead .lg-mark{opacity:1;transition:opacity .25s ease}
+  .is-intro.is-landed .bottom-bar{opacity:1;transition:opacity .5s ease .12s}
+  /* on the way up it stops being a puzzle and goes back to being a name */
+  .is-flying .by-l.is-home{color:inherit;transition:color .7s ease}
+
   .lg-replay{align-self:center}
 
   /* ---------- motion ---------- */
@@ -874,8 +876,8 @@
 <div class="page">
 
   <header class="masthead">
-    <h1 class="wordmark">CAN<span class="micro ada"><span>ada</span></span>DU<span class="micro bee"><span>B</span></span>AI</h1>
-    <p class="byline">By Husam Al-Qawasmeh</p>
+    <h1 class="sr-only">Can-Du-AI — an AI portfolio by Husam Al-Qawasmeh</h1>
+    <a class="mast-mark" href="#/" id="mastLink" aria-label="Can-Du-AI, by Husam Al-Qawasmeh"></a>
   </header>
 
   <main id="view"></main>
@@ -1205,6 +1207,7 @@ function measureLogo(stage) {
   stage.classList.add("no-anim", "is-small", "is-grown");
   void stage.offsetWidth;
   put(slot.getBoundingClientRect(), "--tx", "--ty", "--ts");
+  fitName(mark);                             // against the word at its final width
 
   /* Where CAN comes in: below the word, its right edge against the word's.
      Taken from the layout box rather than getBoundingClientRect, because the
@@ -1241,7 +1244,56 @@ function byCells() {
   return out;
 }
 
-function startByline(stage, shuffle) {
+/* The mark, written in one place. The masthead carries it finished; the
+   landing page builds it. The only difference is the travelling globe, which
+   belongs to the animation and so is not part of this. */
+function markHTML(id, extra) {
+  return '<span class="lg-mark' + (extra ? " " + extra : "") + '"' +
+      (id ? ' id="' + id + '"' : "") + ' aria-hidden="true">' +
+      '<span class="lg-can">CAN</span>' +
+      '<span class="lg-word">' +
+        '<span class="lg-side lg-du">DU</span>' +
+        '<span class="lg-b">' +
+          '<span class="lg-letter">B</span>' +
+          '<span class="lg-b-globe"><svg viewBox="0 0 200 200">' +
+            '<use href="#cdaGlobe"/></svg></span>' +
+        '</span>' +
+        '<span class="lg-side lg-ai">AI</span>' +
+      '</span>' +
+      '<span class="lg-by">' +
+        '<span class="by-slots">' + byCells() + '</span>' +
+      '</span>' +
+    '</span>';
+}
+
+/* The name is set to the width of the word above it.
+
+   Sixteen columns of equal width with the letters centred in them: the ink
+   starts half a column in and stops half a column short, so for the ink
+   itself to measure the same as the word, the columns have to come to a
+   glyph less than the word rather than to the word. */
+function fitName(mark) {
+  if (!mark) return;
+  const word = mark.querySelector(".lg-word");
+  const by = mark.querySelector(".lg-by");
+  const slots = mark.querySelector(".by-slots");
+  if (!word || !by || !slots) return;
+
+  const probe = document.createElement("span");
+  probe.textContent = "M";
+  probe.style.cssText = "position:absolute;visibility:hidden;white-space:pre";
+  by.appendChild(probe);
+  const glyph = probe.getBoundingClientRect().width;
+  probe.remove();
+
+  // the word carries tracking after its last letter, which is not ink
+  const trailing = parseFloat(getComputedStyle(word).letterSpacing) || 0;
+  const w = word.getBoundingClientRect().width - trailing;
+  if (!w || !glyph) return;
+  slots.style.setProperty("--sw", ((w - glyph) / 15).toFixed(3) + "px");
+}
+
+function startByline(stage, shuffle, onSolved) {
   const slots = stage.querySelector(".by-slots");
   if (!slots) return;
   const letters = Array.prototype.slice.call(slots.querySelectorAll(".by-l"));
@@ -1295,7 +1347,10 @@ function startByline(stage, shuffle) {
   const swap = () => {
     const free = [];
     for (let k = 0; k < letters.length; k++) if (!locked[k]) free.push(k);
-    if (free.length < 2) return;             // the name is finished
+    if (free.length < 2) {                   // the name is finished
+      if (onSolved) onSolved();
+      return;
+    }
     const pick = () => free[Math.floor(Math.random() * free.length)];
     const a = pick();
     let b = pick();
@@ -1308,16 +1363,54 @@ function startByline(stage, shuffle) {
   byTimer = setTimeout(swap, 2100);
 }
 
-function playLogo() {
+/* The mark leaves the middle of the page for the masthead, and stays there.
+
+   Both ends are measured and it goes in one transform. The two are the same
+   markup at two sizes, so putting one box on the other puts everything
+   inside it on everything inside the other. */
+function flyToMasthead(stage) {
+  const from = stage.querySelector(".lg-mark");
+  const to = document.getElementById("mastMark");
+  if (!from || !to) return finishIntro(stage);
+
+  const a = from.getBoundingClientRect();
+  const b = to.getBoundingClientRect();
+  if (!a.width || !b.width) return finishIntro(stage);
+
+  stage.classList.add("is-flying");
+  from.style.transformOrigin = "top left";
+  from.style.transition = "transform 1.05s cubic-bezier(.5,0,.2,1),opacity .24s ease";
+  from.style.transform =
+    "translate(" + (b.left - a.left).toFixed(2) + "px," +
+                   (b.top - a.top).toFixed(2) + "px) " +
+    "scale(" + (b.width / a.width).toFixed(4) + ")";
+  logoTimers.push(setTimeout(() => finishIntro(stage), 1080));
+}
+
+/* Hand over: the masthead's copy comes up as the flown one goes down, both
+   at the same size in the same place, and the site proper takes the screen. */
+function finishIntro(stage) {
+  introDone = true;
+  document.body.classList.add("is-landed");
+  const from = stage && stage.querySelector(".lg-mark");
+  if (from) from.style.opacity = "0";
+  logoTimers.push(setTimeout(() => {
+    document.body.classList.remove("is-intro", "is-landed");
+    renderHome();
+    setBack(false);
+  }, 260));
+}
+
+function playLogo(intro) {
   clearLogo();
   const stage = document.getElementById("logoStage");
   if (!stage) return;
 
   // With motion turned down there is no story to tell, only the mark.
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    stage.className =
-      "logo-stage is-seed is-huge is-word is-small is-grown is-land is-can is-done is-by is-letters";
-    startByline(stage, false);
+    stage.className = "logo-stage is-set";
+    fitName(stage.querySelector(".lg-mark"));
+    if (intro) finishIntro(stage);
     return;
   }
 
@@ -1340,13 +1433,14 @@ function playLogo() {
     at(5250, "is-done");    // up and across, to sit above it ranged left
     // the letters, alphabetical, written out one at a time
     at(6150, "is-by");
-    logoTimers.push(setTimeout(() => startByline(stage, true), 6210));
+    logoTimers.push(setTimeout(
+      () => startByline(stage, true, intro ? () => flyToMasthead(stage) : null), 6210));
     at(6500, "is-letters");
   }
 }
 
-function renderLogo() {
-  document.title = "The Logo — Can-Du-AI";
+function renderLogo(intro) {
+  document.title = intro ? "Can-Du-AI" : "The Logo — Can-Du-AI";
   view.innerHTML =
     // no .anim here: this screen is its own entrance, and the pane-level
     // rise would fade the stage in over the top of it
@@ -1355,30 +1449,17 @@ function renderLogo() {
         'The Can-Du-AI mark assembling itself: a dot opens out into a globe ' +
         'turned to the Gulf, shrinks back to a dot with a B inside it, DU ' +
         'and AI arrive on either side, and CAN rises from below the word to ' +
-        'sit above it. Underneath, a byline reads BY followed by the letters ' +
-        'of Husam Al-Qawasmeh, shuffled and never settling.">' +
+        'sit above it. Underneath, the letters of Husam Al-Qawasmeh are ' +
+        'written out in alphabetical order and then shuffle themselves into ' +
+        'the name.">' +
         '<span class="lg-globe" aria-hidden="true">' +
           '<svg viewBox="0 0 200 200"><use href="#cdaGlobe"/></svg></span>' +
-        '<span class="lg-mark" aria-hidden="true">' +
-          '<span class="lg-can">CAN</span>' +
-          '<span class="lg-word">' +
-            '<span class="lg-side lg-du">DU</span>' +
-            '<span class="lg-b">' +
-              '<span class="lg-letter">B</span>' +
-              '<span class="lg-b-globe"><svg viewBox="0 0 200 200">' +
-                '<use href="#cdaGlobe"/></svg></span>' +
-            '</span>' +
-            '<span class="lg-side lg-ai">AI</span>' +
-          '</span>' +
-          '<span class="lg-by">' +
-            '<span class="by-slots">' + byCells() + '</span>' +
-          '</span>' +
-        '</span>' +
+        markHTML("", "") +
       '</div>' +
       '<button type="button" class="btn lg-replay" id="logoReplay">Play again</button>' +
     '</div>';
-  document.getElementById("logoReplay").addEventListener("click", playLogo);
-  playLogo();
+  document.getElementById("logoReplay").addEventListener("click", () => playLogo(false));
+  playLogo(intro);
 
   /* The measurements depend on text metrics, so they are taken again once the
      webfont is in. Play is not held back for it: a promise that never settles
@@ -1410,51 +1491,65 @@ function renderCategory(key) {
     '</div></div>';
 }
 
+// the back button joins the bottom row, ahead of the other two
+function setBack(on) {
+  const slot = document.getElementById("backSlot");
+  if (slot) {
+    slot.innerHTML = on
+      ? '<a class="crumb" href="#/"><span class="crumb-arrow">&larr;</span> All categories</a>'
+      : "";
+  }
+}
+
+/* The front door is the mark drawing itself, once a visit. Arriving straight
+   at a category skips it — an intro belongs to the front door — and so does
+   coming back to the grid later. */
+let introDone = false;
+
 function route() {
   clearLogo();                                  // leaving the logo screen stops it
   const key = location.hash.replace(/^#\/?/, "").trim();
   const onCategory = Object.prototype.hasOwnProperty.call(SITE, key);
-  if (onCategory) renderCategory(key); else renderHome();
 
-  // the back button joins the bottom row, ahead of the other two
-  const slot = document.getElementById("backSlot");
-  if (slot) {
-    slot.innerHTML = onCategory
-      ? '<a class="crumb" href="#/"><span class="crumb-arrow">&larr;</span> All categories</a>'
-      : "";
+  if (!introDone && key === "") {
+    document.body.classList.add("is-intro");
+    setBack(false);
+    renderLogo(true);
+    return;
   }
+
+  introDone = true;
+  document.body.classList.remove("is-intro", "is-landed");
+  if (onCategory) renderCategory(key); else renderHome();
+  setBack(onCategory);
   view.scrollTop = 0;
 }
 
+/* The masthead's copy of the mark, built from the same function and set to
+   its finished state. It has to exist before the landing page can fly its
+   own copy into it. */
+const mastLink = document.getElementById("mastLink");
+if (mastLink) mastLink.innerHTML = markHTML("mastMark", "is-set");
+
+const fitAll = () => {
+  fitName(document.getElementById("mastMark"));
+  /* The landing page's word is only its final width once the slot has shrunk
+     to a dot; before that measureLogo does the fitting, from inside the
+     layout it applies to read it. */
+  const stage = document.getElementById("logoStage");
+  if (stage && (stage.classList.contains("is-grown") ||
+                stage.classList.contains("is-set"))) {
+    fitName(stage.querySelector(".lg-mark"));
+  }
+};
+fitAll();
+window.addEventListener("resize", fitAll);
+// the width of a name is the width of a typeface, so it is taken again once
+// the real one is in
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
+
 window.addEventListener("hashchange", route);
 route();
-
-/* Set the byline's tracking so its line measures exactly as wide as the
-   wordmark above it, at any viewport size. */
-function fitByline() {
-  const mark = document.querySelector(".wordmark");
-  const line = document.querySelector(".byline");
-  if (!mark || !line) return;
-
-  const chars = line.textContent.length;
-  if (chars < 2) return;
-
-  line.style.letterSpacing = "0px";
-  line.style.marginRight = "0px";
-
-  const trailing = parseFloat(getComputedStyle(mark).letterSpacing) || 0;
-  const target = mark.getBoundingClientRect().width - trailing;
-  const base = line.getBoundingClientRect().width;
-  if (!target || !base) return;
-
-  const spacing = (target - base) / (chars - 1);
-  line.style.letterSpacing = spacing.toFixed(3) + "px";
-  line.style.marginRight = (-spacing).toFixed(3) + "px";
-}
-
-fitByline();
-window.addEventListener("resize", fitByline);
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitByline);
 
 /* ---------------- useful links ---------------- */
 (function () {
