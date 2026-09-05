@@ -527,9 +527,10 @@
   }
 
   /* ---------- the logo screen ----------
-     The mark assembles itself. The globe arrives huge, shrinks past its
-     resting size to a dot with a B inside it, grows back to settle, and then
-     DU and AI arrive on either side of it. CAN comes last, up from below.
+     The mark assembles itself. A dot opens out into a globe filling the
+     stage, shrinks back past its resting size to a dot with a B inside it,
+     grows again to settle, and then DU and AI arrive on either side of it.
+     CAN comes last, up from below.
 
      A circle here is a circle from the first frame to the last: nothing is
      ever squashed, flattened or boxed. Every stage is a class added in turn,
@@ -563,18 +564,26 @@
     opacity:0;
     /* Laid out at its largest and only ever scaled down, so the artwork is
        never asked to enlarge. Every stage writes the same two functions, so
-       they interpolate one for one rather than falling back to matrices. */
-    transform:translate(0,0) scale(1.06);
+       they interpolate one for one rather than falling back to matrices.
+       It opens at the size it will finish at — the dot — which is the same
+       measured scale the end of the sequence returns to. */
+    transform:translate(0,0) scale(var(--ts,.06));
   }
   .lg-globe svg,.lg-b-globe svg{display:block;width:100%;height:100%}
 
-  /* 1 — huge, and alone on the screen */
+  /* 1 — a dot, and nothing else */
+  .is-seed .lg-globe{
+    opacity:1;
+    transform:translate(0,0) scale(var(--ts,.06));
+    transition:opacity .35s ease;
+  }
+  /* 2 — out to full size, filling the stage */
   .is-huge .lg-globe{
     opacity:1;
     transform:translate(0,0) scale(1);
-    transition:transform .5s ease,opacity .45s ease;
+    transition:transform 1s cubic-bezier(.25,.7,.3,1);
   }
-  /* 2 — down to a dot, smaller than it will end up. The three values are
+  /* 3 — down to a dot, smaller than it will end up. The three values are
      measured in the script: the dot's home is a character in a line of type,
      which no stylesheet can know the position of in advance. */
   .is-small .lg-globe{
@@ -582,12 +591,12 @@
     transform:translate(var(--tx,0px),var(--ty,0px)) scale(calc(var(--ts,.06) * .72));
     transition:transform 1.35s cubic-bezier(.5,0,.18,1);
   }
-  /* 3 — and back up, to settle at the size it keeps */
+  /* 4 — and back up, to settle at the size it keeps */
   .is-grown .lg-globe{
     transform:translate(var(--tx,0px),var(--ty,0px)) scale(var(--ts,.06));
     transition:transform .55s cubic-bezier(.3,1.5,.5,1);
   }
-  /* 4 — landed. The copy that lives inside the word takes over, so from here
+  /* 5 — landed. The copy that lives inside the word takes over, so from here
      the dot reflows with the type like any other character. */
   .is-land .lg-globe{opacity:0;transition:opacity .1s linear}
   .is-land .lg-b-globe{opacity:1;transition:opacity .1s linear}
@@ -1086,24 +1095,25 @@ function playLogo() {
 
   // With motion turned down there is no story to tell, only the mark.
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    stage.className = "logo-stage is-huge is-small is-grown is-land is-sides is-can is-done";
+    stage.className = "logo-stage is-seed is-huge is-small is-grown is-land is-sides is-can is-done";
     return;
   }
 
   stage.className = "logo-stage no-anim";
-  void stage.offsetWidth;                       // take the reset before animating
+  void stage.offsetWidth;                       // commit the reset before animating
   measureLogo(stage);
-  requestAnimationFrame(() => {
-    stage.classList.remove("no-anim");
+  stage.classList.remove("no-anim");
+  {
     const at = (ms, cls) => logoTimers.push(setTimeout(() => stage.classList.add(cls), ms));
-    at(60,   "is-huge");    // a globe, filling the stage
-    at(1250, "is-small");   // shrunk to a dot, with the B inside it
-    at(2700, "is-grown");   // and settled at the size it keeps
-    at(3320, "is-land");    // hand over to the copy in the word
-    at(3400, "is-sides");   // DU from the left, AI from the right
-    at(4300, "is-can");     // CAN, below the word and ranged right
-    at(5050, "is-done");    // up and across, to sit above it ranged left
-  });
+    at(60,   "is-seed");    // a dot, the size the mark ends on
+    at(420,  "is-huge");    // out to full size, filling the stage
+    at(1600, "is-small");   // back down to a dot, with the B inside it
+    at(2950, "is-grown");   // and settled at the size it keeps
+    at(3500, "is-land");    // hand over to the copy in the word
+    at(3560, "is-sides");   // DU from the left, AI from the right
+    at(4400, "is-can");     // CAN, below the word and ranged right
+    at(5100, "is-done");    // up and across, to sit above it ranged left
+  }
 }
 
 function renderLogo() {
@@ -1113,9 +1123,10 @@ function renderLogo() {
     // rise would fade the stage in over the top of it
     '<div class="pane logo-pane">' +
       '<div class="logo-stage" id="logoStage" role="img" aria-label="' +
-        'The Can-Du-AI mark assembling itself: a globe turned to the Gulf ' +
-        'shrinks to a dot with a B inside it, DU and AI arrive on either ' +
-        'side, and CAN rises from below the word to sit above it.">' +
+        'The Can-Du-AI mark assembling itself: a dot opens out into a globe ' +
+        'turned to the Gulf, shrinks back to a dot with a B inside it, DU ' +
+        'and AI arrive on either side, and CAN rises from below the word to ' +
+        'sit above it.">' +
         '<span class="lg-globe" aria-hidden="true">' +
           '<svg viewBox="0 0 200 200"><use href="#cdaGlobe"/></svg></span>' +
         '<span class="lg-mark" aria-hidden="true">' +
@@ -1134,8 +1145,18 @@ function renderLogo() {
       '<button type="button" class="btn lg-replay" id="logoReplay">Play again</button>' +
     '</div>';
   document.getElementById("logoReplay").addEventListener("click", playLogo);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(playLogo);
-  else playLogo();
+  playLogo();
+
+  /* The measurements depend on text metrics, so they are taken again once the
+     webfont is in. Play is not held back for it: a promise that never settles
+     — a slow or blocked font — would otherwise leave the screen empty for
+     good, and a retarget mid-flight is only a transition changing its mind. */
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => {
+      const stage = document.getElementById("logoStage");
+      if (stage) measureLogo(stage);
+    });
+  }
 }
 
 function renderCategory(key) {
