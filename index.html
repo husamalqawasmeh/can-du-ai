@@ -539,6 +539,7 @@
     gap:1.1rem;
   }
   .logo-stage{
+    --gd:min(32vmin,14rem);          /* the globe at its largest */
     position:relative;
     width:100%;
     min-height:min(44vh,20rem);
@@ -550,36 +551,55 @@
      would animate itself apart first. */
   .logo-stage.no-anim *{transition:none !important}
 
-  .lg-blob{
+  .lg-globe{
     position:absolute;
-    width:min(32vmin,14rem);
-    height:min(32vmin,14rem);
-    border-radius:50%;
-    background:var(--c-community);
+    left:50%;
+    top:50%;
+    width:var(--gd);
+    height:var(--gd);
+    margin:calc(var(--gd) / -2) 0 0 calc(var(--gd) / -2);
     opacity:0;
-    transform:scale(.03);
+    /* Every stage writes the same two functions, so the browser interpolates
+       them one for one instead of falling back to matrices. */
+    transform:translate(0,0) scale(.03);
   }
+  .lg-globe svg,.lg-b-globe svg{display:block;width:100%;height:100%}
   /* 1 — a dot, and nothing else */
-  .is-dot .lg-blob{
+  .is-dot .lg-globe{
     opacity:1;
-    transform:scale(.055);
+    transform:translate(0,0) scale(.05);
     transition:transform .32s ease,opacity .32s ease;
   }
   /* 2 — grown to mid screen */
-  .is-big .lg-blob{
+  .is-big .lg-globe{
     opacity:1;
-    transform:scale(1);
-    transition:transform 1.25s cubic-bezier(.2,.72,.25,1);
+    transform:translate(0,0) scale(1);
+    transition:transform 1.3s cubic-bezier(.2,.72,.25,1);
   }
-  /* 3 — melting: it flattens and spreads as the word rises out of it */
-  .is-word .lg-blob{
-    opacity:0;
-    border-radius:.4rem;
-    transform:scaleX(2.3) scaleY(.04);
-    transition:transform .85s cubic-bezier(.55,0,.25,1),
-               border-radius .5s ease,
-               opacity .5s ease .3s;
+  /* 3 — the word rises out of it, so it settles back and softens */
+  .is-word .lg-globe{
+    opacity:.45;
+    filter:blur(1.4px) saturate(.85);
+    transform:translate(0,0) scale(.78);
+    transition:transform .9s cubic-bezier(.4,0,.25,1),
+               opacity .7s ease,
+               filter .7s ease;
   }
+  /* 4 — and travels into the slot the B is leaving. The three values are
+     measured in the script: the dot's home is a character in a line of type,
+     which no stylesheet can know the position of in advance. */
+  .is-tuck .lg-globe{
+    opacity:1;
+    filter:none;
+    transform:translate(var(--tx,0px),var(--ty,0px)) scale(var(--ts,.06));
+    transition:transform 1.2s cubic-bezier(.45,0,.2,1),
+               opacity .5s ease,
+               filter .6s ease;
+  }
+  /* 5 — landed. The copy that lives inside the word takes over, so from here
+     the dot reflows with the type like any other character. */
+  .is-land .lg-globe{opacity:0;transition:opacity .1s linear}
+  .is-land .lg-b-globe{opacity:1;transition:opacity .1s linear}
 
   .lg-mark{
     position:relative;
@@ -616,34 +636,33 @@
     width:.72em;
     height:.72em;
     margin:0;
-    border-radius:50%;
-    background:transparent;
-    box-shadow:inset 0 0 0 0 var(--c-community);
   }
-  .lg-b > span{
+  .lg-b > .lg-letter{
     font-size:1em;
     font-stretch:100%;
     letter-spacing:0;
     line-height:1;
     color:inherit;
   }
+  .lg-b-globe{position:absolute;inset:0;opacity:0}
+  /* Smaller than the letter it replaces, and dropped to the baseline: what is
+     left reads as the full stop in DU.AI rather than a character of its own. */
   .is-tuck .lg-b{
-    width:.4em;
-    height:.4em;
-    margin:0 .05em;
-    background:var(--c-community);
-    /* the ring closes in first; the fill lands once the letter is small */
-    box-shadow:inset 0 0 0 .05em var(--c-community);
-    transition:width 1.15s cubic-bezier(.45,0,.2,1),
-               height 1.15s cubic-bezier(.45,0,.2,1),
-               margin 1.15s cubic-bezier(.45,0,.2,1),
-               box-shadow .45s ease,
-               background-color .5s ease .6s;
+    width:.34em;
+    height:.34em;
+    /* measured, not guessed: at .13em the globe floated four pixels clear of
+       the baseline, which read as a raised dot rather than a full stop */
+    top:.18em;
+    margin:0 .06em;
+    transition:width 1.2s cubic-bezier(.45,0,.2,1),
+               height 1.2s cubic-bezier(.45,0,.2,1),
+               top 1.2s cubic-bezier(.45,0,.2,1),
+               margin 1.2s cubic-bezier(.45,0,.2,1);
   }
-  .is-tuck .lg-b > span{
-    font-size:.17em;
-    color:var(--ground);
-    transition:font-size 1.15s cubic-bezier(.45,0,.2,1),color .5s ease .6s;
+  .is-tuck .lg-b > .lg-letter{
+    font-size:0;
+    opacity:0;
+    transition:font-size 1s cubic-bezier(.45,0,.2,1),opacity .45s ease;
   }
   /* 5 — CAN, last to arrive */
   .lg-can{
@@ -678,6 +697,42 @@
 </style>
 </head>
 <body>
+
+<!-- The globe, drawn once and used twice: the one that grows and travels, and
+     the one that lives in the word afterwards. Natural Earth 110m coastlines
+     projected orthographically onto 48E 22N, so the Gulf sits dead centre and
+     the shape holds from a ten-pixel dot up to a third of the screen. -->
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+  <defs>
+    <radialGradient id="cdaSea" cx="34%" cy="27%" r="80%">
+      <stop offset="0" stop-color="#c3dff1"/>
+      <stop offset=".55" stop-color="#8dbedc"/>
+      <stop offset="1" stop-color="#5a8db3"/>
+    </radialGradient>
+    <linearGradient id="cdaLand" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6d9d5b"/>
+      <stop offset=".24" stop-color="#84ab60"/>
+      <stop offset=".41" stop-color="#cbb887"/>
+      <stop offset=".55" stop-color="#ddc88e"/>
+      <stop offset=".70" stop-color="#a3b76a"/>
+      <stop offset="1" stop-color="#6f9d57"/>
+    </linearGradient>
+    <radialGradient id="cdaShade" cx="34%" cy="26%" r="82%">
+      <stop offset=".5" stop-color="#0a2338" stop-opacity="0"/>
+      <stop offset=".86" stop-color="#0a2338" stop-opacity=".2"/>
+      <stop offset="1" stop-color="#06162a" stop-opacity=".46"/>
+    </radialGradient>
+    <clipPath id="cdaClip"><circle cx="100" cy="100" r="96"/></clipPath>
+    <symbol id="cdaGlobe" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="96" fill="url(#cdaSea)"/>
+      <g clip-path="url(#cdaClip)">
+        <path fill="url(#cdaLand)" d="M55 185 58 186 60 187 62 188 65 189 67 190 69 191 72 192 74 192 77 193 79 194 81 194 84 195 86 195 84 195 81 194 79 194 77 193 75 193 77 193 79 194 82 194 85 195 87 195 90 195 92 196 95 196 97 196 100 196 102 196 104 196 107 196 109 196 112 195 114 195 117 195 119 194 121 194 123 193 126 192 128 192 131 191 133 190 135 189 138 188 140 187 142 186 140 187 138 188 136 189 133 190 131 191 128 192 126 192 124 193 121 194 118 194 116 195 113 195 111 195 108 196 100 196 107 196 105 196 102 196 104 196 107 196 105 196 107 196 110 196 107 196 104 196 102 196 99 196 97 196 95 196 92 196 90 195 87 195 85 195 82 194 79 194 76 193 74 192 72 192 70 191 67 190 64 189 62 188 60 187 58 186 56 185 54 184Z M103 156 104 158 103 160 102 163 100 167 99 170 96 171 94 170 93 168 94 165 94 163 94 160 97 159 100 157 101 155Z M194 118 194 121 193 124 192 126 192 129 191 131 190 133 189 136 188 139 187 141 185 144 184 146 183 148 182 151 180 153 178 155 180 153 181 151 182 149 181 152 180 154 178 156 177 157 175 160 173 162 175 160 176 157 177 155 178 153 179 151 181 148 182 146 184 144 185 142 186 140 188 137 189 134 190 132 191 130 192 127 193 125 193 123 194 121 193 123 192 126 193 123 194 121 194 118 195 115 194 117Z M183 128 185 126 187 126 186 128 184 129 181 130 182 128Z M196 104 196 107 196 103 196 106 196 108 195 111 195 113 195 111 196 108 196 106 196 104Z M194 106 193 109 191 111 192 113 192 116 191 119 191 117 191 114 191 111 192 109 194 105Z M181 128 178 127 177 125 175 122 174 120 173 118 170 117 173 115 175 117 176 119 179 120 180 122 181 124 181 128Z M190 110 190 112 189 115 189 120 186 121 185 119 184 117 184 114 186 112 187 109 188 105 189 102 190 104 190 108Z M193 94 193 98 192 99 192 96 193 94Z M152 120 150 118 150 115 152 116 153 120Z M189 97 189 100 189 97 189 94 189 96Z M187 82 189 84 189 88 188 86 187 83Z M176 45 178 48 179 50 180 52 180 54 181 57 179 56 178 52 178 50 176 47 175 44 174 42 172 40 174 42 176 45Z M41 26 39 27 37 29 35 31 37 29 38 27 41 25Z M160 29 163 30 164 32 166 33 163 31 160 29 157 27 160 29Z M52 42 50 42 52 39 55 39 53 41Z M61 36 60 38 58 41 57 44 56 46 53 46 51 46 52 44 54 42 56 41 57 39 59 36 61 36Z M71 9 69 9 67 10 69 9 72 9Z M66 25 63 27 61 27 61 24 63 23 66 25Z M78 7 75 8 73 9 70 9 68 10 64 11 61 12 59 13 56 15 52 17 55 15 57 14 60 13 64 11 61 13 59 14 56 15 53 18 51 19 48 21 45 23 43 24 44 22 41 24 39 26 37 28 39 26 37 28 35 29 33 31 31 33 28 36 31 34 32 32 34 30 36 28 38 27 40 25 42 23 40 25 38 27 36 29 34 30 32 33 30 34 28 36 27 38 25 40 24 42 22 43 21 46 20 48 18 50 17 52 16 54 14 56 13 59 12 61 11 63 10 66 11 63 10 66 9 69 8 71 7 75 7 78 6 80 5 83 5 87 4 92 4 94 4 98 4 101 4 103 4 106 4 108 5 110 5 113 6 116 6 118 6 121 8 126 8 128 9 131 10 134 11 136 13 140 14 143 16 146 17 148 16 146 17 148 18 151 20 153 21 155 23 158 25 160 27 162 29 164 31 167 33 169 36 172 38 174 36 172 33 168 30 166 28 164 26 161 24 158 21 154 19 151 17 149 16 146 14 143 13 140 12 138 10 134 9 132 8 128 7 124 6 120 5 117 5 114 5 112 4 109 4 105 4 102 4 98 4 94 5 89 5 86 5 83 6 80 7 78 8 74 8 72 9 69 10 66 11 63 12 61 14 58 15 56 16 54 17 52 19 49 20 47 21 45 23 43 25 41 26 39 28 36 30 34 32 32 35 30 38 27 40 25 42 23 46 21 48 19 50 18 53 16 55 15 58 14 61 12 64 11 67 10 69 9 67 10 65 11 62 12 60 13 58 14 56 15 59 13 62 12 64 11 66 10 69 9 72 8 74 8 77 7 80 6 82 6 86 5 88 5 91 4 89 5 92 4 95 4 97 4 100 4 103 4 105 4 107 4 110 5 112 5 115 5 118 6 121 6 124 7 127 8 131 9 128 8 126 8 124 7 121 6 124 7 126 8 123 7 121 6 123 7 120 6 118 6 114 5 112 5 110 5 107 4 104 4 101 4 99 4 96 4 94 4 91 4 89 5 86 5 84 5 81 6 79 7 82 6 79 7Z M91 5 89 5 86 5 83 6 86 5 88 5 90 5 93 4Z M80 7 78 8 76 9 73 10 69 11 67 12 65 13 62 14 59 14 62 13 59 14 62 13 64 12 67 10 69 10 72 10 74 9 77 8 79 7Z M94 4 97 4 95 5 92 5Z M105 28 103 27 103 25 104 23 106 22 105 24 104 26 105 28Z M87 7 84 7 82 8 85 7 87 7Z M119 17 121 17 123 19 125 19 127 18 131 17 129 15 130 13 130 11 128 10 126 8 130 9 133 10 136 11 139 12 141 13 143 15 146 17 148 18 150 19 153 21 156 22 152 21 150 19 148 18 145 17 143 15 140 14 144 16 146 18 148 20 149 22 152 25 155 28 158 28 160 30 164 33 165 35 168 37 169 39 170 42 171 44 172 46 173 49 175 50 177 52 178 55 175 53 173 51 171 51 170 53 172 55 174 56 175 59 177 60 178 62 180 64 181 67 181 69 182 72 182 74 182 78 181 81 179 83 179 85 178 84 177 86 177 89 179 92 181 93 182 96 182 99 181 102 180 106 179 103 176 102 175 100 174 103 174 105 174 108 175 110 178 111 179 114 179 116 179 118 177 117 176 114 175 112 174 110 173 107 173 105 172 102 171 100 169 97 168 99 167 97 165 94 163 93 162 90 159 91 156 93 156 96 155 97 153 100 152 102 150 105 150 108 150 111 150 114 149 116 147 118 145 115 143 113 142 110 140 107 139 104 138 100 135 99 132 98 130 95 129 94 125 93 122 94 117 94 114 93 113 91 110 92 107 91 104 89 103 86 101 87 101 89 102 91 103 93 104 95 106 97 108 96 110 95 112 93 113 96 116 97 118 98 117 101 115 103 114 105 112 107 109 109 107 110 103 112 100 113 98 114 96 115 93 116 92 113 91 110 91 108 89 105 88 103 86 101 85 97 84 95 83 92 81 89 81 87 80 89 78 86 79 89 79 92 81 96 83 99 83 101 83 105 86 108 87 111 89 112 91 114 92 116 93 118 96 119 99 118 102 118 104 117 105 119 104 121 102 125 101 128 100 129 98 131 93 134 90 137 88 139 86 141 85 144 86 146 86 149 87 151 88 154 88 157 86 160 83 161 81 162 79 164 81 166 81 168 78 170 77 172 76 174 73 176 71 177 67 177 65 177 62 176 59 174 58 172 56 169 54 167 52 165 51 162 49 159 47 157 46 154 46 151 46 149 47 147 46 144 45 141 44 139 42 135 41 133 39 130 40 127 41 123 39 121 37 120 35 119 34 116 31 115 28 115 26 115 23 113 20 112 18 109 17 106 17 103 16 101 16 98 15 95 15 92 17 89 18 87 18 85 19 82 20 80 22 78 24 76 26 74 28 73 30 70 32 68 34 67 36 66 39 67 41 67 44 67 47 68 50 68 53 68 53 71 51 73 52 76 55 77 56 80 59 81 61 81 63 79 66 79 68 81 71 82 74 83 77 83 80 84 81 82 83 79 84 77 82 75 79 76 77 74 75 74 73 72 72 69 76 68 79 67 82 66 86 68 89 68 92 68 91 65 89 63 87 62 89 60 86 59 86 62 83 63 83 60 81 59 79 61 77 63 76 66 74 67 72 67 69 68 69 70 67 72 66 70 65 68 66 65 64 62 63 60 62 57 60 59 61 61 62 63 63 65 61 67 60 69 60 67 59 64 58 63 57 60 57 58 54 59 51 58 48 60 46 61 44 63 42 64 40 65 37 65 37 63 37 60 38 58 40 56 41 54 43 54 45 55 50 52 50 50 52 49 55 48 58 46 60 45 63 44 65 43 66 41 69 40 68 42 66 44 68 45 71 45 73 46 76 44 78 42 79 40 82 40 84 40 81 39 79 38 80 36 84 33 82 33 80 34 76 37 75 40 73 42 70 44 69 41 70 38 68 39 67 37 69 34 73 33 75 32 77 31 80 29 84 27 86 27 88 27 91 28 93 29 95 31 93 33 91 32 91 35 94 35 96 33 98 31 100 32 103 30 106 30 108 30 113 30 111 28 110 26 113 26 114 29 115 32 117 30 114 28 113 26 115 24 117 22 117 20 117 17Z M90 10 87 10 85 9 83 8 85 7 87 8 90 8Z M90 13 87 13 86 15 83 15 80 17 77 17 75 18 72 19 70 20 67 20 65 20 62 20 60 20 57 21 55 21 52 22 54 20 56 19 58 18 60 17 63 15 65 15 67 14 70 14 72 13 76 12 78 11 81 9 84 9 86 10 88 11 90 13Z"/>
+        <path fill="#d4482a" d="M105.5 96.2 105.8 96.5 107.0 96.2 108.2 96.3 109.2 96.3 110.2 95.1 111.2 94.0 112.1 92.9 112.4 93.4 112.7 94.8 111.9 94.8 111.9 95.9 111.5 96.5 111.5 97.2 111.1 97.9 111.1 98.6 110.8 98.9 106.2 98.2 105.5 96.6Z"/>
+      </g>
+      <circle cx="100" cy="100" r="96" fill="url(#cdaShade)"/>
+    </symbol>
+  </defs>
+</svg>
 
 <div class="dunes" aria-hidden="true">
   <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice" role="presentation" focusable="false">
@@ -984,6 +1039,33 @@ function emptyRow(key) {
 let logoTimers = [];
 const clearLogo = () => { logoTimers.forEach(clearTimeout); logoTimers = []; };
 
+/* Where the globe has to land.
+   The dot's resting place is a character in a line of type, so it can only be
+   measured, not calculated: apply the finished layout with transitions off,
+   read the slot, put everything back, and only then let the move run. */
+function tuckGlobe(stage) {
+  const slot = stage.querySelector(".lg-b");
+  const globe = stage.querySelector(".lg-globe");
+  if (!slot || !globe) return;
+
+  stage.classList.add("no-anim", "is-tuck");
+  void stage.offsetWidth;
+  const target = slot.getBoundingClientRect();
+  stage.classList.remove("is-tuck");
+  void stage.offsetWidth;
+  stage.classList.remove("no-anim");
+
+  const box = stage.getBoundingClientRect();
+  const size = globe.offsetWidth || 1;
+  globe.style.setProperty("--tx",
+    (target.left + target.width / 2 - (box.left + box.width / 2)).toFixed(2) + "px");
+  globe.style.setProperty("--ty",
+    (target.top + target.height / 2 - (box.top + box.height / 2)).toFixed(2) + "px");
+  globe.style.setProperty("--ts", (target.width / size).toFixed(4));
+
+  stage.classList.add("is-tuck");
+}
+
 function playLogo() {
   clearLogo();
   const stage = document.getElementById("logoStage");
@@ -991,7 +1073,7 @@ function playLogo() {
 
   // With motion turned down there is no story to tell, only the mark.
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    stage.className = "logo-stage is-dot is-big is-word is-tuck is-done";
+    stage.className = "logo-stage is-dot is-big is-word is-tuck is-land is-done";
     return;
   }
 
@@ -999,12 +1081,14 @@ function playLogo() {
   void stage.offsetWidth;                       // take the reset before animating
   requestAnimationFrame(() => {
     stage.classList.remove("no-anim");
-    const at = (ms, cls) => logoTimers.push(setTimeout(() => stage.classList.add(cls), ms));
-    at(80,   "is-dot");    // a dot
-    at(420,  "is-big");    // grown to mid screen
-    at(1800, "is-word");   // melted into DUBAI
-    at(3150, "is-tuck");   // the B shrinks into its disc
-    at(4550, "is-done");   // CAN arrives
+    const at = (ms, step) => logoTimers.push(setTimeout(
+      typeof step === "function" ? step : () => stage.classList.add(step), ms));
+    at(80,   "is-dot");                      // a dot
+    at(420,  "is-big");                      // grown to mid screen
+    at(1800, "is-word");                     // DUBAI rises out of it
+    at(3150, () => tuckGlobe(stage));        // the globe becomes the full stop
+    at(4420, "is-land");                     // hand over to the copy in the word
+    at(4560, "is-done");                     // CAN arrives
   });
 }
 
@@ -1013,13 +1097,18 @@ function renderLogo() {
   view.innerHTML =
     '<div class="pane logo-pane anim">' +
       '<div class="logo-stage" id="logoStage" role="img" aria-label="' +
-        'The Can-Du-AI mark drawing itself: a dot grows to fill the screen, ' +
-        'melts into the word DUBAI, and the B shrinks inside a copper disc ' +
-        'until it is the dot between DU and AI, with CAN settling above it.">' +
-        '<span class="lg-blob" aria-hidden="true"></span>' +
+        'The Can-Du-AI mark drawing itself: a dot grows into a globe turned ' +
+        'to the Gulf, the word DUBAI rises out of it, and the globe shrinks ' +
+        'into the full stop of DU.AI, with CAN settling above it.">' +
+        '<span class="lg-globe" aria-hidden="true">' +
+          '<svg viewBox="0 0 200 200"><use href="#cdaGlobe"/></svg></span>' +
         '<span class="lg-mark" aria-hidden="true">' +
           '<span class="lg-can">CAN</span>' +
-          '<span class="lg-word">DU<span class="lg-b"><span>B</span></span>AI</span>' +
+          '<span class="lg-word">DU<span class="lg-b">' +
+            '<span class="lg-letter">B</span>' +
+            '<span class="lg-b-globe"><svg viewBox="0 0 200 200">' +
+              '<use href="#cdaGlobe"/></svg></span>' +
+          '</span>AI</span>' +
         '</span>' +
       '</div>' +
       '<button type="button" class="btn lg-replay" id="logoReplay">Play again</button>' +
