@@ -693,6 +693,67 @@
     transform:translate(0,0);
     transition:transform .85s cubic-bezier(.35,.9,.3,1),opacity .3s ease;
   }
+  /* ---- the byline, written once the mark is finished ----
+     BY : is fixed. The name is not: its fifteen letters sit in random
+     columns and two of them trade places every beat. Nothing locks, so it
+     never resolves — a letter glows only for as long as chance leaves it
+     where it belongs, and the reader is left to work the name out. */
+  .lg-by{
+    position:absolute;
+    top:100%;
+    left:50%;
+    margin-top:.5em;
+    transform:translateX(-50%);
+    display:flex;
+    align-items:flex-start;
+    gap:.55em;
+    font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    font-size:.32em;
+    font-weight:700;
+    line-height:1;
+    white-space:nowrap;
+    color:var(--ink);
+    opacity:0;
+  }
+  .is-by .lg-by{opacity:1;transition:opacity .5s ease}
+  /* Monospaced, so a column is a column whatever letter is standing in it.
+     The letters are laid out on top of one another and moved by transform:
+     they have to be able to pass through each other, which they cannot do
+     while they are taking up room in a line. */
+  .by-slots{
+    --sw:.78em;
+    position:relative;
+    display:block;
+    width:calc(16 * var(--sw));
+    height:1em;
+  }
+  .by-l{
+    position:absolute;
+    left:0;
+    top:0;
+    width:var(--sw);
+    text-align:center;
+    opacity:0;
+    transform:translateX(calc(var(--i,0) * var(--sw)));
+    transition:transform .45s cubic-bezier(.4,0,.2,1),
+               color .3s ease,
+               text-shadow .3s ease;
+  }
+  .is-letters .by-l{
+    opacity:1;
+    transition:transform .45s cubic-bezier(.4,0,.2,1),
+               opacity .5s ease,
+               color .3s ease,
+               text-shadow .3s ease;
+  }
+  /* Home by chance, and only until the next swap moves it on. Dark enough
+     to read on the sand at 5.3:1; the green it glows with is the halo. */
+  .by-l.is-home{
+    color:#17612f;
+    transform:translateX(calc(var(--i,0) * var(--sw))) scale(1.18);
+    text-shadow:0 0 .35em rgba(56,170,88,.9),0 0 .9em rgba(56,170,88,.5);
+  }
+
   .lg-replay{align-self:center}
 
   /* ---------- motion ---------- */
@@ -1054,7 +1115,15 @@ function emptyRow(key) {
    the two that can only be measured: where the dot sits inside the line of
    type, and how far CAN has to travel to get above it. */
 let logoTimers = [];
-const clearLogo = () => { logoTimers.forEach(clearTimeout); logoTimers = []; };
+let byTimer = 0;
+const clearLogo = () => {
+  logoTimers.forEach(clearTimeout);
+  logoTimers = [];
+  // The shuffle reschedules itself for as long as the screen is open, so it
+  // is held on its own rather than piling up in the list above.
+  clearTimeout(byTimer);
+  byTimer = 0;
+};
 
 /* Both measurements, taken together before anything moves.
 
@@ -1088,6 +1157,68 @@ function measureLogo(stage) {
     (mark.offsetHeight + can.offsetHeight + below + em * 0.16).toFixed(2) + "px");
 }
 
+/* The name, refusing to settle.
+
+   Letters are judged by their character and not by which span they are: to
+   anyone reading, the three As are the same A, and one of them standing in
+   an A's column is that column answered. Nothing is ever locked in place —
+   a solved letter is swapped away again like any other, which is what keeps
+   the name a puzzle rather than a slow reveal. */
+const BY_NAME = "HUSAM ALQAWASMEH";
+
+function byCells() {
+  let out = "", col = 0;
+  for (const ch of BY_NAME) {
+    if (ch !== " ") {
+      out += '<span class="by-l" data-c="' + ch + '" style="--i:' + col + '">' + ch + '</span>';
+    }
+    col++;                                   // the space is a column no letter uses
+  }
+  return out;
+}
+
+function startByline(stage, shuffle) {
+  const slots = stage.querySelector(".by-slots");
+  if (!slots) return;
+  const letters = Array.prototype.slice.call(slots.querySelectorAll(".by-l"));
+  if (!letters.length) return;
+
+  const want = {};                           // want[column] = the letter it wants
+  let col = 0;
+  for (const ch of BY_NAME) { if (ch !== " ") want[col] = ch; col++; }
+
+  const at = letters.map((el) => Number(el.style.getPropertyValue("--i")));
+
+  const place = () => letters.forEach((el, k) => {
+    el.style.setProperty("--i", String(at[k]));
+    el.classList.toggle("is-home", want[at[k]] === el.dataset.c);
+  });
+
+  if (!shuffle) { place(); return; }         // motion turned down: leave it read
+
+  // A deal that happened to spell the name would give the answer away on the
+  // first frame, so it is dealt again if it does.
+  const spelled = () => letters.every((el, k) => want[at[k]] === el.dataset.c);
+  let guard = 0;
+  do {
+    for (let i = at.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = at[i]; at[i] = at[j]; at[j] = t;
+    }
+  } while (spelled() && ++guard < 20);
+  place();
+
+  const swap = () => {
+    const a = Math.floor(Math.random() * at.length);
+    let b = Math.floor(Math.random() * at.length);
+    if (b === a) b = (a + 1) % at.length;
+    const t = at[a]; at[a] = at[b]; at[b] = t;
+    place();
+    byTimer = setTimeout(swap, 640 + Math.random() * 420);
+  };
+  byTimer = setTimeout(swap, 900);
+}
+
 function playLogo() {
   clearLogo();
   const stage = document.getElementById("logoStage");
@@ -1095,7 +1226,9 @@ function playLogo() {
 
   // With motion turned down there is no story to tell, only the mark.
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    stage.className = "logo-stage is-seed is-huge is-small is-grown is-land is-sides is-can is-done";
+    stage.className =
+      "logo-stage is-seed is-huge is-small is-grown is-land is-sides is-can is-done is-by is-letters";
+    startByline(stage, false);
     return;
   }
 
@@ -1113,6 +1246,11 @@ function playLogo() {
     at(3560, "is-sides");   // DU from the left, AI from the right
     at(4400, "is-can");     // CAN, below the word and ranged right
     at(5100, "is-done");    // up and across, to sit above it ranged left
+    // BY : first, on its own; then the letters, scattered before they are
+    // shown so the name is never legible on the way to being illegible
+    at(5900, "is-by");
+    logoTimers.push(setTimeout(() => startByline(stage, true), 5960));
+    at(6300, "is-letters");
   }
 }
 
@@ -1126,7 +1264,8 @@ function renderLogo() {
         'The Can-Du-AI mark assembling itself: a dot opens out into a globe ' +
         'turned to the Gulf, shrinks back to a dot with a B inside it, DU ' +
         'and AI arrive on either side, and CAN rises from below the word to ' +
-        'sit above it.">' +
+        'sit above it. Underneath, a byline reads BY followed by the letters ' +
+        'of Husam Al-Qawasmeh, shuffled and never settling.">' +
         '<span class="lg-globe" aria-hidden="true">' +
           '<svg viewBox="0 0 200 200"><use href="#cdaGlobe"/></svg></span>' +
         '<span class="lg-mark" aria-hidden="true">' +
@@ -1139,6 +1278,10 @@ function renderLogo() {
                 '<use href="#cdaGlobe"/></svg></span>' +
             '</span>' +
             '<span class="lg-side lg-ai">AI</span>' +
+          '</span>' +
+          '<span class="lg-by">' +
+            '<span class="by-fix">BY :</span>' +
+            '<span class="by-slots">' + byCells() + '</span>' +
           '</span>' +
         '</span>' +
       '</div>' +
