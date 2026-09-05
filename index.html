@@ -34,6 +34,7 @@
     --c-llm:#7A4468;
     --c-multimodal:#2F6B4F;
     --c-lab:#8A6C1F;
+    --c-logo:#9C4A1E;
   }
 
   *{box-sizing:border-box}
@@ -525,6 +526,144 @@
     white-space:nowrap;
   }
 
+  /* ---------- the logo screen ----------
+     The mark draws itself: a dot grows to the middle of the screen, melts
+     into DUBAI, and the B shrinks inside a copper disc until it is the dot
+     between DU and AI — the same disc the masthead carries. CAN arrives
+     last, over its shoulder. Each stage is a class added in turn, so the
+     browser interpolates between them and nothing is keyframed by hand. */
+  .logo-pane{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:1.1rem;
+  }
+  .logo-stage{
+    position:relative;
+    width:100%;
+    min-height:min(44vh,20rem);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  /* Replaying means going back to the dot. Without this the finished mark
+     would animate itself apart first. */
+  .logo-stage.no-anim *{transition:none !important}
+
+  .lg-blob{
+    position:absolute;
+    width:min(32vmin,14rem);
+    height:min(32vmin,14rem);
+    border-radius:50%;
+    background:var(--c-community);
+    opacity:0;
+    transform:scale(.03);
+  }
+  /* 1 — a dot, and nothing else */
+  .is-dot .lg-blob{
+    opacity:1;
+    transform:scale(.055);
+    transition:transform .32s ease,opacity .32s ease;
+  }
+  /* 2 — grown to mid screen */
+  .is-big .lg-blob{
+    opacity:1;
+    transform:scale(1);
+    transition:transform 1.25s cubic-bezier(.2,.72,.25,1);
+  }
+  /* 3 — melting: it flattens and spreads as the word rises out of it */
+  .is-word .lg-blob{
+    opacity:0;
+    border-radius:.4rem;
+    transform:scaleX(2.3) scaleY(.04);
+    transition:transform .85s cubic-bezier(.55,0,.25,1),
+               border-radius .5s ease,
+               opacity .5s ease .3s;
+  }
+
+  .lg-mark{
+    position:relative;
+    font-size:clamp(2.1rem,9.5vmin,5.2rem);
+    font-weight:700;
+    font-stretch:125%;
+    line-height:1;
+    opacity:0;
+    transform:scaleY(.1);
+    filter:blur(8px);
+  }
+  .is-word .lg-mark{
+    opacity:1;
+    transform:none;
+    filter:none;
+    transition:opacity .55s ease .15s,
+               transform .75s cubic-bezier(.2,.8,.25,1) .1s,
+               filter .6s ease .15s;
+  }
+  .lg-word{
+    display:inline-flex;
+    align-items:center;
+    letter-spacing:.12em;
+  }
+  /* 4 — the B. A letter to begin with, a copper disc with a letter inside it
+     by the end. The box is what shrinks, so DU and AI close the gap on their
+     own rather than being moved. */
+  .lg-b{
+    position:relative;
+    top:-.05em;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:.72em;
+    height:.72em;
+    margin:0;
+    border-radius:50%;
+    background:transparent;
+    box-shadow:inset 0 0 0 0 var(--c-community);
+  }
+  .lg-b > span{
+    font-size:1em;
+    font-stretch:100%;
+    letter-spacing:0;
+    line-height:1;
+    color:inherit;
+  }
+  .is-tuck .lg-b{
+    width:.4em;
+    height:.4em;
+    margin:0 .05em;
+    background:var(--c-community);
+    /* the ring closes in first; the fill lands once the letter is small */
+    box-shadow:inset 0 0 0 .05em var(--c-community);
+    transition:width 1.15s cubic-bezier(.45,0,.2,1),
+               height 1.15s cubic-bezier(.45,0,.2,1),
+               margin 1.15s cubic-bezier(.45,0,.2,1),
+               box-shadow .45s ease,
+               background-color .5s ease .6s;
+  }
+  .is-tuck .lg-b > span{
+    font-size:.17em;
+    color:var(--ground);
+    transition:font-size 1.15s cubic-bezier(.45,0,.2,1),color .5s ease .6s;
+  }
+  /* 5 — CAN, last to arrive */
+  .lg-can{
+    position:absolute;
+    left:0;
+    bottom:100%;
+    margin-bottom:.1em;
+    font-size:.33em;
+    font-stretch:110%;
+    letter-spacing:.18em;
+    opacity:0;
+    transform:translateY(.5em);
+  }
+  .is-done .lg-can{
+    opacity:1;
+    transform:none;
+    transition:opacity .5s ease,transform .6s cubic-bezier(.2,.8,.25,1);
+  }
+  .lg-replay{align-self:center}
+
   /* ---------- motion ---------- */
   @keyframes riseIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   .anim > *{animation:riseIn .5s cubic-bezier(.2,.7,.3,1) both}
@@ -771,10 +910,15 @@ const SITE = {
         status: "soon"
       }
     ]
+  },
+  logo: {
+    accent: "var(--c-logo)",
+    title: "The Logo",
+    special: "logo"
   }
 };
 
-const ORDER = ["community", "commercial", "enterprise", "agents", "multimodal", "llm", "lab"];
+const ORDER = ["community", "commercial", "enterprise", "agents", "multimodal", "llm", "lab", "logo"];
 
 /* Useful links — add a line to this list and it appears in the modal. */
 const LINKS = [
@@ -834,8 +978,59 @@ function emptyRow(key) {
     '</div></li>';
 }
 
+/* ---------------- the logo, drawing itself ----------------
+   Five stages, each a class on the stage. The CSS holds every value; this
+   only says when. Timings are cumulative from the moment the screen opens. */
+let logoTimers = [];
+const clearLogo = () => { logoTimers.forEach(clearTimeout); logoTimers = []; };
+
+function playLogo() {
+  clearLogo();
+  const stage = document.getElementById("logoStage");
+  if (!stage) return;
+
+  // With motion turned down there is no story to tell, only the mark.
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    stage.className = "logo-stage is-dot is-big is-word is-tuck is-done";
+    return;
+  }
+
+  stage.className = "logo-stage no-anim";
+  void stage.offsetWidth;                       // take the reset before animating
+  requestAnimationFrame(() => {
+    stage.classList.remove("no-anim");
+    const at = (ms, cls) => logoTimers.push(setTimeout(() => stage.classList.add(cls), ms));
+    at(80,   "is-dot");    // a dot
+    at(420,  "is-big");    // grown to mid screen
+    at(1800, "is-word");   // melted into DUBAI
+    at(3150, "is-tuck");   // the B shrinks into its disc
+    at(4550, "is-done");   // CAN arrives
+  });
+}
+
+function renderLogo() {
+  document.title = "The Logo — Can-Du-AI";
+  view.innerHTML =
+    '<div class="pane logo-pane anim">' +
+      '<div class="logo-stage" id="logoStage" role="img" aria-label="' +
+        'The Can-Du-AI mark drawing itself: a dot grows to fill the screen, ' +
+        'melts into the word DUBAI, and the B shrinks inside a copper disc ' +
+        'until it is the dot between DU and AI, with CAN settling above it.">' +
+        '<span class="lg-blob" aria-hidden="true"></span>' +
+        '<span class="lg-mark" aria-hidden="true">' +
+          '<span class="lg-can">CAN</span>' +
+          '<span class="lg-word">DU<span class="lg-b"><span>B</span></span>AI</span>' +
+        '</span>' +
+      '</div>' +
+      '<button type="button" class="btn lg-replay" id="logoReplay">Play again</button>' +
+    '</div>';
+  document.getElementById("logoReplay").addEventListener("click", playLogo);
+  playLogo();
+}
+
 function renderCategory(key) {
   const cat = SITE[key];
+  if (cat.special === "logo") return renderLogo();
   document.title = cat.title + " — Can-Du-AI";
   const compact = !!cat.compact;
   const rows = cat.items.length
@@ -852,6 +1047,7 @@ function renderCategory(key) {
 }
 
 function route() {
+  clearLogo();                                  // leaving the logo screen stops it
   const key = location.hash.replace(/^#\/?/, "").trim();
   const onCategory = Object.prototype.hasOwnProperty.call(SITE, key);
   if (onCategory) renderCategory(key); else renderHome();
