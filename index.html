@@ -279,6 +279,14 @@
     letter-spacing:-.01em;
     margin:0 0 .25rem;
   }
+  .row-tag{
+    margin-left:.5em;
+    font-size:.84em;
+    font-weight:500;
+    letter-spacing:0;
+    color:var(--ink-soft);
+    white-space:nowrap;
+  }
   /* project descriptions stay on a single line */
   .row-desc{
     margin:0;
@@ -952,6 +960,7 @@
      compact      -> two entries per row, two lines each
      item.href    -> full destination URL
      item.external-> true opens in a new tab
+     item.note    -> optional line on the label, set lighter beside the name
      item.status  -> "live" (clickable) or "soon" (listed, not clickable)
      item.label   -> optional badge text, replacing Live / In build
    Add a project by copying an item block into a category's items array.
@@ -963,6 +972,7 @@ const SITE = {
     items: [
       {
         name: "Janna-Zad",
+        note: "(Eligible for nomination to Ministry of Islamic Affairs' usage)",
         desc: "Provisions and planning for the journey.",
         href: "https://jannazad.com",
         dest: "jannazad.com",
@@ -971,6 +981,7 @@ const SITE = {
       },
       {
         name: "Dubai Schools",
+        note: "(Eligible for nomination to KHDA's usage)",
         desc: "Fee sheets and inspections, answered plainly.",
         href: "https://dubai-schools.can-du-ai.com",
         dest: "dubai-schools.can-du-ai.com",
@@ -978,6 +989,7 @@ const SITE = {
       },
       {
         name: "Nol Chat-Bot",
+        note: "(Eligible for nomination to RTA's usage)",
         desc: "Balance, top-ups and routes in plain words.",
         href: "https://nol-bot.can-du-ai.com",
         dest: "nol-bot.can-du-ai.com",
@@ -1139,13 +1151,16 @@ function projectRow(item, compact) {
     ? '<span class="badge live">' + (item.label || (item.external ? "Live &middot; External" : "Live")) + '</span>'
     : '<span class="badge">' + (item.label || "In build") + '</span>';
 
+  // Part of the label, set lighter so the name still reads as the name
+  const note = item.note ? '<span class="row-tag">' + esc(item.note) + '</span>' : '';
+
   const inner = compact
     ? '<div class="row-head">' +
-        '<p class="row-name">' + esc(item.name) + '</p>' + badge +
+        '<p class="row-name">' + esc(item.name) + note + '</p>' + badge +
       '</div>' +
       '<p class="row-desc">' + esc(item.desc) + '</p>'
     : '<div>' +
-        '<p class="row-name">' + esc(item.name) + '</p>' +
+        '<p class="row-name">' + esc(item.name) + note + '</p>' +
         '<p class="row-desc">' + esc(item.desc) + '</p>' +
       '</div>' +
       '<div class="row-meta">' + badge + (live ? '<span class="arrow">&#8599;</span>' : '') + '</div>' +
