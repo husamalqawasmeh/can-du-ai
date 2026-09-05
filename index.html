@@ -35,6 +35,8 @@
     --c-multimodal:#2F6B4F;
     --c-lab:#8A6C1F;
     --c-logo:#9C4A1E;
+    /* the mark on the logo screen: the same warm brown throughout */
+    --mark-ink:#5A3D1C;
   }
 
   *{box-sizing:border-box}
@@ -583,20 +585,26 @@
     transform:translate(0,0) scale(1);
     transition:transform 1s cubic-bezier(.25,.7,.3,1);
   }
-  /* 3 — down to a dot, smaller than it will end up. The three values are
-     measured in the script: the dot's home is a character in a line of type,
-     which no stylesheet can know the position of in advance. */
+  /* 3 — in to the size of a letter, which is where the word reads DUBAI.
+     Measured in the script: the slot is a character in a line of type, and
+     no stylesheet can know where the line of type has put it. */
+  .is-word .lg-globe{
+    opacity:1;
+    transform:translate(var(--lx,0px),var(--ly,0px)) scale(var(--ls,.2));
+    transition:transform 1s cubic-bezier(.5,0,.2,1);
+  }
+  /* 4 — and on down to a dot, smaller than it will end up */
   .is-small .lg-globe{
     opacity:1;
     transform:translate(var(--tx,0px),var(--ty,0px)) scale(calc(var(--ts,.06) * .72));
-    transition:transform 1.35s cubic-bezier(.5,0,.18,1);
+    transition:transform 1.05s cubic-bezier(.5,0,.18,1);
   }
-  /* 4 — and back up, to settle at the size it keeps */
+  /* 5 — and back up, to settle at the size it keeps */
   .is-grown .lg-globe{
     transform:translate(var(--tx,0px),var(--ty,0px)) scale(var(--ts,.06));
-    transition:transform .55s cubic-bezier(.3,1.5,.5,1);
+    transition:transform .5s cubic-bezier(.3,1.5,.5,1);
   }
-  /* 5 — landed. The copy that lives inside the word takes over, so from here
+  /* 6 — landed. The copy that lives inside the word takes over, so from here
      the dot reflows with the type like any other character. */
   .is-land .lg-globe{opacity:0;transition:opacity .1s linear}
   .is-land .lg-b-globe{opacity:1;transition:opacity .1s linear}
@@ -607,6 +615,7 @@
     font-weight:700;
     font-stretch:125%;
     line-height:1;
+    color:var(--mark-ink);
   }
   .lg-word{
     display:inline-flex;
@@ -614,33 +623,41 @@
     letter-spacing:.12em;
   }
   /* DU and AI hold their places from the first frame — invisible, but taking
-     up room — so the dot can be measured before either of them is shown and
-     nothing shifts when they arrive. */
+     up room — so the slot can be measured before either of them is shown and
+     nothing shifts when they arrive. They arrive at the moment the globe is
+     the size of a letter, which is the moment the word reads DUBAI. */
   .lg-side{
     opacity:0;
     transform:translateX(.4em);
   }
   .lg-side.lg-du{transform:translateX(-.4em)}
-  .is-sides .lg-side{
+  .is-word .lg-side{
     opacity:1;
     transform:none;
     transition:opacity .5s ease,transform .6s cubic-bezier(.2,.8,.25,1);
   }
-  .is-sides .lg-du{transition-delay:0s}
-  .is-sides .lg-ai{transition-delay:.12s}
+  .is-word .lg-du{transition-delay:0s}
+  .is-word .lg-ai{transition-delay:.12s}
 
-  /* The dot: the same disc the masthead carries, with the globe in it. It is
-     one size for the whole animation, which is what lets the slot be measured
-     once and never re-measured. */
+  /* The slot the globe comes to rest in, and it has two sizes.
+
+     It starts as a letter: .95em across, which is what it takes for a circle
+     to hold a capital B rather than crop it — a B is .72em tall and about
+     .62em wide, and the diagonal of that is .95. At that size the word reads
+     DUBAI. It ends as the dot the masthead carries, and DU and AI close the
+     gap between them as it shrinks.
+
+     Both sizes have to be measured, since the globe is not in the line of
+     type and has to be told where the line of type has put its slot. */
   .lg-b{
     position:relative;
-    top:.02em;
+    top:-.06em;
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    width:.4em;
-    height:.4em;
-    margin:0 .05em;
+    width:.95em;
+    height:.95em;
+    margin:0;
     border-radius:50%;
   }
   .lg-b-globe{position:absolute;inset:0;border-radius:50%;overflow:hidden;opacity:0}
@@ -649,25 +666,53 @@
   .lg-b > .lg-letter{
     position:relative;
     z-index:1;
-    font-size:.17em;
+    font-size:1em;
     font-stretch:100%;
     letter-spacing:0;
     line-height:1;
-    color:#0f1a4e;
-    text-shadow:0 0 .3em #fff,0 0 .15em #fff,0 0 .06em #fff;
+    color:var(--mark-ink);
+    /* A halo rather than a plate behind it, which would put a box inside the
+       circle. Tight at this size: the letter is nearly as wide as the globe,
+       so it needs an edge to sit on, not a glow — in em, a generous one here
+       would be thirty pixels of white and would bleach the globe out. */
+    text-shadow:0 0 .045em rgba(255,255,255,.92),0 0 .09em rgba(255,255,255,.6);
     opacity:0;
   }
-  /* It appears as the globe becomes a dot, not before — and rides the same
-     undershoot, so the letter keeps its proportion to the circle instead of
-     standing at full size inside a globe that has not finished shrinking. */
-  .is-small .lg-b > .lg-letter{
+  /* It is there for the word DUBAI, and stays for everything after it */
+  .is-word .lg-b > .lg-letter{
     opacity:1;
-    transform:scale(.72);
-    transition:opacity .45s ease .75s,transform 1.35s cubic-bezier(.5,0,.18,1);
+    transition:opacity .5s ease .25s;
+  }
+  /* Down to the dot, the slot, the letter and the globe on one undershoot,
+     then all three settle together. The letter is sized off the slot rather
+     than transformed, so it stays a letter in a line of type. */
+  .is-small .lg-b{
+    width:calc(.4em * .72);
+    height:calc(.4em * .72);
+    top:.02em;
+    margin:0 .05em;
+    transition:width 1.05s cubic-bezier(.5,0,.18,1),
+               height 1.05s cubic-bezier(.5,0,.18,1),
+               top 1.05s cubic-bezier(.5,0,.18,1),
+               margin 1.05s cubic-bezier(.5,0,.18,1);
+  }
+  /* Once it is a fifth of the size, over a globe a fifth of the size, it
+     needs the glow back — proportionally far more of it. */
+  .is-small .lg-b > .lg-letter{
+    font-size:calc(.17em * .72);
+    text-shadow:0 0 .18em #fff,0 0 .4em rgba(255,255,255,.85);
+    transition:font-size 1.05s cubic-bezier(.5,0,.18,1),
+               text-shadow 1.05s ease;
+  }
+  .is-grown .lg-b{
+    width:.4em;
+    height:.4em;
+    transition:width .5s cubic-bezier(.3,1.5,.5,1),
+               height .5s cubic-bezier(.3,1.5,.5,1);
   }
   .is-grown .lg-b > .lg-letter{
-    transform:scale(1);
-    transition:transform .55s cubic-bezier(.3,1.5,.5,1);
+    font-size:.17em;
+    transition:font-size .5s cubic-bezier(.3,1.5,.5,1);
   }
 
   /* CAN arrives below the word, ranged right with it, then travels up and
@@ -1123,11 +1168,13 @@ const clearLogo = () => {
   byTimer = 0;
 };
 
-/* Both measurements, taken together before anything moves.
+/* Where the globe has to stop, both times, and where CAN comes in from.
 
-   The dot keeps one size for the whole animation and DU and AI hold their
-   places from the first frame, so the layout being measured here is the
-   finished one — no need to apply a state, read it and put it back. */
+   Called again in the gap between the globe finishing its growth and the
+   word arriving: by then the webfont has landed, and every one of these
+   numbers comes from the metrics of a typeface. Doing it in a gap matters —
+   the reading needs transitions off for a moment, and that would cut short
+   any that were running. */
 function measureLogo(stage) {
   const slot = stage.querySelector(".lg-b");
   const globe = stage.querySelector(".lg-globe");
@@ -1136,13 +1183,26 @@ function measureLogo(stage) {
   if (!slot || !globe || !mark || !can) return;
 
   const box = stage.getBoundingClientRect();
-  const target = slot.getBoundingClientRect();
   const size = globe.offsetWidth || 1;
-  globe.style.setProperty("--tx",
-    (target.left + target.width / 2 - (box.left + box.width / 2)).toFixed(2) + "px");
-  globe.style.setProperty("--ty",
-    (target.top + target.height / 2 - (box.top + box.height / 2)).toFixed(2) + "px");
-  globe.style.setProperty("--ts", (target.width / size).toFixed(4));
+  const put = (rect, px, py, ps) => {
+    globe.style.setProperty(px,
+      (rect.left + rect.width / 2 - (box.left + box.width / 2)).toFixed(2) + "px");
+    globe.style.setProperty(py,
+      (rect.top + rect.height / 2 - (box.top + box.height / 2)).toFixed(2) + "px");
+    globe.style.setProperty(ps, (rect.width / size).toFixed(4));
+  };
+
+  // the slot at letter size, which is the stylesheet's default
+  put(slot.getBoundingClientRect(), "--lx", "--ly", "--ls");
+
+  /* And the slot once it has shrunk to a dot. That layout has to be put in
+     place to be read, so it is applied with transitions off and taken back
+     within the same task — nothing is painted in between. It is also the
+     layout CAN is measured against, since the word is narrower by then. */
+  const held = stage.classList.contains("no-anim");
+  stage.classList.add("no-anim", "is-small", "is-grown");
+  void stage.offsetWidth;
+  put(slot.getBoundingClientRect(), "--tx", "--ty", "--ts");
 
   /* Where CAN comes in: below the word, its right edge against the word's.
      Taken from the layout box rather than getBoundingClientRect, because the
@@ -1153,6 +1213,10 @@ function measureLogo(stage) {
   can.style.setProperty("--cx", (mark.offsetWidth - can.offsetWidth).toFixed(2) + "px");
   can.style.setProperty("--cy",
     (mark.offsetHeight + can.offsetHeight + below + em * 0.16).toFixed(2) + "px");
+
+  stage.classList.remove("is-small", "is-grown");
+  void stage.offsetWidth;
+  if (!held) stage.classList.remove("no-anim");
 }
 
 /* The name, refusing to settle.
@@ -1194,20 +1258,21 @@ function startByline(stage, shuffle) {
 
   if (!shuffle) { place(); return; }         // motion turned down: leave it read
 
-  // A deal that happened to spell the name would give the answer away on the
-  // first frame, so it is dealt again if it does.
-  const spelled = () => letters.every((el, k) => want[at[k]] === el.dataset.c);
-  let guard = 0;
-  do {
-    for (let i = at.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      const t = at[i]; at[i] = at[j]; at[j] = t;
-    }
-  } while (spelled() && ++guard < 20);
+  /* It does not open on a scatter. The letters are written out in
+     alphabetical order — AAAAE HHLMMQSSUW — which shows the reader what
+     there is to work with before any of it starts moving. */
+  const cols = [];
+  let n = 0;
+  for (const ch of BY_NAME) { if (ch !== " ") cols.push(n); n++; }
+  letters
+    .map((el, k) => k)
+    .sort((a, b) => (letters[a].dataset.c < letters[b].dataset.c ? -1 : 1))
+    .forEach((k, rank) => { at[k] = cols[rank]; });
   place();
 
   /* Written out left to right: each letter is told how many places along the
      line it is, and the stylesheet turns that into its own delay. */
+  // (in alphabetical order this is simply left to right)
   letters
     .map((el, k) => ({ el, col: at[k] }))
     .sort((a, b) => a.col - b.col)
@@ -1233,7 +1298,7 @@ function playLogo() {
   // With motion turned down there is no story to tell, only the mark.
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     stage.className =
-      "logo-stage is-seed is-huge is-small is-grown is-land is-sides is-can is-done is-by is-letters";
+      "logo-stage is-seed is-huge is-word is-small is-grown is-land is-can is-done is-by is-letters";
     startByline(stage, false);
     return;
   }
@@ -1245,18 +1310,20 @@ function playLogo() {
   {
     const at = (ms, cls) => logoTimers.push(setTimeout(() => stage.classList.add(cls), ms));
     at(60,   "is-seed");    // a dot, the size the mark ends on
-    at(420,  "is-huge");    // out to full size, filling the stage
-    at(1600, "is-small");   // back down to a dot, with the B inside it
-    at(2950, "is-grown");   // and settled at the size it keeps
-    at(3500, "is-land");    // hand over to the copy in the word
-    at(3560, "is-sides");   // DU from the left, AI from the right
-    at(4400, "is-can");     // CAN, below the word and ranged right
-    at(5100, "is-done");    // up and across, to sit above it ranged left
-    // BY : first, on its own; then the letters, scattered before they are
-    // shown so the name is never legible on the way to being illegible
-    at(5900, "is-by");
-    logoTimers.push(setTimeout(() => startByline(stage, true), 5960));
-    at(6300, "is-letters");
+    at(400,  "is-huge");    // out to full size, filling the stage
+    // in the gap: the real font is in by now, and every number below comes
+    // from its metrics
+    logoTimers.push(setTimeout(() => measureLogo(stage), 1380));
+    at(1450, "is-word");    // in to letter size — the word reads DUBAI
+    at(2600, "is-small");   // on down to a dot, the B shrinking with it
+    at(3700, "is-grown");   // and settled at the size it keeps
+    at(4250, "is-land");    // hand over to the copy in the word
+    at(4600, "is-can");     // CAN, below the word and ranged right
+    at(5250, "is-done");    // up and across, to sit above it ranged left
+    // the letters, alphabetical, written out one at a time
+    at(6150, "is-by");
+    logoTimers.push(setTimeout(() => startByline(stage, true), 6210));
+    at(6500, "is-letters");
   }
 }
 
