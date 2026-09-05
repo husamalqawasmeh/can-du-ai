@@ -739,10 +739,10 @@
     transition:transform .85s cubic-bezier(.35,.9,.3,1),opacity .3s ease;
   }
   /* ---- the byline, written once the mark is finished ----
-     Fifteen letters in random columns, two of them trading places every
-     beat. Nothing locks, so it never resolves — a letter is green only for
-     as long as chance leaves it where it belongs, and the reader is left to
-     work the name out. Centred on the mark: the strip is a fixed sixteen
+     The fifteen letters are written out in alphabetical order, then two of
+     them trade places every beat. A letter that lands in its own column
+     turns green and stops moving, so the name assembles itself out of the
+     letters it was given. Centred on the mark: the strip is a fixed sixteen
      columns wide, so centring the strip centres the name. */
   .lg-by{
     position:absolute;
@@ -782,19 +782,21 @@
     text-align:center;
     opacity:0;
     transform:translateX(calc(var(--i,0) * var(--sw)));
-    transition:transform .45s cubic-bezier(.4,0,.2,1),color .3s ease;
+    /* short, because there are a good many swaps to get through before the
+       name is finished and each one has to land before the next is called */
+    transition:transform .3s cubic-bezier(.4,0,.2,1),color .3s ease;
   }
   /* Written on one letter at a time, left to right across the columns. Only
      the fade is staggered — a delay on the transform would hold a letter
      back mid-swap for the rest of the sequence. */
   .is-letters .by-l{
     opacity:1;
-    transition:transform .45s cubic-bezier(.4,0,.2,1),
+    transition:transform .3s cubic-bezier(.4,0,.2,1),
                color .3s ease,
                opacity .3s ease calc(var(--d,0) * 80ms);
   }
-  /* Home by chance, and only until the next swap moves it on. Green, and
-     dark enough to hold 5.3:1 on the sand. */
+  /* Home, and staying there. Green, and dark enough to hold 5.3:1 on the
+     sand. */
   .by-l.is-home{color:#17612f}
 
   .lg-replay{align-self:center}
@@ -1251,9 +1253,21 @@ function startByline(stage, shuffle) {
 
   const at = letters.map((el) => Number(el.style.getPropertyValue("--i")));
 
+  /* A letter that reaches its own column is done with: it turns green and is
+     taken out of the draw, so it cannot be swapped away again. Which means
+     the name does assemble itself, one letter at a time, out of the letters
+     it was given.
+
+     Judged by character rather than by which span it is — to a reader the
+     four As are the same A, so any of them standing in an A's column answers
+     it. The last letter needs no luck: once fourteen columns are right the
+     fifteenth has nowhere else to be. */
+  const locked = letters.map(() => false);
+
   const place = () => letters.forEach((el, k) => {
     el.style.setProperty("--i", String(at[k]));
-    el.classList.toggle("is-home", want[at[k]] === el.dataset.c);
+    if (want[at[k]] === el.dataset.c) locked[k] = true;
+    el.classList.toggle("is-home", locked[k]);
   });
 
   if (!shuffle) { place(); return; }         // motion turned down: leave it read
@@ -1279,12 +1293,16 @@ function startByline(stage, shuffle) {
     .forEach((item, rank) => item.el.style.setProperty("--d", String(rank)));
 
   const swap = () => {
-    const a = Math.floor(Math.random() * at.length);
-    let b = Math.floor(Math.random() * at.length);
-    if (b === a) b = (a + 1) % at.length;
+    const free = [];
+    for (let k = 0; k < letters.length; k++) if (!locked[k]) free.push(k);
+    if (free.length < 2) return;             // the name is finished
+    const pick = () => free[Math.floor(Math.random() * free.length)];
+    const a = pick();
+    let b = pick();
+    while (b === a) b = pick();              // free.length is at least two
     const t = at[a]; at[a] = at[b]; at[b] = t;
     place();
-    byTimer = setTimeout(swap, 640 + Math.random() * 420);
+    byTimer = setTimeout(swap, 330 + Math.random() * 260);
   };
   // Nothing moves until the last letter has been written
   byTimer = setTimeout(swap, 2100);
