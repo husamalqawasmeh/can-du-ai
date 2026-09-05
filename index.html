@@ -727,7 +727,11 @@
     top:100%;
     left:50%;
     margin-top:.5em;
-    transform:translateX(-50%);
+    /* Centred on the word's ink, not on its box. The word carries tracking
+       after its last letter, which the box includes and the eye does not, so
+       centring on the box leaves the name sitting half that much to the
+       right; the nudge is measured and takes it back. */
+    transform:translateX(calc(-50% + var(--nudge,0px)));
     display:flex;
     justify-content:center;
     font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
@@ -1296,6 +1300,7 @@ function fitName(mark) {
   const w = word.getBoundingClientRect().width - trailing;
   if (!w || !glyph) return;
   slots.style.setProperty("--sw", ((w - glyph) / 15).toFixed(3) + "px");
+  by.style.setProperty("--nudge", (-trailing / 2).toFixed(2) + "px");
 }
 
 function startByline(stage, shuffle, onSolved) {
@@ -1440,6 +1445,14 @@ function playLogo(intro) {
     at(4250, "is-land");    // hand over to the copy in the word
     at(4600, "is-can");     // CAN, below the word and ranged right
     at(5250, "is-done");    // up and across, to sit above it ranged left
+    /* The name is set against the word as it actually stands, a moment
+       before it is shown. Everything that changes the word's width — the
+       slot shrinking out of DUBAI, the webfont arriving — is long finished
+       by now, and measuring the live layout beats predicting it: the earlier
+       reading is taken from a layout applied for a fraction of a second to
+       be read, and any difference between that and the real one ends up in
+       the name's width. */
+    logoTimers.push(setTimeout(() => fitName(stage.querySelector(".lg-mark")), 6100));
     // the letters, alphabetical, written out one at a time
     at(6150, "is-by");
     logoTimers.push(setTimeout(
