@@ -694,10 +694,11 @@
     transition:transform .85s cubic-bezier(.35,.9,.3,1),opacity .3s ease;
   }
   /* ---- the byline, written once the mark is finished ----
-     BY : is fixed. The name is not: its fifteen letters sit in random
-     columns and two of them trade places every beat. Nothing locks, so it
-     never resolves — a letter glows only for as long as chance leaves it
-     where it belongs, and the reader is left to work the name out. */
+     Fifteen letters in random columns, two of them trading places every
+     beat. Nothing locks, so it never resolves — a letter is green only for
+     as long as chance leaves it where it belongs, and the reader is left to
+     work the name out. Centred on the mark: the strip is a fixed sixteen
+     columns wide, so centring the strip centres the name. */
   .lg-by{
     position:absolute;
     top:100%;
@@ -705,14 +706,15 @@
     margin-top:.5em;
     transform:translateX(-50%);
     display:flex;
-    align-items:flex-start;
-    gap:.55em;
+    justify-content:center;
     font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
     font-size:.32em;
     font-weight:700;
     line-height:1;
     white-space:nowrap;
-    color:var(--ink);
+    /* the brown the mark is set in, warmed a little: at this size the near
+       black of the big letters reads as black rather than as brown */
+    color:#5A3D1C;
     opacity:0;
   }
   .is-by .lg-by{opacity:1;transition:opacity .5s ease}
@@ -735,24 +737,20 @@
     text-align:center;
     opacity:0;
     transform:translateX(calc(var(--i,0) * var(--sw)));
-    transition:transform .45s cubic-bezier(.4,0,.2,1),
-               color .3s ease,
-               text-shadow .3s ease;
+    transition:transform .45s cubic-bezier(.4,0,.2,1),color .3s ease;
   }
+  /* Written on one letter at a time, left to right across the columns. Only
+     the fade is staggered — a delay on the transform would hold a letter
+     back mid-swap for the rest of the sequence. */
   .is-letters .by-l{
     opacity:1;
     transition:transform .45s cubic-bezier(.4,0,.2,1),
-               opacity .5s ease,
                color .3s ease,
-               text-shadow .3s ease;
+               opacity .3s ease calc(var(--d,0) * 80ms);
   }
-  /* Home by chance, and only until the next swap moves it on. Dark enough
-     to read on the sand at 5.3:1; the green it glows with is the halo. */
-  .by-l.is-home{
-    color:#17612f;
-    transform:translateX(calc(var(--i,0) * var(--sw))) scale(1.18);
-    text-shadow:0 0 .35em rgba(56,170,88,.9),0 0 .9em rgba(56,170,88,.5);
-  }
+  /* Home by chance, and only until the next swap moves it on. Green, and
+     dark enough to hold 5.3:1 on the sand. */
+  .by-l.is-home{color:#17612f}
 
   .lg-replay{align-self:center}
 
@@ -1208,6 +1206,13 @@ function startByline(stage, shuffle) {
   } while (spelled() && ++guard < 20);
   place();
 
+  /* Written out left to right: each letter is told how many places along the
+     line it is, and the stylesheet turns that into its own delay. */
+  letters
+    .map((el, k) => ({ el, col: at[k] }))
+    .sort((a, b) => a.col - b.col)
+    .forEach((item, rank) => item.el.style.setProperty("--d", String(rank)));
+
   const swap = () => {
     const a = Math.floor(Math.random() * at.length);
     let b = Math.floor(Math.random() * at.length);
@@ -1216,7 +1221,8 @@ function startByline(stage, shuffle) {
     place();
     byTimer = setTimeout(swap, 640 + Math.random() * 420);
   };
-  byTimer = setTimeout(swap, 900);
+  // Nothing moves until the last letter has been written
+  byTimer = setTimeout(swap, 2100);
 }
 
 function playLogo() {
@@ -1280,7 +1286,6 @@ function renderLogo() {
             '<span class="lg-side lg-ai">AI</span>' +
           '</span>' +
           '<span class="lg-by">' +
-            '<span class="by-fix">BY :</span>' +
             '<span class="by-slots">' + byCells() + '</span>' +
           '</span>' +
         '</span>' +
