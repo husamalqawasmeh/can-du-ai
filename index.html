@@ -633,9 +633,19 @@
   .is-land .lg-b-globe{opacity:1;transition:opacity .1s linear}
 
   /* No size of its own: the masthead sets one and the landing page sets a
-     much larger one, and everything inside the mark is in em of it. */
+     much larger one, and everything inside the mark is in em of it.
+
+     inline-flex, and that matters. On the landing page this is a flex item,
+     so its box is exactly the word's box. In the masthead it would otherwise
+     be a plain inline box, which is sized by the line rather than by what is
+     in it: 42px tall around a 39.2px word, with the word sitting 2px down
+     inside it. The flight lines the two boxes up, so that difference landed
+     the word 2px high and it dropped into place at the swap. As a flex
+     container in both places, the box is the word in both places. */
   .lg-mark{
     position:relative;
+    display:inline-flex;
+    align-items:center;
     font-weight:700;
     font-stretch:125%;
     line-height:1;
@@ -1476,7 +1486,18 @@ function flyToMasthead(stage) {
     "translate(" + (b.left - a.left).toFixed(2) + "px," +
                    (b.top - a.top).toFixed(2) + "px) " +
     "scale(" + (b.width / a.width).toFixed(4) + ")";
-  logoTimers.push(setTimeout(() => finishIntro(stage), 1080));
+  /* On the transition itself rather than on a stopwatch set to the same
+     length, so the swap cannot happen a frame before the mark has landed. */
+  let landed = false;
+  const done = (e) => {
+    if (e && e.target !== from) return;        // ignore anything bubbling up
+    if (landed) return;
+    landed = true;
+    from.removeEventListener("transitionend", done);
+    finishIntro(stage);
+  };
+  from.addEventListener("transitionend", done);
+  logoTimers.push(setTimeout(done, 1400));     // in case it never fires
 }
 
 /* Hand over.
