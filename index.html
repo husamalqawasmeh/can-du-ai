@@ -323,13 +323,13 @@
     color:var(--ink-soft);
     white-space:nowrap;
   }
-  /* project descriptions stay on a single line */
+  /* One line, and the whole of the line: no measure cap, so a description
+     runs to the width the row gives it before anything is cut. */
   .row-desc{
     margin:0;
     font-size:.88rem;
     line-height:1.5;
     color:var(--ink-soft);
-    max-width:48ch;
     display:-webkit-box;
     -webkit-box-orient:vertical;
     -webkit-line-clamp:1;
@@ -1064,6 +1064,13 @@ const SITE = {
     accent: "var(--c-enterprise)",
     title: "Enterprise Solutions",
     items: [
+      {
+        name: "GRP-like System for Onboarding and Managing AI-Agents in the Enterprise",
+        desc: "Register, permission, review and retire agents as an organisation does staff.",
+        href: "https://agent-ops.can-du-ai.com",
+        dest: "agent-ops.can-du-ai.com",
+        status: "soon"
+      },
       {
         name: "Self-Learning Organization",
         desc: "A company's own documents, turned into memory.",
