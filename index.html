@@ -148,8 +148,15 @@
     width:100%;
     display:flex;
     flex-direction:column;
-    justify-content:center;
+    /* The groups start at the top and stay where they are. Centred, the whole
+       stack slid up the page every time one of them was opened, which is the
+       opposite of the rows holding their positions. */
+    justify-content:flex-start;
   }
+  /* the mark still wants the middle of the page, on the way in and on its
+     own screen */
+  .is-intro main,
+  main.centred{justify-content:center}
   .pane{
     width:100%;
     max-width:64rem;
@@ -157,34 +164,35 @@
     padding:clamp(1.25rem,3.5vh,2.25rem) 1.5rem;
   }
 
-  /* ---------- category grid ---------- */
-  .grid{
-    display:grid;
-    grid-template-columns:repeat(3,minmax(0,1fr));
-    gap:.85rem;
-  }
-  @media (max-width:900px){ .grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
-  @media (max-width:600px){ .grid{grid-template-columns:1fr} }
-
-  .tile{
-    --accent:var(--ink);
-    position:relative;
+  /* ---------- the groups ----------
+     The five groups are the main page and they stay on it: opening one shows
+     its projects under its own row rather than replacing the screen, so the
+     others never leave and none of them moves anywhere. One open at a time,
+     which keeps the page inside the window. */
+  .groups{
     display:flex;
     flex-direction:column;
+    gap:.6rem;
+  }
+  .group{--accent:var(--ink)}
+  .group-head{
+    position:relative;
+    width:100%;
+    display:flex;
     align-items:center;
-    justify-content:center;
-    text-align:center;
-    min-height:6.5rem;
-    gap:.4rem;
-    padding:1.25rem 1.35rem;
+    justify-content:space-between;
+    gap:1rem;
+    padding:.9rem 1.3rem;
+    font:inherit;
+    color:inherit;
+    text-align:left;
     border:1px solid var(--line);
     border-radius:2px;
     background:var(--card);
-    color:inherit;
-    text-decoration:none;
-    transition:background .22s ease, transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+    cursor:pointer;
+    transition:background .2s ease,border-color .2s ease,box-shadow .2s ease;
   }
-  .tile::before{
+  .group-head::before{
     content:"";
     position:absolute;
     left:-1px; top:-1px; bottom:-1px;
@@ -192,37 +200,45 @@
     background:var(--accent);
     transform:scaleY(0);
     transform-origin:top;
-    transition:transform .28s cubic-bezier(.2,.7,.3,1);
+    transition:transform .26s cubic-bezier(.2,.7,.3,1);
   }
-  .tile:hover,.tile:focus-visible{
+  .group-head:hover,.group-head:focus-visible{
     background:var(--card-hover);
     border-color:color-mix(in srgb,var(--accent) 40%,var(--line));
     box-shadow:var(--shadow);
-    transform:translateY(-2px);
   }
-  .tile:hover::before,.tile:focus-visible::before{transform:scaleY(1)}
-  .tile:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-
-  .tile-title{
-    font-size:clamp(1.05rem,.95rem + .35vw,1.3rem);
+  .group-head:hover::before,
+  .group.is-open .group-head::before{transform:scaleY(1)}
+  .group-head:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .group.is-open .group-head{
+    background:var(--card-hover);
+    border-color:color-mix(in srgb,var(--accent) 45%,var(--line));
+  }
+  .group-title{
+    font-size:1.05rem;
     font-weight:600;
     font-stretch:105%;
     letter-spacing:-.01em;
-    margin:0;
-    line-height:1.25;
-    text-wrap:balance;
   }
-  .tile-go{
-    margin-top:.2rem;
+  .group-mark{
+    flex:0 0 auto;
     font-family:"IBM Plex Mono",ui-monospace,monospace;
-    font-size:.7rem;
-    letter-spacing:.1em;
+    font-size:.85rem;
+    line-height:1;
     color:var(--accent);
-    opacity:0;
-    transform:translateX(-4px);
-    transition:opacity .22s ease, transform .22s ease;
   }
-  .tile:hover .tile-go,.tile:focus-visible .tile-go{opacity:1;transform:none}
+  .group-body{
+    padding:.5rem 0 .15rem 1rem;
+    animation:groupIn .22s ease both;
+  }
+  .group-body .list{margin:0}
+  @keyframes groupIn{
+    from{opacity:0;transform:translateY(-5px)}
+    to{opacity:1;transform:none}
+  }
+  @media (max-width:640px){
+    .group-body{padding-left:.4rem}
+  }
 
   /* ---------- secondary screen ---------- */
   .crumb{
@@ -265,21 +281,6 @@
     .crumb{min-width:0;width:100%;padding:.62rem 1.2rem}
   }
 
-  .cat-head{margin:1rem 0 0}
-  .cat-title{
-    font-size:clamp(1.6rem,1.2rem + 1.8vw,2.35rem);
-    font-weight:700;
-    font-stretch:110%;
-    letter-spacing:-.02em;
-    line-height:1.05;
-    margin:0;
-    text-wrap:balance;
-  }
-  .cat-rule{
-    width:3.5rem;height:2px;
-    background:var(--accent);
-    margin:.7rem 0 .8rem;
-  }
   .list{
     list-style:none;
     margin:1.25rem 0 0;
@@ -674,7 +675,7 @@
   .is-word .lg-side{
     opacity:1;
     transform:none;
-    transition:opacity .3s ease,transform 1.05s cubic-bezier(.22,.72,.28,1);
+    transition:opacity .35s ease,transform 1.5s cubic-bezier(.24,.7,.26,1);
   }
   .is-word .lg-du{transition-delay:0s}
   .is-word .lg-ai{transition-delay:.06s}
@@ -1067,13 +1068,6 @@ const SITE = {
         href: "https://superstore.can-du-ai.com",
         dest: "superstore.can-du-ai.com",
         status: "soon"
-      },
-      {
-        name: "AI Education Marketplace",
-        desc: "Learn anything with a one-to-one tutor.",
-        href: "https://e-du-ai.can-du-ai.com",
-        dest: "e-du-ai.can-du-ai.com",
-        status: "live"
       }
     ]
   },
@@ -1094,21 +1088,48 @@ const SITE = {
         href: "https://self-learning.can-du-ai.com",
         dest: "self-learning.can-du-ai.com",
         status: "soon"
-      },
+      }
+    ]
+  },
+  knowledge: {
+    accent: "var(--c-llm)",
+    title: "AI Related Knowledge Applications",
+    items: [
       {
         name: "AI Laws and Regulations Chat-Bot",
         desc: "Answers on AI regulation, with the source cited.",
         href: "https://ai-laws.can-du-ai.com",
         dest: "ai-laws.can-du-ai.com",
         status: "soon"
+      },
+      {
+        name: "AI Education Marketplace",
+        desc: "Learn anything with a one-to-one tutor.",
+        href: "https://e-du-ai.can-du-ai.com",
+        dest: "e-du-ai.can-du-ai.com",
+        status: "live"
       }
     ]
   },
-  agents: {
-    accent: "var(--c-agents)",
-    title: "Agent AI",
+  lab: {
+    accent: "var(--c-lab)",
+    title: "AI Test Lab",
     compact: true,
     items: [
+      {
+        name: "Multi-Modal: Video, Voice and Image",
+        desc: "Video, voice and image models, tried against each other.",
+        href: "https://multimodal.can-du-ai.com",
+        dest: "multimodal.can-du-ai.com",
+        status: "soon"
+      },
+      {
+        name: "LLM Reviews",
+        desc: "Models compared on the work actually asked of them.",
+        href: "https://llm-reviews.can-du-ai.com",
+        dest: "llm-reviews.can-du-ai.com",
+        status: "soon"
+      },
       {
         name: "LangChain",
         desc: "Chains, tools and memory around a model.",
@@ -1122,25 +1143,7 @@ const SITE = {
         href: "https://crewai.can-du-ai.com",
         dest: "crewai.can-du-ai.com",
         status: "soon"
-      }
-    ]
-  },
-  multimodal: {
-    accent: "var(--c-multimodal)",
-    title: "Multi-Modal: Video, Voice and Image",
-    items: []
-  },
-  llm: {
-    accent: "var(--c-llm)",
-    title: "LLM Reviews",
-    compact: true,
-    items: []
-  },
-  lab: {
-    accent: "var(--c-lab)",
-    title: "Tool Test Lab",
-    compact: true,
-    items: [
+      },
       {
         name: "n8n",
         desc: "Self-hosted agent and workflow automation.",
@@ -1188,7 +1191,7 @@ const SITE = {
 /* "logo" is deliberately not here: the mark plays on the front door now,
    so a tile for it would be a second door to the same room. The screen
    itself stays reachable at #/logo for replaying it. */
-const ORDER = ["community", "enterprise", "commercial", "agents", "multimodal", "llm", "lab"];
+const ORDER = ["community", "enterprise", "knowledge", "commercial", "lab"];
 
 /* Useful links — add a line to this list and it appears in the modal. */
 const LINKS = [
@@ -1201,15 +1204,44 @@ const view = document.getElementById("view");
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-function renderHome() {
+/* The main page is the five groups, and it stays the main page: opening one
+   shows its projects under its own row instead of taking the screen away.
+   The hash still carries which is open, so a link to a group still works and
+   the browser's back button still closes it. */
+function renderHome(openKey) {
   document.title = "Can-Du-AI";
-  view.innerHTML = '<div class="pane"><div class="grid anim">' + ORDER.map(key => {
+
+  const groups = ORDER.map((key) => {
     const cat = SITE[key];
-    return '<a class="tile" style="--accent:' + cat.accent + '" href="#/' + key + '">' +
-      '<h2 class="tile-title">' + esc(cat.title) + '</h2>' +
-      '<span class="tile-go">Open &rarr;</span>' +
-      '</a>';
-  }).join("") + '</div></div>';
+    const open = key === openKey;
+    const compact = !!cat.compact;
+    const rows = cat.items.length
+      ? cat.items.map((item) => projectRow(item, compact)).join("")
+      : emptyRow(key);
+    return '<section class="group' + (open ? " is-open" : "") +
+        '" style="--accent:' + cat.accent + '">' +
+        '<button type="button" class="group-head" data-key="' + key + '"' +
+          ' aria-expanded="' + (open ? "true" : "false") +
+          '" aria-controls="g-' + key + '">' +
+          '<span class="group-title">' + esc(cat.title) + '</span>' +
+          '<span class="group-mark" aria-hidden="true">' +
+            (open ? "&#9660;" : "&#9654;") + '</span>' +
+        '</button>' +
+        // rendered either way, so the button always controls something real
+        '<div class="group-body" id="g-' + key + '"' + (open ? "" : " hidden") + '>' +
+          '<ul class="list' + (compact ? " two-col" : "") + '">' + rows + '</ul>' +
+        '</div>' +
+      '</section>';
+  }).join("");
+
+  view.innerHTML = '<div class="pane"><div class="groups">' + groups + '</div></div>';
+
+  view.querySelectorAll(".group-head").forEach((head) => {
+    head.addEventListener("click", () => {
+      // through the hash, so closing is a step back rather than a dead end
+      location.hash = head.dataset.key === openKey ? "#/" : "#/" + head.dataset.key;
+    });
+  });
 }
 
 function projectRow(item, compact) {
@@ -1550,13 +1582,13 @@ function playLogo(intro) {
     // from its metrics
     logoTimers.push(setTimeout(() => measureLogo(stage), 1380));
     at(1450, "is-word");    // in to letter size — the word reads DUBAI
-    // DU and AI are still crossing the screen until 2500; the word wants a
+    // DU and AI are still crossing the screen until 2950; the word wants a
     // moment whole before it starts closing up
-    at(3000, "is-small");   // on down to a dot, the B shrinking with it
-    at(4100, "is-grown");   // and settled at the size it keeps
-    at(4650, "is-land");    // hand over to the copy in the word
-    at(5000, "is-can");     // CAN, below the word and ranged right
-    at(5650, "is-done");    // up and across, to sit above it ranged left
+    at(3450, "is-small");   // on down to a dot, the B shrinking with it
+    at(4550, "is-grown");   // and settled at the size it keeps
+    at(5100, "is-land");    // hand over to the copy in the word
+    at(5450, "is-can");     // CAN, below the word and ranged right
+    at(6100, "is-done");    // up and across, to sit above it ranged left
     /* The name is set against the word as it actually stands, a moment
        before it is shown. Everything that changes the word's width — the
        slot shrinking out of DUBAI, the webfont arriving — is long finished
@@ -1564,12 +1596,12 @@ function playLogo(intro) {
        reading is taken from a layout applied for a fraction of a second to
        be read, and any difference between that and the real one ends up in
        the name's width. */
-    logoTimers.push(setTimeout(() => fitName(stage.querySelector(".lg-mark")), 6500));
+    logoTimers.push(setTimeout(() => fitName(stage.querySelector(".lg-mark")), 6950));
     // the letters, alphabetical, written out one at a time
-    at(6550, "is-by");
+    at(7000, "is-by");
     logoTimers.push(setTimeout(
-      () => startByline(stage, true, intro ? () => flyToMasthead(stage) : null), 6610));
-    at(6900, "is-letters");
+      () => startByline(stage, true, intro ? () => flyToMasthead(stage) : null), 7060));
+    at(7350, "is-letters");
   }
 }
 
@@ -1607,39 +1639,6 @@ function renderLogo(intro) {
   }
 }
 
-function renderCategory(key) {
-  const cat = SITE[key];
-  if (cat.special === "logo") return renderLogo();
-  document.title = cat.title + " — Can-Du-AI";
-  const compact = !!cat.compact;
-  const rows = cat.items.length
-    ? cat.items.map(item => projectRow(item, compact)).join("")
-    : emptyRow(key);
-  view.innerHTML =
-    '<div class="pane"><div class="anim" style="--accent:' + cat.accent + '">' +
-      '<div class="cat-head">' +
-        '<h2 class="cat-title">' + esc(cat.title) + '</h2>' +
-        '<div class="cat-rule"></div>' +
-      '</div>' +
-      '<ul class="list' + (compact ? ' two-col' : '') + '">' + rows + '</ul>' +
-    '</div></div>';
-}
-
-// the way back sits at the left of the top row, and only where there is one
-function setBack(on) {
-  const slot = document.getElementById("backSlot");
-  if (slot) {
-    slot.innerHTML = on
-      ? '<a class="crumb" href="#/"><span class="crumb-arrow">&larr;</span> All categories</a>'
-      : "";
-  }
-}
-
-/* The front door is the mark drawing itself, once a visit. Arriving straight
-   at a category skips it — an intro belongs to the front door — and so does
-   coming back to the grid later. */
-let introDone = false;
-
 function route() {
   clearLogo();                                  // leaving the logo screen stops it
   const key = location.hash.replace(/^#\/?/, "").trim();
@@ -1654,9 +1653,24 @@ function route() {
 
   introDone = true;
   document.body.classList.remove("is-intro");
-  if (onCategory) renderCategory(key); else renderHome();
+
+  // The mark's own screen is the one thing that is still a screen
+  if (onCategory && SITE[key].special === "logo") {
+    view.classList.add("centred");
+    renderLogo(false);
+    setBack(true);
+    view.scrollTop = 0;
+    return;
+  }
+  view.classList.remove("centred");
+
+  /* Held across the render: opening a group rebuilds the list, and losing the
+     scroll position would throw the page back to the top every time one of
+     the lower groups was opened. */
+  const keep = view.scrollTop;
+  renderHome(onCategory ? key : null);
   setBack(onCategory);
-  view.scrollTop = 0;
+  view.scrollTop = keep;
 }
 
 /* The masthead's copy of the mark, built from the same function and set to
