@@ -1639,6 +1639,22 @@ function renderLogo(intro) {
   }
 }
 
+// the way back sits at the left of the top row, and only where there is one;
+// with the groups opening in place, it closes whichever one is open
+function setBack(on) {
+  const slot = document.getElementById("backSlot");
+  if (slot) {
+    slot.innerHTML = on
+      ? '<a class="crumb" href="#/"><span class="crumb-arrow">&larr;</span> All categories</a>'
+      : "";
+  }
+}
+
+/* The front door is the mark drawing itself, once a visit. Arriving straight
+   at a group skips it — an intro belongs to the front door — and so does
+   coming back to the groups later. */
+let introDone = false;
+
 function route() {
   clearLogo();                                  // leaving the logo screen stops it
   const key = location.hash.replace(/^#\/?/, "").trim();
