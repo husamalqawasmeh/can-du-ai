@@ -164,6 +164,118 @@
     padding:clamp(1.25rem,3.5vh,2.25rem) 1.5rem;
   }
 
+  /* ---------- the landing ----------
+     Three buttons and nothing else on the page: who I am, the resume, and
+     the portfolio. The groups live behind the third one now. */
+  .hub{
+    width:100%;
+    max-width:36rem;
+    margin:0 auto;
+    display:flex;
+    flex-direction:column;
+    gap:.7rem;
+  }
+  .hub-item{--accent:var(--ink)}
+  .hub-btn{
+    position:relative;
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:1rem;
+    padding:1.1rem 1.45rem;
+    font:inherit;
+    font-size:1.12rem;
+    font-weight:600;
+    font-stretch:105%;
+    letter-spacing:-.01em;
+    color:inherit;
+    text-align:left;
+    text-decoration:none;
+    border:1px solid var(--line);
+    border-radius:2px;
+    background:var(--card);
+    cursor:pointer;
+    transition:background .2s ease,border-color .2s ease,
+               box-shadow .2s ease,transform .2s ease;
+  }
+  .hub-btn::before{
+    content:"";
+    position:absolute;
+    left:-1px; top:-1px; bottom:-1px;
+    width:2px;
+    background:var(--accent);
+    transform:scaleY(0);
+    transform-origin:top;
+    transition:transform .26s cubic-bezier(.2,.7,.3,1);
+  }
+  .hub-btn:hover,.hub-btn:focus-visible{
+    background:var(--card-hover);
+    border-color:color-mix(in srgb,var(--accent) 45%,var(--line));
+    box-shadow:var(--shadow);
+    transform:translateY(-2px);
+  }
+  .hub-btn:hover::before,
+  .hub-item.is-open .hub-btn::before{transform:scaleY(1)}
+  .hub-btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .hub-item.is-open .hub-btn{
+    background:var(--card-hover);
+    border-color:color-mix(in srgb,var(--accent) 45%,var(--line));
+    transform:none;
+  }
+  .hub-mark{
+    flex:0 0 auto;
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:.85rem;
+    line-height:1;
+    color:var(--accent);
+  }
+  .hub-body{
+    padding:.55rem 0 .1rem 1.1rem;
+    animation:groupIn .22s ease both;
+  }
+  /* Label and value on one line, the value a link you can actually use */
+  .hub-line{
+    display:flex;
+    align-items:baseline;
+    gap:.8rem;
+    padding:.4rem 0;
+  }
+  .hub-key{
+    flex:0 0 4.5rem;
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:.66rem;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+  .hub-val{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:.92rem;
+    color:var(--accent);
+    text-decoration:none;
+    border-bottom:1px solid color-mix(in srgb,var(--accent) 35%,transparent);
+    overflow-wrap:anywhere;
+  }
+  .hub-val:hover,.hub-val:focus-visible{border-bottom-color:var(--accent)}
+
+  /* ---------- the resume ---------- */
+  .sheet{
+    width:100%;
+    max-width:44rem;
+    margin:0 auto;
+  }
+  .sheet h2{
+    font-size:clamp(1.5rem,1.2rem + 1.4vw,2.1rem);
+    font-weight:700;
+    font-stretch:110%;
+    letter-spacing:-.02em;
+    line-height:1.05;
+    margin:0;
+  }
+  .sheet-rule{width:3.5rem;height:2px;background:var(--accent);margin:.7rem 0 1rem}
+  .sheet p{margin:0 0 .9rem;font-size:.95rem;line-height:1.6;color:var(--ink-2,var(--ink-soft))}
+
   /* ---------- the groups ----------
      The five groups are the main page and they stay on it: opening one shows
      its projects under its own row rather than replacing the screen, so the
@@ -1204,12 +1316,82 @@ const view = document.getElementById("view");
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-/* The main page is the five groups, and it stays the main page: opening one
+/* Who to reach, and how. One place, used by the landing page and by the
+   resume sheet behind it. */
+const ME = {
+  name: "Husam Al-Qawasmeh",
+  email: "husamalqawasmeh@gmail.com",
+  phone: "+971 50 624 5809",
+  tel: "+971506245809"
+};
+
+/* The landing page: three buttons and nothing else.
+
+   The first carries the contact details and opens where it stands, in the
+   same way the groups do. The other two are links, because they go
+   somewhere. */
+function renderLanding(openContact) {
+  document.title = "Can-Du-AI";
+  view.innerHTML =
+    '<div class="pane"><div class="hub">' +
+      '<section class="hub-item' + (openContact ? " is-open" : "") +
+        '" style="--accent:var(--c-community)">' +
+        '<button type="button" class="hub-btn" id="hubContact"' +
+          ' aria-expanded="' + (openContact ? "true" : "false") + '" aria-controls="hubCard">' +
+          '<span>' + esc(ME.name) + '</span>' +
+          '<span class="hub-mark" aria-hidden="true">' +
+            (openContact ? "&#9660;" : "&#9654;") + '</span>' +
+        '</button>' +
+        '<div class="hub-body" id="hubCard"' + (openContact ? "" : " hidden") + '>' +
+          '<p class="hub-line"><span class="hub-key">Email</span>' +
+            '<a class="hub-val" href="mailto:' + ME.email + '">' + esc(ME.email) + '</a></p>' +
+          '<p class="hub-line"><span class="hub-key">Phone</span>' +
+            '<a class="hub-val" href="tel:' + ME.tel + '">' + esc(ME.phone) + '</a></p>' +
+        '</div>' +
+      '</section>' +
+      '<section class="hub-item" style="--accent:var(--c-enterprise)">' +
+        '<a class="hub-btn" href="#/resume">' +
+          '<span>My Resume</span>' +
+          '<span class="hub-mark" aria-hidden="true">&#9654;</span>' +
+        '</a>' +
+      '</section>' +
+      '<section class="hub-item" style="--accent:var(--c-lab)">' +
+        '<a class="hub-btn" href="#/portfolio">' +
+          '<span>My AI Portfolio</span>' +
+          '<span class="hub-mark" aria-hidden="true">&#9654;</span>' +
+        '</a>' +
+      '</section>' +
+    '</div></div>';
+
+  const btn = document.getElementById("hubContact");
+  // through the hash, so the back button closes what the click opened
+  if (btn) btn.addEventListener("click", () => {
+    location.hash = openContact ? "#/" : "#/contact";
+  });
+}
+
+/* Nothing invented here: the resume itself is not written into this page, so
+   the screen says so and hands over the two ways of asking for it. */
+function renderResume() {
+  document.title = "Resume — Can-Du-AI";
+  view.innerHTML =
+    '<div class="pane"><div class="sheet" style="--accent:var(--c-enterprise)">' +
+      '<h2>My Resume</h2>' +
+      '<div class="sheet-rule"></div>' +
+      '<p>Not published on this site yet. Ask for it and it comes straight back.</p>' +
+      '<p class="hub-line"><span class="hub-key">Email</span>' +
+        '<a class="hub-val" href="mailto:' + ME.email + '">' + esc(ME.email) + '</a></p>' +
+      '<p class="hub-line"><span class="hub-key">Phone</span>' +
+        '<a class="hub-val" href="tel:' + ME.tel + '">' + esc(ME.phone) + '</a></p>' +
+    '</div></div>';
+}
+
+/* The portfolio is the five groups, and it stays one page: opening one
    shows its projects under its own row instead of taking the screen away.
    The hash still carries which is open, so a link to a group still works and
    the browser's back button still closes it. */
-function renderHome(openKey) {
-  document.title = "Can-Du-AI";
+function renderGroups(openKey) {
+  document.title = "My AI Portfolio — Can-Du-AI";
 
   const groups = ORDER.map((key) => {
     const cat = SITE[key];
@@ -1239,7 +1421,8 @@ function renderHome(openKey) {
   view.querySelectorAll(".group-head").forEach((head) => {
     head.addEventListener("click", () => {
       // through the hash, so closing is a step back rather than a dead end
-      location.hash = head.dataset.key === openKey ? "#/" : "#/" + head.dataset.key;
+      location.hash =
+        head.dataset.key === openKey ? "#/portfolio" : "#/" + head.dataset.key;
     });
   });
 }
@@ -1548,8 +1731,7 @@ function finishIntro(stage) {
   logoTimers.push(setTimeout(() => {
     document.body.classList.remove("is-intro");
     if (to) to.style.opacity = "";             // back to the stylesheet's word
-    renderHome();
-    setBack(false);
+    route();                                   // and the front door takes over
   }, 90));
 }
 
@@ -1641,13 +1823,13 @@ function renderLogo(intro) {
 
 // the way back sits at the left of the top row, and only where there is one;
 // with the groups opening in place, it closes whichever one is open
-function setBack(on) {
+function setBack(href, label) {
   const slot = document.getElementById("backSlot");
-  if (slot) {
-    slot.innerHTML = on
-      ? '<a class="crumb" href="#/"><span class="crumb-arrow">&larr;</span> All categories</a>'
-      : "";
-  }
+  if (!slot) return;
+  slot.innerHTML = href
+    ? '<a class="crumb" href="' + href + '">' +
+        '<span class="crumb-arrow">&larr;</span> ' + esc(label) + '</a>'
+    : "";
 }
 
 /* The front door is the mark drawing itself, once a visit. Arriving straight
@@ -1662,7 +1844,7 @@ function route() {
 
   if (!introDone && key === "") {
     document.body.classList.add("is-intro");
-    setBack(false);
+    setBack(null);
     renderLogo(true);
     return;
   }
@@ -1670,23 +1852,43 @@ function route() {
   introDone = true;
   document.body.classList.remove("is-intro");
 
-  // The mark's own screen is the one thing that is still a screen
-  if (onCategory && SITE[key].special === "logo") {
+  // The mark's own screen
+  if (key === "logo") {
     view.classList.add("centred");
     renderLogo(false);
-    setBack(true);
+    setBack("#/", "Back");
     view.scrollTop = 0;
     return;
   }
-  view.classList.remove("centred");
 
-  /* Held across the render: opening a group rebuilds the list, and losing the
-     scroll position would throw the page back to the top every time one of
-     the lower groups was opened. */
-  const keep = view.scrollTop;
-  renderHome(onCategory ? key : null);
-  setBack(onCategory);
-  view.scrollTop = keep;
+  if (key === "resume") {
+    view.classList.remove("centred");
+    renderResume();
+    setBack("#/", "Back");
+    view.scrollTop = 0;
+    return;
+  }
+
+  const inGroups = key === "portfolio" || (onCategory && !SITE[key].special);
+  if (inGroups) {
+    view.classList.remove("centred");
+    const openKey = key === "portfolio" ? null : key;
+    /* Held across the render: opening a group rebuilds the list, and losing
+       the scroll position would throw the page back to the top every time
+       one of the lower groups was opened. */
+    const keep = view.scrollTop;
+    renderGroups(openKey);
+    // one step back each time: an open group closes, the page returns home
+    setBack(openKey ? "#/portfolio" : "#/", openKey ? "All groups" : "Back");
+    view.scrollTop = keep;
+    return;
+  }
+
+  // anything else is the front door, with the contact line open or shut
+  view.classList.add("centred");
+  renderLanding(key === "contact");
+  setBack(null);
+  view.scrollTop = 0;
 }
 
 /* The masthead's copy of the mark, built from the same function and set to
