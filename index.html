@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Can-Du-AI — an AI portfolio by Husam Al-Qawasmeh: community apps, commercial apps, enterprise solutions, agent AI, LLM reviews and a tool test lab.">
+<meta name="description" content="Can-Du-AI — an AI portfolio by Husam Al-Qawasmeh: community apps, commercial apps, enterprise solutions, agent AI and LLM reviews.">
 <!--ARTIFACT-START-->
 <title>Can-Du-AI</title>
 <!-- The dot from the mark, on its own. SVG first so it stays sharp at any
@@ -1414,6 +1414,14 @@ const SITE = {
         status: "live"
       },
       {
+        name: "Quran",
+        desc: "The Quran, online.",
+        href: "https://quran.can-du-ai.com",
+        dest: "quran.can-du-ai.com",
+        external: true,
+        status: "live"
+      },
+      {
         name: "Janna-Zad",
         note: "(Eligible for nomination to Ministry of Islamic Affairs' usage)",
         desc: "Provisions and planning for the journey.",
@@ -1485,76 +1493,6 @@ const SITE = {
       }
     ]
   },
-  lab: {
-    accent: "var(--c-lab)",
-    title: "AI Test Lab",
-    compact: true,
-    items: [
-      {
-        name: "Multi-Modal: Video, Voice and Image",
-        desc: "Video, voice and image models, tried against each other.",
-        href: "https://multimodal.can-du-ai.com",
-        dest: "multimodal.can-du-ai.com",
-        status: "soon"
-      },
-      {
-        name: "LLM Reviews",
-        desc: "Models compared on the work actually asked of them.",
-        href: "https://llm-reviews.can-du-ai.com",
-        dest: "llm-reviews.can-du-ai.com",
-        status: "soon"
-      },
-      {
-        name: "LangChain",
-        desc: "Chains, tools and memory around a model.",
-        href: "https://langchain.can-du-ai.com",
-        dest: "langchain.can-du-ai.com",
-        status: "soon"
-      },
-      {
-        name: "CrewAI",
-        desc: "Role-based agents working as a crew.",
-        href: "https://crewai.can-du-ai.com",
-        dest: "crewai.can-du-ai.com",
-        status: "soon"
-      },
-      {
-        name: "n8n",
-        desc: "Self-hosted agent and workflow automation.",
-        href: "https://n8n.can-du-ai.com",
-        dest: "n8n.can-du-ai.com",
-        status: "soon"
-      },
-      {
-        name: "Netlify",
-        desc: "Static hosting, measured against Cloudflare.",
-        href: "https://netlify.can-du-ai.com",
-        dest: "netlify.can-du-ai.com",
-        status: "soon"
-      },
-      {
-        name: "Lovable",
-        desc: "Prompt to app — how far before a developer.",
-        href: "https://lovable.can-du-ai.com",
-        dest: "lovable.can-du-ai.com",
-        status: "soon"
-      },
-      {
-        name: "Azure AI Foundry",
-        desc: "Agent platform: models, guardrails, cost.",
-        href: "https://azure-foundry.can-du-ai.com",
-        dest: "azure-foundry.can-du-ai.com",
-        status: "soon"
-      },
-      {
-        name: "NotebookLM",
-        desc: "Research grounded in the sources you give it.",
-        href: "https://notebooklm.can-du-ai.com",
-        dest: "notebooklm.can-du-ai.com",
-        status: "soon"
-      }
-    ]
-  },
   logo: {
     accent: "var(--c-logo)",
     title: "The Logo",
@@ -1565,7 +1503,7 @@ const SITE = {
 /* "logo" is deliberately not here: the mark plays on the front door now,
    so a tile for it would be a second door to the same room. The screen
    itself stays reachable at #/logo for replaying it. */
-const ORDER = ["community", "enterprise", "knowledge", "commercial", "lab"];
+const ORDER = ["community", "enterprise", "knowledge", "commercial"];
 
 /* Useful links — add a line to this list and it appears in the modal. */
 const LINKS = [
