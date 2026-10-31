@@ -428,18 +428,17 @@
      a photo.jpg beside the page to cover them */
   .sp-head{
     display:grid;
-    grid-template-columns:auto minmax(0,1fr) auto;
+    grid-template-columns:auto minmax(0,1fr);
     column-gap:1.2rem;
     align-items:start;
   }
   .sp-photo{grid-row:1 / span 2}
   .sp-who{grid-column:2;grid-row:1}
-  .sp-icons{grid-column:3;grid-row:1}
-  .sp-open{grid-column:2 / 4;grid-row:2}
+  .sp-row{grid-column:2;grid-row:2;display:flex;flex-wrap:wrap;align-items:stretch;gap:.6rem;margin-top:.55rem}
   .sp-who{min-width:0}
   .sp-photo{
     position:relative;flex:0 0 auto;
-    width:7.2rem;height:7.2rem;
+    width:6.4rem;height:6.4rem;
     border-radius:1.4rem;
     overflow:hidden;
     border:2px solid var(--accent);
@@ -451,12 +450,12 @@
   .sp-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 25%}
   @media (max-width:520px){.sp-photo{width:5rem;height:5rem;border-radius:1.1rem}}
   .sp-title{margin:.3rem 0 0;font-size:1rem;font-weight:600;color:var(--accent)}
-  /* the strip opened under the name: a coloured block holding the icon, and
-     the details beside it */
-  .sp-open{min-height:3.1rem;margin-top:.55rem}
+  /* the details box, to the right of the five icons: the text, and a button
+     to copy it */
+  .sp-open{flex:1 1 14rem;min-width:0;display:flex;align-items:stretch}
   .sp-det{
-    display:inline-flex;align-items:stretch;max-width:100%;
-    font-size:.92rem;font-weight:700;line-height:1.4;letter-spacing:.02em;
+    flex:1;display:flex;align-items:stretch;min-width:0;
+    font-size:.8rem;font-weight:700;line-height:1.4;letter-spacing:.01em;
     color:var(--ink);
     background:var(--card-hover);
     border:1px solid var(--accent);border-radius:4px;
@@ -464,29 +463,36 @@
     overflow:hidden;
     animation:riseIn .2s cubic-bezier(.2,.7,.3,1) both;
   }
-  .sp-det > span:last-child{padding:.55rem .9rem;display:flex;align-items:center}
-  .sp-det a{color:var(--accent)}
-  .sp-cico{display:grid;place-items:center;flex:0 0 auto;padding:0 .8rem;color:#fff;background:var(--accent);--sp-in:var(--accent)}
-  .sp-cico svg{width:1.7rem;height:1.7rem}
+  .sp-dtext{flex:1;min-width:0;display:flex;align-items:center;padding:.5rem .65rem;overflow-wrap:anywhere}
+  .sp-dtext a{color:var(--accent)}
+  .sp-copy{
+    flex:0 0 auto;display:grid;place-items:center;width:2.6rem;padding:0;
+    color:var(--accent);background:transparent;
+    border:0;border-left:1px solid var(--line);
+    cursor:pointer;
+    transition:background .15s ease;
+  }
+  .sp-copy:hover{background:color-mix(in srgb,var(--accent) 10%,transparent)}
+  .sp-copy:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+  .sp-copy svg{width:1.3rem;height:1.3rem}
   /* five boxes side by side on the right of the header */
-  .sp-icons{display:flex;gap:.5rem;justify-self:end}
+  .sp-icons{display:flex;gap:.3rem;flex:0 0 auto}
   .sp-ico{
     display:grid;place-items:center;
-    width:3.5rem;height:3.5rem;padding:0;
+    width:3rem;height:3rem;padding:0;
     color:var(--accent);
     background:var(--card-hover);
     border:1px solid var(--line);border-radius:4px;
     cursor:pointer;
     transition:border-color .15s ease,box-shadow .15s ease,background .15s ease;
   }
-  .sp-ico svg{width:2rem;height:2rem}
+  .sp-ico svg{width:1.9rem;height:1.9rem}
   .sp-ico:hover,.sp-ico.is-on{border-color:var(--accent);box-shadow:var(--shadow)}
   .sp-ico.is-on{background:color-mix(in srgb,var(--accent) 9%,var(--card-hover))}
   .sp-ico:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   @media (max-width:760px){
     .sp-head{grid-template-columns:auto minmax(0,1fr)}
-    .sp-icons{grid-column:1 / -1;grid-row:2;margin:.7rem 0 0}
-    .sp-open{grid-column:1 / -1;grid-row:3}
+    .sp-row{grid-column:1 / -1;grid-row:2}
     .sp-photo{grid-row:1}
   }
   .sp-lead{margin:.9rem 0 0;font-size:1rem;line-height:1.6;color:var(--ink-2,var(--ink-soft))}
@@ -2020,8 +2026,8 @@ function renderSpare() {
         '<img src="photo.jpg" alt="' + esc(ME.name) + '" onerror="this.remove()"></span><div class="sp-who">' +
       "<h2>" + esc(ME.name) + "</h2>" +
       "</div>" +
-      '<div class="sp-icons" id="spIcons">' + SP_ITEMS.map(icoBtn).join("") + "</div>" +
-      '<div class="sp-open" id="spOpen" aria-live="polite"></div></div>' +
+      '<div class="sp-row"><div class="sp-icons" id="spIcons">' + SP_ITEMS.map(icoBtn).join("") + "</div>" +
+      '<div class="sp-open" id="spOpen" aria-live="polite"></div></div></div>' +
       '<p class="sp-lead">' + esc(R.summary) + "</p>" +
       '<div class="sp-stats">' + stat("36", "years") + stat("5", "employers") + stat(R.jobs.length, "roles") +
         stat("2", "countries") + "</div></section>" +
@@ -2051,30 +2057,54 @@ function renderSpare() {
     "</div></section>" +
     "</div></div>";
 
-  // the opened strip sits under the name. Hovering previews an icon, a click
-  // pins it (and makes its link clickable); clicking it again closes it
+  // the five boxes sit under the name; a click opens that one's details in
+  // the box to their right, with a button to copy them. Clicking it again
+  // closes the box.
+  const COPY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true">' +
+    '<rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6.5A2.5 2.5 0 0 0 13.5 4h-7A2.5 2.5 0 0 0 4 6.5v7A2.5 2.5 0 0 0 6.5 16H8"/></svg>';
+  const TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
   let pinned = "creds";
   const strip = document.getElementById("spOpen");
   const drawOpen = (k) => {
     const it = SP_ITEMS.find((x) => x.k === k);
     strip.innerHTML = it
-      ? '<div class="sp-det"><span class="sp-cico" aria-hidden="true">' + svgOf(it) + "</span><span>" +
-        (it.href && k === pinned ? '<a href="' + it.href + '">' + esc(it.text) + "</a>" : esc(it.text)) + "</span></div>"
+      ? '<div class="sp-det"><span class="sp-dtext">' +
+          (it.href ? '<a href="' + it.href + '">' + esc(it.text) + "</a>" : esc(it.text)) + "</span>" +
+          '<button type="button" class="sp-copy" aria-label="Copy ' + esc(it.label.toLowerCase()) + '" title="Copy">' + COPY + "</button></div>"
       : "";
     view.querySelectorAll(".sp-ico").forEach((b) => {
-      b.parentNode && b.setAttribute("aria-expanded", String(b.dataset.k === k));
+      b.setAttribute("aria-expanded", String(b.dataset.k === k));
       b.classList.toggle("is-on", b.dataset.k === k);
     });
   };
-  const icons = document.getElementById("spIcons");
-  icons.addEventListener("click", (e) => {
+  document.getElementById("spIcons").addEventListener("click", (e) => {
     const b = e.target.closest(".sp-ico");
     if (!b) return;
     pinned = pinned === b.dataset.k ? null : b.dataset.k;
     drawOpen(pinned);
   });
-  icons.addEventListener("mouseover", (e) => { const b = e.target.closest(".sp-ico"); if (b) drawOpen(b.dataset.k); });
-  icons.addEventListener("mouseleave", () => drawOpen(pinned));
+  strip.addEventListener("click", (e) => {
+    const b = e.target.closest(".sp-copy");
+    if (!b) return;
+    const it = SP_ITEMS.find((x) => x.k === pinned);
+    if (!it) return;
+    const done = () => {
+      b.innerHTML = TICK;
+      b.title = "Copied";
+      setTimeout(() => { b.innerHTML = COPY; b.title = "Copy"; }, 1300);
+    };
+    const fallback = () => {                    // no clipboard API (older browsers, plain http)
+      const t = document.createElement("textarea");
+      t.value = it.text;
+      t.style.cssText = "position:fixed;opacity:0";
+      document.body.appendChild(t);
+      t.select();
+      try { document.execCommand("copy"); done(); } catch (err) { /* nothing more to try */ }
+      t.remove();
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(it.text).then(done, fallback);
+    else fallback();
+  });
   drawOpen(pinned);
 
   const nav = document.getElementById("spNav");
