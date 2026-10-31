@@ -1845,9 +1845,9 @@ function renderResume() {
    is read out of RESUME and the file it came from; the employer line is
    drawn from the dates, to scale. */
 const SP_EMP = [
-  { k: "mash1", logoOnly: true, logo: "mashreq", n: "Mashreq Bank", a: 1990.45, b: 1997.8, y: "1990 – 1997", c: "#E4501E", jobs: [7, 6] },
-  { k: "hsbc", logoOnly: true, logo: "hsbc",  n: "HSBC",         a: 1998.0,  b: 1998.5, y: "1998",        c: "#DB0011", jobs: [5] },
-  { k: "icbc", logo: "icbc",  n: "ICBC",         a: 1998.5,  b: 2002.8, y: "1998 – 2002", c: "#00AEEF", tc: "#0A2A3D", jobs: [4, 3] },
+  { k: "mash1", logoOnly: true, logo: "mashreq", n: "Mashreq Bank", a: 1989.9, b: 1997.85, y: "1990 – 1997", c: "#E4501E", jobs: [7, 6] },
+  { k: "hsbc", logoOnly: true, logo: "hsbc",  n: "HSBC",         a: 1997.9,  b: 1998.6, y: "1998",        c: "#DB0011", jobs: [5] },
+  { k: "icbc", logo: "icbc",  n: "ICBC",         a: 1998.6,  b: 2002.8, y: "1998 – 2002", c: "#00AEEF", tc: "#0A2A3D", jobs: [4, 3] },
   { k: "emaar", logoOnly: true, logo: "emaar", logo2: "sahm", alt2: "Sahm Technologies", n: "Emaar",        a: 2002.95, b: 2005.8, y: "2002 – 2005", c: "#1C3687", jobs: [2] },
   { k: "mash2", logoOnly: true, logo: "mashreq", n: "Mashreq Bank", a: 2005.8,  b: 2015.95, y: "2005 – 2015", c: "#E4501E", jobs: [1] },
   { k: "rta", logo: "rta",   n: "RTA",          a: 2016.0,  b: 2027.6, y: "2016 – Present", c: "#E4241D", jobs: [0] }
@@ -1888,11 +1888,12 @@ function renderSpare() {
   ];
 
   // ---- 4: the employer line, to scale
-  const X0 = 30, X1 = 970, Y0 = 1990, Y1 = 2027.6;
+  const X0 = 30, X1 = 992, Y0 = 1990, Y1 = 2027.6;
   const x = (y) => X0 + (y - Y0) * (X1 - X0) / (Y1 - Y0);
   let svg = '<svg viewBox="0 0 1000 134" role="img" aria-label="Career timeline, 1990 to today: ' +
     SP_EMP.map((e) => e.n + " " + e.y).join("; ") + '">';
-  for (let y = 1990; y <= 2025; y += 5) {
+  // 2025 is left out: it would sit on top of 2026, a year to its right
+  for (const y of [1990, 1995, 2000, 2005, 2010, 2015, 2020, 2026]) {
     svg += '<line x1="' + x(y).toFixed(1) + '" y1="34" x2="' + x(y).toFixed(1) + '" y2="102" stroke="currentColor" stroke-opacity=".15"/>' +
       '<text x="' + x(y).toFixed(1) + '" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor"' +
       ' font-family="IBM Plex Mono,monospace">' + y + "</text>";
