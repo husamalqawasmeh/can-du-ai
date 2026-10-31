@@ -426,8 +426,8 @@
   .sp-sec h2{margin:0;font-size:clamp(1.5rem,1.1rem + 1.6vw,2.2rem);font-weight:700;font-stretch:110%;letter-spacing:-.02em;line-height:1.05}
   /* a soft-cornered square for the portrait, ahead of the name; initials show until there is
      a photo.jpg beside the page to cover them */
-  .sp-head{display:flex;align-items:center;gap:1.2rem}
-  .sp-who{min-width:0}
+  .sp-head{display:flex;align-items:flex-start;gap:1.2rem}
+  .sp-who{min-width:0;flex:1 1 auto}
   .sp-photo{
     position:relative;flex:0 0 auto;
     width:7.2rem;height:7.2rem;
@@ -456,32 +456,37 @@
   .sp-creds > span:last-child{padding:.45rem .9rem;display:flex;align-items:center}
   .sp-cico{display:grid;place-items:center;padding:0 .7rem;background:var(--accent)}
   .sp-cico svg{width:1.5rem;height:1.5rem}
-  /* two boxes, each with its own icon and kept apart; whichever is open
-     grows to show its number or address right after the icon */
-  .sp-icons{display:flex;flex-wrap:wrap;gap:.7rem;margin:.7rem 0 .1rem}
+  /* big boxes on the right of the header, two by two. Hovering one previews
+     its details under the grid; clicking pins it open and makes the email,
+     phone and the rest clickable */
+  .sp-icons{position:relative;display:grid;grid-template-columns:repeat(2,3.9rem);gap:.6rem;margin-left:auto;flex:0 0 auto}
   .sp-ic{
-    display:inline-flex;align-items:stretch;
-    border:1px solid var(--line);border-radius:2px;
+    display:block;
+    border:1px solid var(--line);border-radius:4px;
     background:var(--card-hover);
-    transition:border-color .15s ease,box-shadow .15s ease;
+    transition:border-color .15s ease,box-shadow .15s ease,background .15s ease;
   }
   .sp-ic:hover,.sp-ic:focus-within,.sp-ic.is-open{border-color:var(--accent);box-shadow:var(--shadow)}
-  .sp-ico{display:grid;place-items:center;width:2.7rem;height:2.7rem;padding:0;color:var(--accent);background:transparent;border:0;cursor:pointer}
-  .sp-ico svg{width:1.5rem;height:1.5rem}
+  .sp-ic.is-open{background:color-mix(in srgb,var(--accent) 8%,var(--card-hover))}
+  .sp-ico{display:grid;place-items:center;width:100%;height:3.9rem;padding:0;color:var(--accent);background:transparent;border:0;cursor:pointer}
+  .sp-ico svg{width:2.3rem;height:2.3rem}
   .sp-ico:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
   .sp-icv{
-    max-width:0;
-    overflow:hidden;
-    white-space:nowrap;
-    display:flex;align-items:center;
-    font-size:.9rem;font-weight:600;color:var(--ink);text-decoration:none;
-    opacity:0;
-    transition:max-width .25s ease,opacity .2s ease,padding .25s ease;
+    position:absolute;right:0;top:calc(100% + .5rem);z-index:6;
+    width:max-content;max-width:min(34rem,calc(100vw - 3rem));
+    padding:.6rem .9rem;
+    font-size:.92rem;font-weight:600;line-height:1.4;color:var(--ink);text-decoration:none;
+    background:var(--card-hover);
+    border:1px solid var(--accent);border-radius:4px;
+    box-shadow:var(--shadow);
+    opacity:0;visibility:hidden;pointer-events:none;
+    transition:opacity .18s ease,visibility .18s ease;
   }
-  .sp-ic:hover .sp-icv,.sp-ic:focus-within .sp-icv,.sp-ic.is-open .sp-icv{max-width:min(38rem,70vw);opacity:1;padding:0 .9rem 0 .2rem}
+  .sp-ic:hover .sp-icv,.sp-ic:focus-within .sp-icv,.sp-ic.is-open .sp-icv{opacity:1;visibility:visible}
+  .sp-ic.is-open .sp-icv{pointer-events:auto}
   a.sp-icv:hover{text-decoration:underline}
   span.sp-icv{color:var(--accent)}
-  @media (max-width:640px){.sp-icv{white-space:normal}}
+  @media (max-width:700px){.sp-head{flex-wrap:wrap}.sp-icons{margin-left:0}.sp-icv{right:auto;left:0}}
   .sp-lead{margin:.9rem 0 0;font-size:1rem;line-height:1.6;color:var(--ink-2,var(--ink-soft))}
   .sp-stats{display:flex;flex-wrap:wrap;gap:.6rem 2rem;margin:1rem 0 0;padding-top:.8rem;border-top:1px solid var(--line)}
   .sp-stat b{display:block;font-size:1.5rem;line-height:1;font-stretch:110%;color:var(--ink)}
@@ -1995,7 +2000,7 @@ function renderSpare() {
         '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="11" rx="1.3" fill="#fff"/>' +
         '<rect x="5.8" y="6.8" width="12.4" height="7.4" rx=".5" style="fill:var(--accent)"/>' +
         '<path d="M1.8 18h20.4l-1.5 1.9H3.3z" fill="#fff"/></svg></span>' +
-        "<span>" + esc(R.creds) + "</span></p>" +
+        "<span>" + esc(R.creds) + "</span></p></div>" +
       '<div class="sp-icons">' +
         ico("Title", "AI Chief Specialist", null,
           // a solid briefcase: handle, body, the curve of the flap and the buckle
@@ -2013,7 +2018,6 @@ function renderSpare() {
           '<path d="M3 6.5h18v11H3z"/><path d="m3.5 7 8.5 6.5L20.5 7"/>') +
         ico("Phone", ME.phone, "tel:" + ME.tel,
           '<path d="M6.6 3.5h3l1.4 4-2 1.4a11 11 0 0 0 6.1 6.1l1.4-2 4 1.4v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/>') +
-      "</div>" +
       "</div></div>" +
       '<p class="sp-lead">' + esc(R.summary) + "</p>" +
       '<div class="sp-stats">' + stat("36", "years") + stat("5", "employers") + stat(R.jobs.length, "roles") +
