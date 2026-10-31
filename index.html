@@ -533,6 +533,7 @@
   .sp-card[id^="spE-"]{position:relative}
   /* the company's logo, top right of its card */
   .sp-logo{position:absolute;right:.8rem;top:.7rem;height:1.6rem;width:auto;max-width:46%;object-fit:contain}
+  .sp-logo-l{display:block;height:1.8rem;width:auto;max-width:70%;object-fit:contain;margin:0 0 .2rem}
   .sp-logo-icbc{height:2.4rem}
   .sp-logo-emaar{height:1.1rem}
   .sp-logo-rta{height:2rem}
@@ -1838,11 +1839,11 @@ function renderResume() {
    is read out of RESUME and the file it came from; the employer line is
    drawn from the dates, to scale. */
 const SP_EMP = [
-  { k: "mash1", logo: "mashreq", n: "Mashreq Bank", a: 1990.45, b: 1997.8, y: "1990 – 1997", c: "#7E5F3A", jobs: [7, 6] },
-  { k: "hsbc", logo: "hsbc",  n: "HSBC",         a: 1998.0,  b: 1998.5, y: "1998",        c: "#B25A2A", jobs: [5] },
+  { k: "mash1", logoOnly: true, logo: "mashreq", n: "Mashreq Bank", a: 1990.45, b: 1997.8, y: "1990 – 1997", c: "#7E5F3A", jobs: [7, 6] },
+  { k: "hsbc", logoOnly: true, logo: "hsbc",  n: "HSBC",         a: 1998.0,  b: 1998.5, y: "1998",        c: "#B25A2A", jobs: [5] },
   { k: "icbc", logo: "icbc",  n: "ICBC",         a: 1998.5,  b: 2002.8, y: "1998 – 2002", c: "#2F6B4F", jobs: [4, 3] },
   { k: "emaar", logo: "emaar", n: "Emaar",        a: 2002.95, b: 2005.8, y: "2002 – 2005", c: "#7A4E8C", jobs: [2] },
-  { k: "mash2", logo: "mashreq", n: "Mashreq Bank", a: 2005.8,  b: 2015.95, y: "2005 – 2015", c: "#7E5F3A", jobs: [1] },
+  { k: "mash2", logoOnly: true, logo: "mashreq", n: "Mashreq Bank", a: 2005.8,  b: 2015.95, y: "2005 – 2015", c: "#7E5F3A", jobs: [1] },
   { k: "rta", logo: "rta",   n: "RTA",          a: 2016.0,  b: 2027.6, y: "2016 – Present", c: "#1F3A63", jobs: [0] }
 ];
 
@@ -1910,7 +1911,11 @@ function renderSpare() {
   svg += "</svg>";
 
   const empCards = SP_EMP.map((e) =>
-    '<div class="sp-card" id="spE-' + e.k + '" style="border-left-color:' + e.c + '"><img class="sp-logo sp-logo-' + e.logo + '" src="logos/' + e.logo + '.png" alt="' + esc(e.n) + ' logo"><b>' + esc(e.n) + "</b><em>" + esc(e.y) + "</em><ul>" +
+    '<div class="sp-card" id="spE-' + e.k + '" style="border-left-color:' + e.c + '">' +
+      // Mashreq and HSBC are their logos: it stands in the name's place, on the left
+      (e.logoOnly
+        ? '<img class="sp-logo-l" src="logos/' + e.logo + '.png" alt="' + esc(e.n) + '">'
+        : '<img class="sp-logo sp-logo-' + e.logo + '" src="logos/' + e.logo + '.png" alt="' + esc(e.n) + ' logo"><b>' + esc(e.n) + "</b>") + "<em>" + esc(e.y) + "</em><ul>" +
       e.jobs.map((i) => "<li>" + esc(R.jobs[i].role) + " <em style=\"display:inline\">" + esc(R.jobs[i].when) + "</em></li>").join("") +
     "</ul></div>").join("");
 
