@@ -2061,25 +2061,22 @@ function renderSpare() {
   });
   drawOpen(pinned);
 
+  // one section at a time: choosing one opens it and puts the others away
   const nav = document.getElementById("spNav");
+  const secs = Array.prototype.slice.call(view.querySelectorAll(".sp-sec"));
+  const showSec = (id) => {
+    secs.forEach((el) => { el.hidden = el.id !== "sp-" + id; });
+    nav.querySelectorAll("button").forEach((b) => {
+      b.setAttribute("aria-current", String(b.dataset.sec === id));
+      b.setAttribute("aria-expanded", String(b.dataset.sec === id));
+    });
+    view.scrollTop = 0;
+  };
   nav.addEventListener("click", (e) => {
     const b = e.target.closest("button");
-    if (!b) return;
-    const el = document.getElementById("sp-" + b.dataset.sec);
-    if (el) el.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    if (b) showSec(b.dataset.sec);
   });
-
-  // the nav follows the page
-  if ("IntersectionObserver" in window) {
-    const io = new IntersectionObserver((hits) => {
-      hits.forEach((h) => {
-        if (!h.isIntersecting) return;
-        const id = h.target.id.replace("sp-", "");
-        nav.querySelectorAll("button").forEach((b) => b.setAttribute("aria-current", String(b.dataset.sec === id)));
-      });
-    }, { root: view, rootMargin: "-10% 0px -75% 0px" });
-    view.querySelectorAll(".sp-sec").forEach((s) => io.observe(s));
-  }
+  showSec("profile");
 
   // a bar on the line lights up its employer below
   const pick = (g) => {
