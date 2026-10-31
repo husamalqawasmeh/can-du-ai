@@ -1814,7 +1814,7 @@ const RES_TABS = [
 /* One screen, with its state in the closure: which tab, which role, which
    filter. Every click redraws the body and nothing else. */
 function renderResume() {
-  document.title = "Resume — Can-Du-AI";
+  document.title = "Resume (alternate) — Can-Du-AI";
   const R = RESUME;
   const st = { tab: "exp", open: new Set([0]), tag: "all", sum: false };
   const hits = (i) => st.tag === "all" || RES_JOB_TAGS[i].indexOf(st.tag) >= 0;
@@ -1951,7 +1951,7 @@ const SP_MIX = {
 };
 
 function renderSpare() {
-  document.title = "Resume (spare) — Can-Du-AI";
+  document.title = "Resume — Can-Du-AI";
   const R = RESUME;
   const card = (h, t) => '<div class="sp-card"><b>' + esc(h) + "</b>" + (t ? esc(t) : "") + "</div>";
   const sections = [
@@ -2061,7 +2061,7 @@ function renderSpare() {
     '<section class="sp-sec" id="sp-experience"><p class="sp-num">4 · Experience</p>' +
       '<div class="sp-line" id="spLine">' + svg + "</div>" +
       '<div class="sp-cols">' + empCards + "</div>" +
-      '<a class="sp-more" href="#/resume">The full detail of every role &rarr;</a></section>' +
+      '<a class="sp-more" href="#/resume/spare">The full detail of every role &rarr;</a></section>' +
 
     // 5 — the rest
     '<section class="sp-sec" id="sp-drive"><p class="sp-num">5 · Drive &amp; impact</p><div class="sp-mix">' +
@@ -2635,7 +2635,7 @@ function route() {
 
   if (key === "resume/spare") {
     view.classList.remove("centred");
-    renderSpare();
+    renderResume();
     setBack("#/resume", "Resume");
     view.scrollTop = 0;
     return;
@@ -2643,7 +2643,7 @@ function route() {
 
   if (key === "resume") {
     view.classList.remove("centred");
-    renderResume();
+    renderSpare();
     setBack("#/", "Back");
     view.scrollTop = 0;
     return;
