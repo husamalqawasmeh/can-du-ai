@@ -934,15 +934,15 @@
     /* short, because there are a good many swaps to get through before the
        name is finished and each one has to land before the next is called —
        and at twice the old pace, shorter still */
-    transition:transform .15s cubic-bezier(.4,0,.2,1),color .2s ease;
+    transition:transform .05s cubic-bezier(.4,0,.2,1),color .07s ease;
   }
   /* Written on one letter at a time, left to right across the columns. Only
      the fade is staggered — a delay on the transform would hold a letter
      back mid-swap for the rest of the sequence. */
   .is-letters .by-l{
     opacity:1;
-    transition:transform .15s cubic-bezier(.4,0,.2,1),
-               color .2s ease,
+    transition:transform .05s cubic-bezier(.4,0,.2,1),
+               color .07s ease,
                opacity .3s ease calc(var(--d,0) * 80ms);
   }
   /* Home, and staying there. Green, and dark enough to hold 5.3:1 on the
@@ -1668,7 +1668,7 @@ function startByline(stage, shuffle, onSolved) {
     while (b === a) b = pick();              // free.length is at least two
     const t = at[a]; at[a] = at[b]; at[b] = t;
     place();
-    byTimer = setTimeout(swap, 165 + Math.random() * 130);
+    byTimer = setTimeout(swap, 55 + Math.random() * 43);
   };
   // Nothing moves until the last letter has been written
   byTimer = setTimeout(swap, 2100);
