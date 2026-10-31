@@ -328,41 +328,45 @@
   .res-chip{font-size:.66rem;padding:.3rem .6rem;letter-spacing:.05em}
 
   .res-body{height:calc(100dvh - 27.2rem);min-height:15rem}
-  .res-exp{display:grid;grid-template-columns:minmax(15rem,21rem) minmax(0,1fr);gap:0 1.5rem;height:100%}
-  .res-rail,.res-detail,.res-cols{overflow-y:auto;min-height:0}
-  .res-rail{list-style:none;margin:0;padding:0 .4rem 0 0}
-  .res-rail li{margin:0}
+  .res-acc,.res-cols{overflow-y:auto;min-height:0;height:100%}
+  .res-acc{list-style:none;margin:0;padding:0 .4rem 0 0}
+  .res-item{
+    margin:0 0 .4rem;
+    border:1px solid var(--line);
+    border-left:3px solid var(--line);
+    transition:background .15s ease,border-color .15s ease,opacity .2s ease;
+  }
+  .res-item:hover{border-left-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
+  .res-item:has(.res-node[aria-expanded="true"]){border-left-color:var(--accent);background:var(--card-hover)}
+  .res-item.is-dim{opacity:.35}
   .res-node{
+    position:relative;
     display:block;
     width:100%;
     text-align:left;
     font:inherit;
     color:inherit;
-    padding:.5rem .7rem .5rem .9rem;
+    padding:.55rem 2.2rem .55rem .9rem;
     background:transparent;
     border:0;
-    border-left:3px solid var(--line);
     cursor:pointer;
-    transition:background .15s ease,border-color .15s ease,opacity .2s ease;
   }
-  .res-node:hover{background:var(--card-hover);border-left-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
-  .res-node[aria-current="true"]{background:var(--card-hover);border-left-color:var(--accent);box-shadow:inset 0 0 0 1px var(--line)}
-  .res-node.is-dim{opacity:.35}
-  .res-nwhen{display:block;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.68rem;font-weight:700;color:var(--ink-soft)}
-  .res-nrole{display:block;font-size:.88rem;font-weight:700;line-height:1.25;color:var(--ink)}
-  .res-norg{display:block;font-size:.76rem;color:var(--ink-soft)}
-
-  .res-detail{padding:0 .4rem 0 0;animation:riseIn .3s cubic-bezier(.2,.7,.3,1) both}
-  .res-dhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:0 1rem}
-  .res-dhead .res-role{font-size:1.15rem}
-  .sheet.res p.res-org{margin:.1rem 0 .5rem;font-size:.86rem;color:var(--ink-soft)}
+  .res-nhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:0 1rem}
+  .res-nwhen{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.72rem;font-weight:700;color:var(--ink-soft);white-space:nowrap}
+  .res-nrole{font-size:.92rem;font-weight:700;line-height:1.25;color:var(--ink)}
+  .res-norg{display:block;font-size:.78rem;color:var(--ink-soft)}
+  .res-chev{position:absolute;right:.9rem;top:50%;margin-top:-.55em;font-size:.8rem;color:var(--accent);transition:transform .2s ease}
+  .res-node[aria-expanded="true"] .res-chev{transform:rotate(90deg)}
+  .res-panel{padding:0 .9rem .7rem}
+  .res-panel:not([hidden]){animation:riseIn .25s cubic-bezier(.2,.7,.3,1) both}
+  .sheet.res p.res-org{margin:0 0 .5rem;font-size:.86rem;color:var(--ink-soft)}
   .sheet.res p.res-sub{margin:0 0 .15rem;font-size:.8rem;color:var(--ink-soft)}
   .res-sub b{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.7rem;color:var(--ink)}
   .res-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin:.55rem 0 .3rem}
   .res-tag{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.64rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:.15rem .5rem;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));color:var(--accent)}
   .res ul{margin:.4rem 0 0;padding-left:1.1rem;font-size:.85rem;line-height:1.5;color:var(--ink-2,var(--ink-soft))}
   .res li{margin:0 0 .3rem;break-inside:avoid}
-  .res-detail ul{column-width:22rem;column-gap:2rem}
+  .res-panel ul{column-width:22rem;column-gap:2rem;list-style:disc}
   .res-role{font-weight:700;color:var(--ink)}
   .res-when{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.74rem;font-weight:700;color:var(--ink-soft);white-space:nowrap}
 
@@ -385,9 +389,7 @@
 
   @media (max-width:860px){
     .res-body{height:auto}
-    .res-exp{grid-template-columns:minmax(0,1fr);gap:.8rem}
-    .res-rail,.res-detail,.res-cols{overflow:visible}
-    .res-rail{max-height:14rem;overflow-y:auto}
+    .res-acc,.res-cols{overflow:visible;height:auto}
   }
 
   /* ---------- the groups ----------
@@ -1670,7 +1672,7 @@ const RES_TABS = [
 function renderResume() {
   document.title = "Resume — Can-Du-AI";
   const R = RESUME;
-  const st = { tab: "exp", sel: 0, tag: "all", sum: false };
+  const st = { tab: "exp", open: new Set([0]), tag: "all", sum: false };
   const hits = (i) => st.tag === "all" || RES_JOB_TAGS[i].indexOf(st.tag) >= 0;
   const list = (a) => "<ul>" + a.map((t) => "<li>" + esc(t) + "</li>").join("") + "</ul>";
   const cards = (a) => a.map((t) => '<div class="res-card">' + esc(t) + "</div>").join("");
@@ -1703,20 +1705,18 @@ function renderResume() {
   function drawBody() {
     const body = $("resBody");
     if (st.tab === "exp") {
-      const j = R.jobs[st.sel];
-      const rail = R.jobs.map((x, i) =>
-        '<li><button type="button" class="res-node' + (hits(i) ? "" : " is-dim") + '" data-job="' + i +
-          '" aria-current="' + (i === st.sel) + '"><span class="res-nwhen">' + esc(x.when) +
-          '</span><span class="res-nrole">' + esc(x.role) + '</span><span class="res-norg">' +
-          esc(x.org.split(",")[0].split(" · ")[0]) + "</span></button></li>").join("");
-      body.innerHTML =
-        '<div class="res-exp"><ol class="res-rail" id="resRail" aria-label="Roles, newest first">' + rail + "</ol>" +
-        '<article class="res-detail" tabindex="-1"><div class="res-dhead"><span class="res-role">' + esc(j.role) +
-          '</span><span class="res-when">' + esc(j.when) + "</span></div>" +
-          '<p class="res-org">' + esc(j.org) + "</p>" +
+      const acc = R.jobs.map((j, i) => {
+        const open = st.open.has(i);
+        return '<li class="res-item' + (hits(i) ? "" : " is-dim") + '"><button type="button" class="res-node" data-job="' + i +
+          '" aria-expanded="' + open + '" aria-controls="resP' + i + '"><span class="res-nhead"><span class="res-nrole">' +
+          esc(j.role) + '</span><span class="res-nwhen">' + esc(j.when) + '</span></span><span class="res-norg">' +
+          esc(j.org) + '</span><span class="res-chev" aria-hidden="true">&#9654;</span></button>' +
+          '<div class="res-panel" id="resP' + i + '"' + (open ? "" : " hidden") + ">" +
           (j.posts ? j.posts.map((p) => '<p class="res-sub"><b>' + esc(p[0]) + "</b> · " + esc(p[1]) + "</p>").join("") : "") +
-          '<div class="res-tags">' + RES_JOB_TAGS[st.sel].map((k) => '<span class="res-tag">' + esc(RES_TAGS[k]) + "</span>").join("") + "</div>" +
-          list(j.points) + "</article></div>";
+          '<div class="res-tags">' + RES_JOB_TAGS[i].map((k) => '<span class="res-tag">' + esc(RES_TAGS[k]) + "</span>").join("") + "</div>" +
+          list(j.points) + "</div></li>";
+      }).join("");
+      body.innerHTML = '<ol class="res-acc" aria-label="Roles, newest first">' + acc + "</ol>";
     } else if (st.tab === "str") {
       body.innerHTML = '<div class="res-cols">' + cards(R.strengths) + "</div>";
     } else if (st.tab === "ach") {
@@ -1738,11 +1738,17 @@ function renderResume() {
     if (b.dataset.tab) { st.tab = b.dataset.tab; draw(); return; }
     if (b.dataset.tag) {
       st.tag = st.tag === b.dataset.tag ? "all" : b.dataset.tag;
-      if (!hits(st.sel)) st.sel = R.jobs.findIndex((_, i) => hits(i));
       draw();
       return;
     }
-    if (b.dataset.job) { st.sel = Number(b.dataset.job); drawBody(); const n = view.querySelector('[data-job="' + st.sel + '"]'); if (n) n.focus(); return; }
+    if (b.dataset.job) {
+      const i = Number(b.dataset.job);
+      const open = !st.open.has(i);
+      if (open) st.open.add(i); else st.open.delete(i);
+      b.setAttribute("aria-expanded", String(open));
+      $("resP" + i).hidden = !open;
+      return;
+    }
     if (b.id === "resMore") {
       st.sum = !st.sum;
       $("resSum").classList.toggle("is-open", st.sum);
@@ -1750,17 +1756,14 @@ function renderResume() {
       b.setAttribute("aria-expanded", String(st.sum));
     }
   });
-  // up and down walk the timeline without leaving the keyboard
+  // up and down walk the list of roles without leaving the keyboard
   sheet.addEventListener("keydown", (e) => {
     if (!e.target.dataset || e.target.dataset.job === undefined) return;
     const step = e.key === "ArrowDown" ? 1 : e.key === "ArrowUp" ? -1 : 0;
     if (!step) return;
     e.preventDefault();
-    const next = st.sel + step;
-    if (next < 0 || next >= R.jobs.length) return;
-    st.sel = next;
-    drawBody();
-    view.querySelector('[data-job="' + next + '"]').focus();
+    const to = view.querySelector('[data-job="' + (Number(e.target.dataset.job) + step) + '"]');
+    if (to) to.focus();
   });
 
   draw();
