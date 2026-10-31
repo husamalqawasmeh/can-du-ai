@@ -2070,7 +2070,8 @@ function renderSpare() {
     strip.innerHTML = it
       ? '<div class="sp-det"><span class="sp-dtext">' +
           (it.href ? '<a href="' + it.href + '">' + esc(it.text) + "</a>" : esc(it.text)) + "</span>" +
-          '<button type="button" class="sp-copy" aria-label="Copy ' + esc(it.label.toLowerCase()) + '" title="Copy">' + COPY + "</button></div>"
+          // only the email and the number are worth copying
+          (it.href ? '<button type="button" class="sp-copy" aria-label="Copy ' + esc(it.label.toLowerCase()) + '" title="Copy">' + COPY + "</button>" : "") + "</div>"
       : "";
     view.querySelectorAll(".sp-ico").forEach((b) => {
       b.setAttribute("aria-expanded", String(b.dataset.k === k));
