@@ -495,7 +495,12 @@
     .sp-row{grid-column:1 / -1;grid-row:2}
     .sp-photo{grid-row:1}
   }
-  .sp-lead{margin:.9rem 0 0;font-size:1rem;line-height:1.6;color:var(--ink-2,var(--ink-soft))}
+  .sp-lead{
+    margin:.9rem 0 0;padding:.8rem 1rem;
+    font-size:1rem;line-height:1.6;color:var(--ink-2,var(--ink-soft));
+    background:var(--card-hover);
+    border:1px solid var(--accent);border-radius:4px;
+  }
   .sp-stats{display:flex;flex-wrap:wrap;gap:.6rem 2rem;margin:1rem 0 0;padding-top:.8rem;border-top:1px solid var(--line)}
   .sp-stat b{display:block;font-size:1.5rem;line-height:1;font-stretch:110%;color:var(--ink)}
   .sp-stat span{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
