@@ -1841,12 +1841,12 @@ function renderResume() {
    is read out of RESUME and the file it came from; the employer line is
    drawn from the dates, to scale. */
 const SP_EMP = [
-  { k: "mash1", logoOnly: true, logo: "mashreq", n: "Mashreq Bank", a: 1990.45, b: 1997.8, y: "1990 – 1997", c: "#7E5F3A", jobs: [7, 6] },
-  { k: "hsbc", logoOnly: true, logo: "hsbc",  n: "HSBC",         a: 1998.0,  b: 1998.5, y: "1998",        c: "#B25A2A", jobs: [5] },
-  { k: "icbc", logo: "icbc",  n: "ICBC",         a: 1998.5,  b: 2002.8, y: "1998 – 2002", c: "#2F6B4F", jobs: [4, 3] },
-  { k: "emaar", logo: "emaar", n: "Emaar",        a: 2002.95, b: 2005.8, y: "2002 – 2005", c: "#7A4E8C", jobs: [2] },
-  { k: "mash2", logoOnly: true, logo: "mashreq", n: "Mashreq Bank", a: 2005.8,  b: 2015.95, y: "2005 – 2015", c: "#7E5F3A", jobs: [1] },
-  { k: "rta", logo: "rta",   n: "RTA",          a: 2016.0,  b: 2027.6, y: "2016 – Present", c: "#1F3A63", jobs: [0] }
+  { k: "mash1", logoOnly: true, logo: "mashreq", n: "Mashreq Bank", a: 1990.45, b: 1997.8, y: "1990 – 1997", c: "#E4501E", jobs: [7, 6] },
+  { k: "hsbc", logoOnly: true, logo: "hsbc",  n: "HSBC",         a: 1998.0,  b: 1998.5, y: "1998",        c: "#DB0011", jobs: [5] },
+  { k: "icbc", logo: "icbc",  n: "ICBC",         a: 1998.5,  b: 2002.8, y: "1998 – 2002", c: "#00AEEF", tc: "#0A2A3D", jobs: [4, 3] },
+  { k: "emaar", logo: "emaar", n: "Emaar",        a: 2002.95, b: 2005.8, y: "2002 – 2005", c: "#3B3B3D", jobs: [2] },
+  { k: "mash2", logoOnly: true, logo: "mashreq", n: "Mashreq Bank", a: 2005.8,  b: 2015.95, y: "2005 – 2015", c: "#E4501E", jobs: [1] },
+  { k: "rta", logo: "rta",   n: "RTA",          a: 2016.0,  b: 2027.6, y: "2016 – Present", c: "#E4241D", jobs: [0] }
 ];
 
 const SP_MIX = {
@@ -1902,8 +1902,8 @@ function renderSpare() {
       "<title>" + esc(e.n + " · " + e.y) + "</title>" +
       '<rect x="' + l.toFixed(1) + '" y="40" width="' + w.toFixed(1) + '" height="54" rx="3" fill="' + e.c + '"/>';
     if (w > 60) {
-      svg += '<text x="' + mid.toFixed(1) + '" y="63" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">' + esc(e.n) + "</text>" +
-        '<text x="' + mid.toFixed(1) + '" y="82" text-anchor="middle" font-size="' + (w < 90 ? "10" : "12") + '" fill="#fff" fill-opacity=".9">' + esc(e.y) + "</text>";
+      svg += '<text x="' + mid.toFixed(1) + '" y="63" text-anchor="middle" font-size="15" font-weight="700" fill="' + (e.tc || "#fff") + '">' + esc(e.n) + "</text>" +
+        '<text x="' + mid.toFixed(1) + '" y="82" text-anchor="middle" font-size="' + (w < 90 ? "10" : "12") + '" fill="' + (e.tc || "#fff") + '" fill-opacity=".9">' + esc(e.y) + "</text>";
     } else {                                   // too narrow to hold a name: label it above
       svg += '<line x1="' + mid.toFixed(1) + '" y1="40" x2="' + mid.toFixed(1) + '" y2="22" stroke="' + e.c + '" stroke-width="2"/>' +
         '<text x="' + mid.toFixed(1) + '" y="15" text-anchor="middle" font-size="15" font-weight="700" fill="' + e.c + '">' + esc(e.n) + " " + esc(e.y) + "</text>";
