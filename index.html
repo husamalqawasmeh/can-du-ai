@@ -268,6 +268,50 @@
   .sheet-rule{width:3.5rem;height:2px;background:var(--accent);margin:.7rem 0 1rem}
   .sheet p{margin:0 0 .9rem;font-size:.95rem;line-height:1.6;color:var(--ink-2,var(--ink-soft))}
 
+  /* The resume uses the whole pane and sets its two halves side by side, so
+     the page is a sheet to read rather than a column to scroll. */
+  .sheet.res{
+    max-width:none;
+    padding:1.4rem 1.6rem;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:2px;
+    box-shadow:var(--shadow);
+  }
+  .sheet.res p.res-creds{margin:.35rem 0 0;font-size:.85rem;font-weight:600;color:var(--accent)}
+  .res-contact{display:flex;flex-wrap:wrap;gap:.2rem 1.4rem;margin:.5rem 0 0;font-size:.85rem}
+  .res-contact a{color:inherit}
+  .sheet.res p.res-sum{margin:0 0 1rem}
+  .res-grid{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);
+    gap:0 2rem;
+    align-items:start;
+  }
+  @media (max-width:860px){.res-grid{grid-template-columns:minmax(0,1fr)}}
+  .res h3{
+    margin:1.1rem 0 .45rem;
+    padding-bottom:.25rem;
+    border-bottom:1px solid var(--line);
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:.72rem;
+    font-weight:700;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--accent);
+  }
+  .res-grid > div > h3:first-child{margin-top:0}
+  .res ul{margin:0;padding-left:1.1rem;font-size:.84rem;line-height:1.5;color:var(--ink-2,var(--ink-soft))}
+  .res li{margin:0 0 .25rem}
+  .sheet.res p.res-p{margin:0 0 .35rem;font-size:.84rem;line-height:1.5}
+  .res-job{margin:0 0 1rem}
+  .res-job-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:0 1rem;align-items:baseline}
+  .res-role{font-size:.95rem;font-weight:700;color:var(--ink)}
+  .res-when{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.72rem;font-weight:700;color:var(--ink-soft);white-space:nowrap}
+  .sheet.res p.res-org{margin:0 0 .35rem;font-size:.84rem;color:var(--ink-soft)}
+  .sheet.res p.res-sub{margin:0 0 .15rem;font-size:.8rem;color:var(--ink-soft)}
+  .res-sub b{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.7rem;color:var(--ink)}
+
   /* ---------- the groups ----------
      The five groups are the main page and they stay on it: opening one shows
      its projects under its own row rather than replacing the screen, so the
@@ -1364,20 +1408,204 @@ function renderLanding(openContact) {
   });
 }
 
-/* Nothing invented here: the resume itself is not written into this page, so
-   the screen says so and hands over the two ways of asking for it. */
+/* The resume, from the file it was written in. Typos in that file are
+   corrected (Chang, Telcom, CRIS, CGIT); nothing else is changed. */
+const RESUME = {
+  creds: "M.Sc. Data Analytics · AI · PMP · TOGAF · CRISC · CGEIT · GenAI",
+  summary:
+    "36 years of professional experience in enterprise information technology roles, in the UAE and Canada: " +
+    "digital platforms, digital transformation, portfolio, program and project management, IT governance and controls, " +
+    "risk, change management, data and AI. Focused on value delivery through digital transformation, AI, data analytics, " +
+    "portfolio, IT controls and vendor management.",
+  education: [
+    ["2018–2019", "M.Sc. Data Analytics, GPA 4.0", "Rochester Institute of Technology, Dubai, UAE"],
+    ["1984–1989", "B.Sc. Electronic Computers, Electrical Engineering Department", "Jordan University of Science & Technology, Jordan"]
+  ],
+  strengths: [
+    "Building trust and value from IT via data analytics, AI, generative AI and AI tools",
+    "Technology risk management (CRISC certified)",
+    "Technology governance and change management (CGEIT certified)",
+    "IT leadership, value and trust within the business (COBIT certified)",
+    "High operational capacity (data center and production environment)",
+    "Alignment of business and IT (project management: Smart City, Paperless, AI, wellbeing)",
+    "Customer-centric, service-oriented approach (call center services)",
+    "Managing vendors (USD 1 million projects)"
+  ],
+  achievements: [
+    "Smart City portfolio and digital transformation delivery in a large government organization, including initiatives such as PAPERLESS and the Enterprise Command & Control Center.",
+    "Coordinator for the highest-level Technology Strategy and Governance committee in RTA for 6 years.",
+    "Program governance for the entire Smart City Program for a reputed government entity.",
+    "Created the IT governance framework and change management process for a bank.",
+    "Coordinated satisfactory audits from regulators and external and internal auditors.",
+    "IT project manager for a critical banking business process outsourcing program.",
+    "Closed a complex, critical network delivery and support project with a government entity.",
+    "Managed data center hosting services for key enterprise customers.",
+    "Project manager for data center relocations and application moves for a bank, including data center preparation, plus a long list of merger, migration and infrastructure enhancement projects.",
+    "Data center operational management supporting a core banking software migration project in the UAE."
+  ],
+  training: [
+    "On-job and professional training courses and conferences in the U.K., USA, Canada, UAE, Australia and New Zealand, across infrastructure, technical and functional domains: data center and mainframes (Unisys & Tandem), telecom and networking platforms including Nortel and Cisco, enterprise management systems, HP OpenView.",
+    "Essentials of blockchain and cryptocurrency; cloud computing and architecture.",
+    "TOGAF, COBIT, CISA, CISM, CRISC, CGEIT, PMI-RMP, ROI.",
+    "Management, leadership, corporate governance, strategy planning and management, digital transformation.",
+    "Smart City course, Harvard University.",
+    "DIPMF and project management (PMI PMP).",
+    "Data analytics, data science and AI, machine learning, R, Python, generative AI, AI governance, AI architecture, agentic AI, AI tools.",
+    "CISI Investment and Wealth Management."
+  ],
+  jobs: [
+    {
+      role: "Chief Specialist", when: "Jan 2016 – Present",
+      org: "RTA (Road and Transport Authority), Dubai, U.A.E.",
+      posts: [
+        ["Mar 2025 – Present", "Artificial Intelligence and Data Science Center"],
+        ["Mar 2022 – Mar 2025", "NOL (Automatic Fare Collection) Systems"],
+        ["Jan 2016 – Mar 2022", "Technology Strategy and Governance Department"]
+      ],
+      points: [
+        "Participated in the creation of the RTA AI and Data Science Center. Overall coordinator for the AI technical sub-committee.",
+        "Contributed to the RTA AI strategy and supported the external consultant building it.",
+        "Established the Master Services Agreement with vendors for deploying the strategy's use cases.",
+        "Responsible for planning and deployment of internal AI efficiency tools such as Microsoft Copilot.",
+        "Advisor to the department director and section managers on technology topics: data, strategy, governance, projects, contracts and other domains.",
+        "Led overall coordination of the RTA Smart City Program and digital transformation.",
+        "Key member or coordinator for committees including the RTA higher digital transformation committee, the higher committee for OCC development, RTA technology and systems to address traffic issues, and the Dubai Masar infrastructure committee for developing services and digital transformation.",
+        "Support to the data section, the Enterprise Command & Control Center and the Data Driven Mobility program.",
+        "Program and project oversight: tracking, monitoring and decision support."
+      ]
+    },
+    {
+      role: "Program Manager, IT Governance & Controls", when: "Feb 2012 – Dec 2015",
+      org: "Mashreq Bank / Mindscape IT, Dubai, UAE",
+      points: [
+        "Program manager for the IT governance and controls program, including IT compliance checks and reviews.",
+        "Focal point for IT audits from internal and external auditors and the central bank.",
+        "Managed the technology change management process, including the Change Control Board.",
+        "Major incident management coordination; internal transformation and project risk governance.",
+        "Coordinator for the Technology Steering Committee and the Technology Management Committee.",
+        "IT applications inventory, review, roadmap and controls management."
+      ]
+    },
+    {
+      role: "Program Manager, Enterprise Service Delivery", when: "Sep 2008 – Jan 2012",
+      org: "Mashreq Bank / Mindscape IT, Dubai, UAE",
+      points: [
+        "IT project manager for key high-impact enterprise projects such as business process outsourcing.",
+        "Project manager for the data center relocation and applications move, including data center readiness review and audit.",
+        "Managed corporate data center hosting services and enterprise customer relationships.",
+        "Managed the enterprise architecture function.",
+        "Closed a complex, critical network delivery and support project for a government entity.",
+        "Managed key platforms for project delivery: enterprise systems management (HP OpenView) and IT application delivery (Citrix)."
+      ]
+    },
+    {
+      role: "Senior Project Manager, Infrastructure Management", when: "Oct 2005 – Aug 2008",
+      org: "Mashreq Bank / Mindscape IT, Dubai, UAE",
+      points: [
+        "Project planning, including solution design, budgeting, ordering and resources.",
+        "Business support such as requirements analysis and telecom cost analysis for projects.",
+        "Planning, building and supporting maintenance and business development projects.",
+        "Project management for voice and telecom projects, including resource allocation.",
+        "Service management, including vendor management of Nortel and Cisco.",
+        "Technical management focal point for the voice and telecom side, including cost management.",
+        "Management of telecom service providers (Etisalat, du and others) and their services."
+      ]
+    },
+    {
+      role: "Team Leader, Telecom and Voice Services", when: "Dec 2002 – Oct 2005",
+      org: "Emaar / Sahm Technologies, Dubai, U.A.E.",
+      points: [
+        "Technical telecom infrastructure management for the Emaar group: assessment and service planning, configuration management and upgrades, management of service providers and vendors, problem resolution and escalation, performance monitoring and systems integration.",
+        "Voice and call center consultancy and functional support to the business, such as solutions and telecom cost analysis for projects.",
+        "Telecom project planning, implementation and support: group call center and data center relocation to new premises, establishing call center services for the Sahm Telco division, call center services for Emrill Services, Amlak Finance and Dubai Bank, and the start of IP telephony services in Emaar Business Park."
+      ]
+    },
+    {
+      role: "Telecom Network Analyst, Network Support", when: "Jul 1999 – Oct 2002",
+      org: "Insurance Corporation of British Columbia (ICBC), Vancouver, BC, Canada",
+      points: [
+        "Corporate, divisional and departmental project planning, implementation and support.",
+        "Business requirements analysis and translation into technical specifications.",
+        "Call center voice application design and implementation. Telco services connectivity review and fine-tuning.",
+        "Vendor liaison and coordination for projects and ongoing work.",
+        "Primary support for two large call center offices, backup and project support for a third. Configuration management and capacity planning for voice systems."
+      ]
+    },
+    {
+      role: "Telecom Network Analyst, Project Team Member", when: "Jul 1998 – Jun 1999",
+      org: "ICBC, Integration project with the Motor Vehicle Branch, Vancouver, BC, Canada · one-year contract",
+      points: [
+        "Voice network integration consultancy for the merger project.",
+        "Full design and implementation of call flow applications for a new small-to-medium call center, as technical planner and contact for the site's users and vendors.",
+        "Review of telecommunication requirements for small driver service centers and very small road weigh scales across British Columbia."
+      ]
+    },
+    {
+      role: "Consultant and Technical Analyst, Voice Communication Systems", when: "Jan 1998 – Jun 1998",
+      org: "HSBC (formerly Hong Kong Bank of Canada), Vancouver, BC, Canada · 6-month contract",
+      points: [
+        "Moves, adds, changes and configuration management for the head office downtown voice network (telephony and messaging), around 900 users across Canada.",
+        "System upgrades, review and standardization.",
+        "Call center support (HSBC Telephone Banking and Canadian direct insurance) for a mid-size call center, and third-party systems such as BC Tel's Newton IVR and Centrex."
+      ]
+    },
+    {
+      role: "Telecommunication Support Specialist", when: "Oct 1994 – Oct 1997",
+      org: "Mashreq Bank, Dubai, U.A.E.",
+      points: [
+        "Telecom technology consulting, selection and management. Voice systems installation, networking, upgrades, capacity planning, maintenance, performance monitoring, problem resolution and escalation.",
+        "End-user support for around 1,500 users across the UAE. Commissioned Nortel voice equipment at 32 sites.",
+        "Vendor management of vendors such as Nortel Networks. Coordination with service providers such as Etisalat.",
+        "Project and general voice requirement review, planning, implementation and support.",
+        "Call center support, including call flow setup. Support and integration for IVR systems."
+      ]
+    },
+    {
+      role: "Data Center Systems Operations Officer", when: "Jun 1990 – Oct 1994",
+      org: "Mashreq Bank, Dubai, U.A.E.",
+      points: [
+        "Supervised data center operations management and systems administration: data center services and day-to-day activity in the production and backup data centers.",
+        "DMSII database and system administration and data processing for production and development, including configuration management, upgrades, capacity planning, performance analysis and fine-tuning.",
+        "Data center environment and systems operations support for the core banking migration project.",
+        "Led shifts at the data center (11 operators) and mainframe network support, and non-stop systems such as Tandem and Unisys DMSII database management, including vendor coordination.",
+        "Systems programming using workflow language (such as Unisys job control language)."
+      ]
+    }
+  ]
+};
+
 function renderResume() {
   document.title = "Resume — Can-Du-AI";
+  const R = RESUME;
+  const list = (a) => "<ul>" + a.map((t) => "<li>" + esc(t) + "</li>").join("") + "</ul>";
+  const edu = R.education.map((e) =>
+    '<p class="res-p"><b>' + esc(e[1]) + "</b><br>" + esc(e[2]) + ' · <span class="res-when">' + esc(e[0]) + "</span></p>").join("");
+  const jobs = R.jobs.map((j) =>
+    '<div class="res-job"><div class="res-job-head"><span class="res-role">' + esc(j.role) +
+      '</span><span class="res-when">' + esc(j.when) + "</span></div>" +
+      '<p class="res-org">' + esc(j.org) + "</p>" +
+      (j.posts ? j.posts.map((p) =>
+        '<p class="res-sub"><b>' + esc(p[0]) + "</b> · " + esc(p[1]) + "</p>").join("") : "") +
+      list(j.points) + "</div>").join("");
+
   view.innerHTML =
-    '<div class="pane"><div class="sheet" style="--accent:var(--c-enterprise)">' +
-      '<h2>My Resume</h2>' +
+    '<div class="pane"><div class="sheet res" style="--accent:var(--c-enterprise)">' +
+      "<h2>" + esc(ME.name) + "</h2>" +
+      '<p class="res-creds">' + esc(R.creds) + "</p>" +
+      '<div class="res-contact">' +
+        '<a href="mailto:' + ME.email + '">' + esc(ME.email) + "</a>" +
+        '<a href="tel:' + ME.tel + '">' + esc(ME.phone) + "</a></div>" +
       '<div class="sheet-rule"></div>' +
-      '<p>Not published on this site yet. Ask for it and it comes straight back.</p>' +
-      '<p class="hub-line"><span class="hub-key">Email</span>' +
-        '<a class="hub-val" href="mailto:' + ME.email + '">' + esc(ME.email) + '</a></p>' +
-      '<p class="hub-line"><span class="hub-key">Phone</span>' +
-        '<a class="hub-val" href="tel:' + ME.tel + '">' + esc(ME.phone) + '</a></p>' +
-    '</div></div>';
+      '<p class="res-sum">' + esc(R.summary) + "</p>" +
+      '<div class="res-grid"><div>' +
+        "<h3>Education</h3>" + edu +
+        "<h3>Strengths</h3>" + list(R.strengths) +
+        "<h3>Achievements</h3>" + list(R.achievements) +
+        "<h3>Training</h3>" + list(R.training) +
+      "</div><div>" +
+        "<h3>Professional experience</h3>" + jobs +
+      "</div></div>" +
+    "</div></div>";
 }
 
 /* The portfolio is the five groups, and it stays one page: opening one
