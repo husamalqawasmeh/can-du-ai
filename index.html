@@ -530,6 +530,12 @@
   .sp-line .seg:focus-visible{outline:none}
   .sp-line .seg:focus-visible rect{stroke:var(--ink);stroke-width:2}
   .sp-card.is-on{background:var(--card);box-shadow:var(--shadow);border-left-width:5px}
+  .sp-card[id^="spE-"]{position:relative}
+  /* the company's logo, top right of its card */
+  .sp-logo{position:absolute;right:.8rem;top:.7rem;height:1.6rem;width:auto;max-width:46%;object-fit:contain}
+  .sp-logo-icbc{height:2.4rem}
+  .sp-logo-emaar{height:1.1rem}
+  .sp-logo-rta{height:2rem}
   .sp-card ul{margin:.35rem 0 0;padding-left:1.1rem;list-style:disc}
   .sp-card li{margin:0 0 .15rem}
   .sp-more{display:inline-block;margin-top:.7rem;font-weight:700;font-size:.85rem;color:var(--accent)}
@@ -1832,12 +1838,12 @@ function renderResume() {
    is read out of RESUME and the file it came from; the employer line is
    drawn from the dates, to scale. */
 const SP_EMP = [
-  { k: "mash1", n: "Mashreq Bank", a: 1990.45, b: 1997.8, y: "1990 – 1997", c: "#7E5F3A", jobs: [7, 6] },
-  { k: "hsbc",  n: "HSBC",         a: 1998.0,  b: 1998.5, y: "1998",        c: "#B25A2A", jobs: [5] },
-  { k: "icbc",  n: "ICBC",         a: 1998.5,  b: 2002.8, y: "1998 – 2002", c: "#2F6B4F", jobs: [4, 3] },
-  { k: "emaar", n: "Emaar",        a: 2002.95, b: 2005.8, y: "2002 – 2005", c: "#7A4E8C", jobs: [2] },
-  { k: "mash2", n: "Mashreq Bank", a: 2005.8,  b: 2015.95, y: "2005 – 2015", c: "#7E5F3A", jobs: [1] },
-  { k: "rta",   n: "RTA",          a: 2016.0,  b: 2026.8, y: "2016 – Present", c: "#1F3A63", jobs: [0] }
+  { k: "mash1", logo: "mashreq", n: "Mashreq Bank", a: 1990.45, b: 1997.8, y: "1990 – 1997", c: "#7E5F3A", jobs: [7, 6] },
+  { k: "hsbc", logo: "hsbc",  n: "HSBC",         a: 1998.0,  b: 1998.5, y: "1998",        c: "#B25A2A", jobs: [5] },
+  { k: "icbc", logo: "icbc",  n: "ICBC",         a: 1998.5,  b: 2002.8, y: "1998 – 2002", c: "#2F6B4F", jobs: [4, 3] },
+  { k: "emaar", logo: "emaar", n: "Emaar",        a: 2002.95, b: 2005.8, y: "2002 – 2005", c: "#7A4E8C", jobs: [2] },
+  { k: "mash2", logo: "mashreq", n: "Mashreq Bank", a: 2005.8,  b: 2015.95, y: "2005 – 2015", c: "#7E5F3A", jobs: [1] },
+  { k: "rta", logo: "rta",   n: "RTA",          a: 2016.0,  b: 2027.6, y: "2016 – Present", c: "#1F3A63", jobs: [0] }
 ];
 
 const SP_MIX = {
@@ -1875,36 +1881,36 @@ function renderSpare() {
   ];
 
   // ---- 4: the employer line, to scale
-  const X0 = 30, X1 = 970, Y0 = 1990, Y1 = 2027;
+  const X0 = 30, X1 = 970, Y0 = 1990, Y1 = 2027.6;
   const x = (y) => X0 + (y - Y0) * (X1 - X0) / (Y1 - Y0);
-  let svg = '<svg viewBox="0 0 1000 170" role="img" aria-label="Career timeline, 1990 to today: ' +
+  let svg = '<svg viewBox="0 0 1000 134" role="img" aria-label="Career timeline, 1990 to today: ' +
     SP_EMP.map((e) => e.n + " " + e.y).join("; ") + '">';
   for (let y = 1990; y <= 2025; y += 5) {
-    svg += '<line x1="' + x(y).toFixed(1) + '" y1="64" x2="' + x(y).toFixed(1) + '" y2="132" stroke="currentColor" stroke-opacity=".15"/>' +
-      '<text x="' + x(y).toFixed(1) + '" y="152" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor"' +
+    svg += '<line x1="' + x(y).toFixed(1) + '" y1="34" x2="' + x(y).toFixed(1) + '" y2="102" stroke="currentColor" stroke-opacity=".15"/>' +
+      '<text x="' + x(y).toFixed(1) + '" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor"' +
       ' font-family="IBM Plex Mono,monospace">' + y + "</text>";
   }
-  svg += '<line x1="' + X0 + '" y1="132" x2="' + X1 + '" y2="132" stroke="currentColor" stroke-opacity=".5"/>';
+  svg += '<line x1="' + X0 + '" y1="102" x2="' + X1 + '" y2="102" stroke="currentColor" stroke-opacity=".5"/>';
   SP_EMP.forEach((e) => {
     // each bar is drawn a little inside its dates, so a clear gap shows between neighbours
     const GAP = 3;
     const l = x(e.a) + GAP, w = Math.max(x(e.b) - x(e.a) - 2 * GAP, 6), mid = l + w / 2;
     svg += '<g class="seg" data-emp="' + e.k + '" tabindex="0" role="button" aria-label="' + esc(e.n + ", " + e.y) + '">' +
       "<title>" + esc(e.n + " · " + e.y) + "</title>" +
-      '<rect x="' + l.toFixed(1) + '" y="70" width="' + w.toFixed(1) + '" height="54" rx="3" fill="' + e.c + '"/>';
+      '<rect x="' + l.toFixed(1) + '" y="40" width="' + w.toFixed(1) + '" height="54" rx="3" fill="' + e.c + '"/>';
     if (w > 60) {
-      svg += '<text x="' + mid.toFixed(1) + '" y="93" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">' + esc(e.n) + "</text>" +
-        '<text x="' + mid.toFixed(1) + '" y="112" text-anchor="middle" font-size="' + (w < 90 ? "10" : "12") + '" fill="#fff" fill-opacity=".9">' + esc(e.y) + "</text>";
+      svg += '<text x="' + mid.toFixed(1) + '" y="63" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">' + esc(e.n) + "</text>" +
+        '<text x="' + mid.toFixed(1) + '" y="82" text-anchor="middle" font-size="' + (w < 90 ? "10" : "12") + '" fill="#fff" fill-opacity=".9">' + esc(e.y) + "</text>";
     } else {                                   // too narrow to hold a name: label it above
-      svg += '<line x1="' + mid.toFixed(1) + '" y1="70" x2="' + mid.toFixed(1) + '" y2="40" stroke="' + e.c + '" stroke-width="2"/>' +
-        '<text x="' + mid.toFixed(1) + '" y="30" text-anchor="middle" font-size="15" font-weight="700" fill="' + e.c + '">' + esc(e.n) + " " + esc(e.y) + "</text>";
+      svg += '<line x1="' + mid.toFixed(1) + '" y1="40" x2="' + mid.toFixed(1) + '" y2="22" stroke="' + e.c + '" stroke-width="2"/>' +
+        '<text x="' + mid.toFixed(1) + '" y="15" text-anchor="middle" font-size="15" font-weight="700" fill="' + e.c + '">' + esc(e.n) + " " + esc(e.y) + "</text>";
     }
     svg += "</g>";
   });
   svg += "</svg>";
 
   const empCards = SP_EMP.map((e) =>
-    '<div class="sp-card" id="spE-' + e.k + '" style="border-left-color:' + e.c + '"><b>' + esc(e.n) + "</b><em>" + esc(e.y) + "</em><ul>" +
+    '<div class="sp-card" id="spE-' + e.k + '" style="border-left-color:' + e.c + '"><img class="sp-logo sp-logo-' + e.logo + '" src="logos/' + e.logo + '.png" alt="' + esc(e.n) + ' logo"><b>' + esc(e.n) + "</b><em>" + esc(e.y) + "</em><ul>" +
       e.jobs.map((i) => "<li>" + esc(R.jobs[i].role) + " <em style=\"display:inline\">" + esc(R.jobs[i].when) + "</em></li>").join("") +
     "</ul></div>").join("");
 
