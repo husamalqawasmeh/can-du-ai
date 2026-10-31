@@ -268,49 +268,127 @@
   .sheet-rule{width:3.5rem;height:2px;background:var(--accent);margin:.7rem 0 1rem}
   .sheet p{margin:0 0 .9rem;font-size:.95rem;line-height:1.6;color:var(--ink-2,var(--ink-soft))}
 
-  /* The resume uses the whole pane and sets its two halves side by side, so
-     the page is a sheet to read rather than a column to scroll. */
+  /* The resume is one screen: a header, a row of tabs, and a body that holds
+     its own scroll, so the page never has to. Experience is a timeline on the
+     left and the role you pick on the right. */
   .sheet.res{
     max-width:none;
-    padding:1.4rem 1.6rem;
+    padding:1rem 1.3rem 1.1rem;
     background:var(--card);
     border:1px solid var(--line);
     border-radius:2px;
     box-shadow:var(--shadow);
   }
-  .sheet.res p.res-creds{margin:.35rem 0 0;font-size:.85rem;font-weight:600;color:var(--accent)}
-  .res-contact{display:flex;flex-wrap:wrap;gap:.2rem 1.4rem;margin:.5rem 0 0;font-size:.85rem}
+  .res-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:.3rem 1.5rem}
+  .res-top h2{font-size:clamp(1.4rem,1.1rem + 1.2vw,1.9rem)}
+  .sheet.res p.res-creds{margin:.25rem 0 0;font-size:.82rem;font-weight:600;color:var(--accent)}
+  .res-contact{display:flex;flex-wrap:wrap;gap:.2rem 1.2rem;font-size:.82rem}
   .res-contact a{color:inherit}
-  .sheet.res p.res-sum{margin:0 0 1rem}
-  .res-grid{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);
-    gap:0 2rem;
-    align-items:start;
+  .sheet.res p.res-sum{
+    margin:.6rem 0 0;
+    font-size:.86rem;
+    line-height:1.5;
+    display:-webkit-box;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:2;
+    overflow:hidden;
+    cursor:pointer;
   }
-  @media (max-width:860px){.res-grid{grid-template-columns:minmax(0,1fr)}}
-  .res h3{
-    margin:1.1rem 0 .45rem;
-    padding-bottom:.25rem;
-    border-bottom:1px solid var(--line);
+  .sheet.res p.res-sum.is-open{-webkit-line-clamp:unset;display:block}
+  .res-sumwrap{position:relative}
+  .res-sumhint{
+    position:absolute;right:0;bottom:0;
+    padding:0 0 0 1.6rem;
+    font:inherit;font-size:.8rem;font-weight:700;color:var(--accent);
+    background:linear-gradient(90deg,transparent,var(--card) 1.2rem);
+    border:0;cursor:pointer;
+  }
+  .res-sumwrap:has(.is-open) .res-sumhint{position:static;display:block;padding:0;background:none}
+
+  .res-bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.5rem 1rem;margin:.8rem 0 .7rem;padding-top:.7rem;border-top:1px solid var(--line)}
+  .res-tabs,.res-chips{display:flex;flex-wrap:wrap;gap:.35rem}
+  .res-tab,.res-chip{
+    font:inherit;
     font-family:"IBM Plex Mono",ui-monospace,monospace;
-    font-size:.72rem;
+    font-size:.7rem;
     font-weight:700;
-    letter-spacing:.14em;
+    letter-spacing:.08em;
     text-transform:uppercase;
-    color:var(--accent);
+    padding:.4rem .75rem;
+    color:var(--ink);
+    background:transparent;
+    border:1px solid var(--line);
+    border-radius:999px;
+    cursor:pointer;
+    transition:background .15s ease,color .15s ease,border-color .15s ease;
   }
-  .res-grid > div > h3:first-child{margin-top:0}
-  .res ul{margin:0;padding-left:1.1rem;font-size:.84rem;line-height:1.5;color:var(--ink-2,var(--ink-soft))}
-  .res li{margin:0 0 .25rem}
-  .sheet.res p.res-p{margin:0 0 .35rem;font-size:.84rem;line-height:1.5}
-  .res-job{margin:0 0 1rem}
-  .res-job-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:0 1rem;align-items:baseline}
-  .res-role{font-size:.95rem;font-weight:700;color:var(--ink)}
-  .res-when{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.72rem;font-weight:700;color:var(--ink-soft);white-space:nowrap}
-  .sheet.res p.res-org{margin:0 0 .35rem;font-size:.84rem;color:var(--ink-soft)}
+  .res-tab:hover,.res-chip:hover{border-color:var(--accent)}
+  .res-tab:focus-visible,.res-chip:focus-visible,.res-node:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .res-tab[aria-selected="true"],.res-chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .res-chip{font-size:.66rem;padding:.3rem .6rem;letter-spacing:.05em}
+
+  .res-body{height:calc(100dvh - 27.2rem);min-height:15rem}
+  .res-exp{display:grid;grid-template-columns:minmax(15rem,21rem) minmax(0,1fr);gap:0 1.5rem;height:100%}
+  .res-rail,.res-detail,.res-cols{overflow-y:auto;min-height:0}
+  .res-rail{list-style:none;margin:0;padding:0 .4rem 0 0}
+  .res-rail li{margin:0}
+  .res-node{
+    display:block;
+    width:100%;
+    text-align:left;
+    font:inherit;
+    color:inherit;
+    padding:.5rem .7rem .5rem .9rem;
+    background:transparent;
+    border:0;
+    border-left:3px solid var(--line);
+    cursor:pointer;
+    transition:background .15s ease,border-color .15s ease,opacity .2s ease;
+  }
+  .res-node:hover{background:var(--card-hover);border-left-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
+  .res-node[aria-current="true"]{background:var(--card-hover);border-left-color:var(--accent);box-shadow:inset 0 0 0 1px var(--line)}
+  .res-node.is-dim{opacity:.35}
+  .res-nwhen{display:block;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.68rem;font-weight:700;color:var(--ink-soft)}
+  .res-nrole{display:block;font-size:.88rem;font-weight:700;line-height:1.25;color:var(--ink)}
+  .res-norg{display:block;font-size:.76rem;color:var(--ink-soft)}
+
+  .res-detail{padding:0 .4rem 0 0;animation:riseIn .3s cubic-bezier(.2,.7,.3,1) both}
+  .res-dhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:0 1rem}
+  .res-dhead .res-role{font-size:1.15rem}
+  .sheet.res p.res-org{margin:.1rem 0 .5rem;font-size:.86rem;color:var(--ink-soft)}
   .sheet.res p.res-sub{margin:0 0 .15rem;font-size:.8rem;color:var(--ink-soft)}
   .res-sub b{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.7rem;color:var(--ink)}
+  .res-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin:.55rem 0 .3rem}
+  .res-tag{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.64rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:.15rem .5rem;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));color:var(--accent)}
+  .res ul{margin:.4rem 0 0;padding-left:1.1rem;font-size:.85rem;line-height:1.5;color:var(--ink-2,var(--ink-soft))}
+  .res li{margin:0 0 .3rem;break-inside:avoid}
+  .res-detail ul{column-width:22rem;column-gap:2rem}
+  .res-role{font-weight:700;color:var(--ink)}
+  .res-when{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.74rem;font-weight:700;color:var(--ink-soft);white-space:nowrap}
+
+  /* the other three tabs: cards set in columns, so they fit rather than run */
+  .res-cols{height:100%;column-width:19rem;column-gap:1.4rem;padding-right:.4rem}
+  .res-card{
+    break-inside:avoid;
+    margin:0 0 .8rem;
+    padding:.7rem .9rem;
+    border:1px solid var(--line);
+    border-left:3px solid var(--accent);
+    background:var(--card-hover);
+    font-size:.85rem;
+    line-height:1.5;
+    color:var(--ink-2,var(--ink-soft));
+  }
+  .res-card b{display:block;color:var(--ink);font-size:.9rem}
+  .res-card .res-when{display:block;margin-top:.15rem}
+  .res-h{break-inside:avoid;margin:0 0 .5rem;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+
+  @media (max-width:860px){
+    .res-body{height:auto}
+    .res-exp{grid-template-columns:minmax(0,1fr);gap:.8rem}
+    .res-rail,.res-detail,.res-cols{overflow:visible}
+    .res-rail{max-height:14rem;overflow-y:auto}
+  }
 
   /* ---------- the groups ----------
      The five groups are the main page and they stay on it: opening one shows
@@ -1574,38 +1652,118 @@ const RESUME = {
   ]
 };
 
+const RES_TAGS = {
+  ai: "AI & Data", gov: "Governance", pm: "Programs",
+  tel: "Telecom", dc: "Data Center"
+};
+// one row per role in RESUME.jobs, in the same order
+const RES_JOB_TAGS = [
+  ["ai", "gov", "pm"], ["gov", "pm"], ["pm", "dc"], ["pm", "tel"], ["tel"],
+  ["tel"], ["tel"], ["tel"], ["tel"], ["dc"]
+];
+const RES_TABS = [
+  ["exp", "Experience"], ["str", "Strengths"], ["ach", "Achievements"], ["edu", "Education"]
+];
+
+/* One screen, with its state in the closure: which tab, which role, which
+   filter. Every click redraws the body and nothing else. */
 function renderResume() {
   document.title = "Resume — Can-Du-AI";
   const R = RESUME;
+  const st = { tab: "exp", sel: 0, tag: "all", sum: false };
+  const hits = (i) => st.tag === "all" || RES_JOB_TAGS[i].indexOf(st.tag) >= 0;
   const list = (a) => "<ul>" + a.map((t) => "<li>" + esc(t) + "</li>").join("") + "</ul>";
-  const edu = R.education.map((e) =>
-    '<p class="res-p"><b>' + esc(e[1]) + "</b><br>" + esc(e[2]) + ' · <span class="res-when">' + esc(e[0]) + "</span></p>").join("");
-  const jobs = R.jobs.map((j) =>
-    '<div class="res-job"><div class="res-job-head"><span class="res-role">' + esc(j.role) +
-      '</span><span class="res-when">' + esc(j.when) + "</span></div>" +
-      '<p class="res-org">' + esc(j.org) + "</p>" +
-      (j.posts ? j.posts.map((p) =>
-        '<p class="res-sub"><b>' + esc(p[0]) + "</b> · " + esc(p[1]) + "</p>").join("") : "") +
-      list(j.points) + "</div>").join("");
+  const cards = (a) => a.map((t) => '<div class="res-card">' + esc(t) + "</div>").join("");
 
   view.innerHTML =
     '<div class="pane"><div class="sheet res" style="--accent:var(--c-enterprise)">' +
-      "<h2>" + esc(ME.name) + "</h2>" +
-      '<p class="res-creds">' + esc(R.creds) + "</p>" +
-      '<div class="res-contact">' +
-        '<a href="mailto:' + ME.email + '">' + esc(ME.email) + "</a>" +
-        '<a href="tel:' + ME.tel + '">' + esc(ME.phone) + "</a></div>" +
-      '<div class="sheet-rule"></div>' +
-      '<p class="res-sum">' + esc(R.summary) + "</p>" +
-      '<div class="res-grid"><div>' +
-        "<h3>Education</h3>" + edu +
-        "<h3>Strengths</h3>" + list(R.strengths) +
-        "<h3>Achievements</h3>" + list(R.achievements) +
-        "<h3>Training</h3>" + list(R.training) +
-      "</div><div>" +
-        "<h3>Professional experience</h3>" + jobs +
-      "</div></div>" +
+      '<div class="res-top"><div><h2>' + esc(ME.name) + "</h2>" +
+        '<p class="res-creds">' + esc(R.creds) + "</p></div>" +
+        '<div class="res-contact"><a href="mailto:' + ME.email + '">' + esc(ME.email) + "</a>" +
+        '<a href="tel:' + ME.tel + '">' + esc(ME.phone) + "</a></div></div>" +
+      '<div class="res-sumwrap"><p class="res-sum" id="resSum">' + esc(R.summary) + "</p>" +
+      '<button type="button" class="res-sumhint" id="resMore" aria-expanded="false">Read more</button></div>' +
+      '<div class="res-bar"><div class="res-tabs" role="tablist" id="resTabs"></div>' +
+        '<div class="res-chips" id="resChips" role="group" aria-label="Filter roles by theme"></div></div>' +
+      '<div class="res-body" id="resBody"></div>' +
     "</div></div>";
+
+  const $ = (id) => document.getElementById(id);
+
+  function drawBar() {
+    $("resTabs").innerHTML = RES_TABS.map((t) =>
+      '<button type="button" class="res-tab" role="tab" data-tab="' + t[0] +
+        '" aria-selected="' + (st.tab === t[0]) + '">' + esc(t[1]) + "</button>").join("");
+    $("resChips").hidden = st.tab !== "exp";
+    $("resChips").innerHTML = Object.keys(RES_TAGS).map((k) => [k, RES_TAGS[k]])
+      .map((c) => '<button type="button" class="res-chip" data-tag="' + c[0] +
+        '" aria-pressed="' + (st.tag === c[0]) + '">' + esc(c[1]) + "</button>").join("");
+  }
+
+  function drawBody() {
+    const body = $("resBody");
+    if (st.tab === "exp") {
+      const j = R.jobs[st.sel];
+      const rail = R.jobs.map((x, i) =>
+        '<li><button type="button" class="res-node' + (hits(i) ? "" : " is-dim") + '" data-job="' + i +
+          '" aria-current="' + (i === st.sel) + '"><span class="res-nwhen">' + esc(x.when) +
+          '</span><span class="res-nrole">' + esc(x.role) + '</span><span class="res-norg">' +
+          esc(x.org.split(",")[0].split(" · ")[0]) + "</span></button></li>").join("");
+      body.innerHTML =
+        '<div class="res-exp"><ol class="res-rail" id="resRail" aria-label="Roles, newest first">' + rail + "</ol>" +
+        '<article class="res-detail" tabindex="-1"><div class="res-dhead"><span class="res-role">' + esc(j.role) +
+          '</span><span class="res-when">' + esc(j.when) + "</span></div>" +
+          '<p class="res-org">' + esc(j.org) + "</p>" +
+          (j.posts ? j.posts.map((p) => '<p class="res-sub"><b>' + esc(p[0]) + "</b> · " + esc(p[1]) + "</p>").join("") : "") +
+          '<div class="res-tags">' + RES_JOB_TAGS[st.sel].map((k) => '<span class="res-tag">' + esc(RES_TAGS[k]) + "</span>").join("") + "</div>" +
+          list(j.points) + "</article></div>";
+    } else if (st.tab === "str") {
+      body.innerHTML = '<div class="res-cols">' + cards(R.strengths) + "</div>";
+    } else if (st.tab === "ach") {
+      body.innerHTML = '<div class="res-cols">' + cards(R.achievements) + "</div>";
+    } else {
+      body.innerHTML = '<div class="res-cols"><h3 class="res-h">Education</h3>' +
+        R.education.map((e) => '<div class="res-card"><b>' + esc(e[1]) + "</b>" + esc(e[2]) +
+          '<span class="res-when">' + esc(e[0]) + "</span></div>").join("") +
+        '<h3 class="res-h">Training</h3>' + cards(R.training) + "</div>";
+    }
+  }
+
+  function draw() { drawBar(); drawBody(); }
+
+  const sheet = view.querySelector(".sheet");
+  sheet.addEventListener("click", (e) => {
+    const b = e.target.closest("button");
+    if (!b) { if (e.target.id === "resSum") $("resMore").click(); return; }
+    if (b.dataset.tab) { st.tab = b.dataset.tab; draw(); return; }
+    if (b.dataset.tag) {
+      st.tag = st.tag === b.dataset.tag ? "all" : b.dataset.tag;
+      if (!hits(st.sel)) st.sel = R.jobs.findIndex((_, i) => hits(i));
+      draw();
+      return;
+    }
+    if (b.dataset.job) { st.sel = Number(b.dataset.job); drawBody(); const n = view.querySelector('[data-job="' + st.sel + '"]'); if (n) n.focus(); return; }
+    if (b.id === "resMore") {
+      st.sum = !st.sum;
+      $("resSum").classList.toggle("is-open", st.sum);
+      b.textContent = st.sum ? "Show less" : "Read more";
+      b.setAttribute("aria-expanded", String(st.sum));
+    }
+  });
+  // up and down walk the timeline without leaving the keyboard
+  sheet.addEventListener("keydown", (e) => {
+    if (!e.target.dataset || e.target.dataset.job === undefined) return;
+    const step = e.key === "ArrowDown" ? 1 : e.key === "ArrowUp" ? -1 : 0;
+    if (!step) return;
+    e.preventDefault();
+    const next = st.sel + step;
+    if (next < 0 || next >= R.jobs.length) return;
+    st.sel = next;
+    drawBody();
+    view.querySelector('[data-job="' + next + '"]').focus();
+  });
+
+  draw();
 }
 
 /* The portfolio is the five groups, and it stays one page: opening one
