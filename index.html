@@ -423,8 +423,23 @@
   .sp-sec h2{margin:0;font-size:clamp(1.5rem,1.1rem + 1.6vw,2.2rem);font-weight:700;font-stretch:110%;letter-spacing:-.02em;line-height:1.05}
   .sp-title{margin:.3rem 0 0;font-size:1rem;font-weight:600;color:var(--accent)}
   .sp-creds{margin:.15rem 0 0;font-size:.85rem;color:var(--ink-soft)}
-  .sp-contact{display:flex;flex-wrap:wrap;gap:.2rem 1.4rem;margin:.6rem 0 0;font-size:.88rem}
-  .sp-contact a{color:inherit}
+  .sp-icons{display:flex;flex-wrap:wrap;gap:.5rem;margin:.7rem 0 .1rem}
+  .sp-ic{display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:2px;background:var(--card-hover);transition:border-color .15s ease,box-shadow .15s ease}
+  .sp-ic:hover,.sp-ic:focus-within,.sp-ic.is-open{border-color:var(--accent);box-shadow:var(--shadow)}
+  .sp-ico{display:grid;place-items:center;width:2.4rem;height:2.4rem;padding:0;color:var(--accent);background:transparent;border:0;cursor:pointer}
+  .sp-ico svg{width:1.2rem;height:1.2rem}
+  .sp-ico:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+  .sp-icv{
+    max-width:0;
+    overflow:hidden;
+    white-space:nowrap;
+    display:flex;align-items:center;
+    font-size:.9rem;font-weight:600;color:var(--ink);text-decoration:none;
+    opacity:0;
+    transition:max-width .25s ease,opacity .2s ease,padding .25s ease;
+  }
+  .sp-ic:hover .sp-icv,.sp-ic:focus-within .sp-icv,.sp-ic.is-open .sp-icv{max-width:20rem;opacity:1;padding:0 .9rem 0 .2rem}
+  .sp-icv:hover{text-decoration:underline}
   .sp-lead{margin:.9rem 0 0;font-size:1rem;line-height:1.6;color:var(--ink-2,var(--ink-soft))}
   .sp-stats{display:flex;flex-wrap:wrap;gap:.6rem 2rem;margin:1rem 0 0;padding-top:.8rem;border-top:1px solid var(--line)}
   .sp-stat b{display:block;font-size:1.5rem;line-height:1;font-stretch:110%;color:var(--ink)}
@@ -1913,6 +1928,12 @@ function renderSpare() {
       e.jobs.map((i) => "<li>" + esc(R.jobs[i].role) + " <em style=\"display:inline\">" + esc(R.jobs[i].when) + "</em></li>").join("") +
     "</ul></div>").join("");
 
+  // a box with an icon in it; the number or address opens beside it on hover,
+  // focus or a tap, and is the link itself once it is showing
+  const ico = (label, text, href, path) =>
+    '<span class="sp-ic"><button type="button" class="sp-ico" aria-label="' + label + '" aria-expanded="false">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      path + '</svg></button><a class="sp-icv" href="' + href + '">' + esc(text) + "</a></span>";
   const stat = (n, l) => '<div class="sp-stat"><b>' + n + "</b><span>" + l + "</span></div>";
 
   view.innerHTML =
@@ -1925,9 +1946,13 @@ function renderSpare() {
     '<section class="sp-sec" id="sp-profile"><p class="sp-num">1 · Profile</p>' +
       "<h2>" + esc(ME.name) + "</h2>" +
       '<p class="sp-title">AI Chief Specialist · RTA (Road and Transport Authority), Dubai, U.A.E.</p>' +
+      '<div class="sp-icons">' +
+        ico("Email", ME.email, "mailto:" + ME.email,
+          '<path d="M3 6.5h18v11H3z"/><path d="m3.5 7 8.5 6.5L20.5 7"/>') +
+        ico("Phone", ME.phone, "tel:" + ME.tel,
+          '<path d="M6.6 3.5h3l1.4 4-2 1.4a11 11 0 0 0 6.1 6.1l1.4-2 4 1.4v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/>') +
+      "</div>" +
       '<p class="sp-creds">' + esc(R.creds) + "</p>" +
-      '<div class="sp-contact"><a href="mailto:' + ME.email + '">' + esc(ME.email) + "</a>" +
-        '<a href="tel:' + ME.tel + '">' + esc(ME.phone) + "</a></div>" +
       '<p class="sp-lead">' + esc(R.summary) + "</p>" +
       '<div class="sp-stats">' + stat("36", "years") + stat("5", "employers") + stat(R.jobs.length, "roles") +
         stat("2", "countries") + "</div></section>" +
@@ -1956,6 +1981,17 @@ function renderSpare() {
         SP_MIX[k].map((c) => card(c[0], c[1])).join("") + "</div>").join("") +
     "</div></section>" +
     "</div></div>";
+
+  view.querySelectorAll(".sp-ico").forEach((b) => b.addEventListener("click", () => {
+    const wrap = b.parentNode;
+    const on = !wrap.classList.contains("is-open");
+    view.querySelectorAll(".sp-ic.is-open").forEach((w) => {
+      w.classList.remove("is-open");
+      w.firstChild.setAttribute("aria-expanded", "false");
+    });
+    wrap.classList.toggle("is-open", on);
+    b.setAttribute("aria-expanded", String(on));
+  }));
 
   const nav = document.getElementById("spNav");
   nav.addEventListener("click", (e) => {
