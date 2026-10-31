@@ -502,7 +502,8 @@
     border:1px solid var(--accent);border-radius:4px;
   }
   .sp-stats{display:flex;flex-wrap:wrap;gap:.6rem 2rem;margin:1rem 0 0;padding-top:.8rem;border-top:1px solid var(--line)}
-  .sp-stat b{display:block;font-size:1.5rem;line-height:1;font-stretch:110%;color:var(--ink)}
+  .sp-stat b{display:block;font-size:1.9rem;font-weight:700;line-height:1;font-stretch:110%;color:var(--ink)}
+  .sp-stat-map{display:flex;align-items:center;gap:.6rem}
   .sp-map{display:block;height:2.1rem;width:auto;mix-blend-mode:multiply}
   .sp-stat span{display:block;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
   .sp-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:.7rem}
@@ -2039,7 +2040,7 @@ function renderSpare() {
       '<p class="sp-lead">' + esc(R.summary) + "</p>" +
       '<div class="sp-stats">' + stat("36", "Years of Professional Experience") +
         stat("5", "Reputed Enterprise Employers") + stat(R.jobs.length, "Specialized Roles") +
-        '<div class="sp-stat"><img class="sp-map" src="world-map.png" alt=""><span>UAE &amp; Canada</span></div>' +
+        '<div class="sp-stat sp-stat-map"><img class="sp-map" src="world-map.png" alt=""><span>UAE &amp; Canada</span></div>' +
       "</div></section>" +
 
     // 2 — education
