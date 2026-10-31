@@ -1653,7 +1653,8 @@ const RESUME = {
     "High operational capacity (data center and production environment)",
     "Alignment of business and IT (project management: Smart City, Paperless, AI, wellbeing)",
     "Customer-centric, service-oriented approach (call center services)",
-    "Managing vendors (USD 1 million projects)"
+    "Managing vendors (USD 1 million projects)",
+    "AI and digital strategy and transformation for organizations, including delivering the strategy's portfolio"
   ],
   achievements: [
     "Smart City portfolio and digital transformation delivery in a large government organization, including initiatives such as PAPERLESS and the Enterprise Command & Control Center.",
@@ -2054,7 +2055,7 @@ function renderSpare() {
         .map((c) => '<span class="sp-chip"' + (c === "CISI" ? ' title="CISI Investment and Wealth Management"' : "") + ">" + esc(c) + "</span>").join("") + "</div></section>" +
 
     // 3 — strengths
-    '<section class="sp-sec" id="sp-strengths"><p class="sp-num">3 · Strengths</p><div class="sp-cols">' +
+    '<section class="sp-sec" id="sp-strengths"><div class="sp-cols">' +
       R.strengths.map((t) => card(t)).join("") + "</div></section>" +
 
     // 4 — experience
