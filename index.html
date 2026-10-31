@@ -423,9 +423,19 @@
   .sp-sec h2{margin:0;font-size:clamp(1.5rem,1.1rem + 1.6vw,2.2rem);font-weight:700;font-stretch:110%;letter-spacing:-.02em;line-height:1.05}
   .sp-title{margin:.3rem 0 0;font-size:1rem;font-weight:600;color:var(--accent)}
   .sp-creds{margin:.15rem 0 0;font-size:.85rem;color:var(--ink-soft)}
-  .sp-icons{display:flex;flex-wrap:wrap;gap:.5rem;margin:.7rem 0 .1rem}
-  .sp-ic{display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:2px;background:var(--card-hover);transition:border-color .15s ease,box-shadow .15s ease}
-  .sp-ic:hover,.sp-ic:focus-within,.sp-ic.is-open{border-color:var(--accent);box-shadow:var(--shadow)}
+  /* one box for both: a divider between the icons, and whichever is open
+     grows the box to show its number or address */
+  .sp-icons{
+    display:inline-flex;align-items:stretch;
+    margin:.7rem 0 .1rem;
+    border:1px solid var(--line);border-radius:2px;
+    background:var(--card-hover);
+    transition:border-color .15s ease,box-shadow .15s ease;
+  }
+  .sp-icons:hover,.sp-icons:focus-within{border-color:var(--accent);box-shadow:var(--shadow)}
+  .sp-ic{display:inline-flex;align-items:stretch}
+  .sp-ic + .sp-ic{border-left:1px solid var(--line)}
+  .sp-ic:hover,.sp-ic:focus-within,.sp-ic.is-open{background:color-mix(in srgb,var(--accent) 8%,transparent)}
   .sp-ico{display:grid;place-items:center;width:2.4rem;height:2.4rem;padding:0;color:var(--accent);background:transparent;border:0;cursor:pointer}
   .sp-ico svg{width:1.2rem;height:1.2rem}
   .sp-ico:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
@@ -1931,7 +1941,7 @@ function renderSpare() {
   // a box with an icon in it; the number or address opens beside it on hover,
   // focus or a tap, and is the link itself once it is showing
   const ico = (label, text, href, path) =>
-    '<span class="sp-ic"><button type="button" class="sp-ico" aria-label="' + label + '" aria-expanded="false">' +
+    '<span class="sp-ic"><button type="button" class="sp-ico" aria-label="' + label + '" title="' + label + '" aria-expanded="false">' +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
       path + '</svg></button><a class="sp-icv" href="' + href + '">' + esc(text) + "</a></span>";
   const stat = (n, l) => '<div class="sp-stat"><b>' + n + "</b><span>" + l + "</span></div>";
