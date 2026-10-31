@@ -2065,7 +2065,7 @@ function renderSpare() {
       '<a class="sp-more" href="#/resume/spare">The full detail of every role &rarr;</a></section>' +
 
     // 5 — the rest
-    '<section class="sp-sec" id="sp-drive"><p class="sp-num">5 · Drive &amp; impact</p><div class="sp-mix">' +
+    '<section class="sp-sec" id="sp-drive"><div class="sp-mix">' +
       Object.keys(SP_MIX).map((k) => "<div><p class=\"sp-h\">" + esc(k) + "</p>" +
         SP_MIX[k].map((c) => card(c[0], c[1])).join("") + "</div>").join("") +
     "</div></section>" +
