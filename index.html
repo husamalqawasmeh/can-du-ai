@@ -93,6 +93,8 @@
   }
   .top-left,.top-right{min-width:0}
   .top-right{display:flex;gap:.9rem}
+  /* the resume pages carry no links or comment buttons */
+  .on-resume .top-right{display:none}
   @media (max-width:640px){
     .topbuttons{flex-wrap:wrap;justify-content:center;gap:.5rem}
     .top-right{flex-wrap:wrap;justify-content:center}
@@ -2511,6 +2513,7 @@ function route() {
   clearLogo();                                  // leaving the logo screen stops it
   const key = location.hash.replace(/^#\/?/, "").trim();
   const onCategory = Object.prototype.hasOwnProperty.call(SITE, key);
+  document.body.classList.toggle("on-resume", key === "resume" || key === "resume/spare");
 
   if (!introDone && key === "") {
     document.body.classList.add("is-intro");
