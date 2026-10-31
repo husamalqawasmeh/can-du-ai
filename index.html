@@ -441,19 +441,16 @@
   @media (max-width:520px){.sp-photo{width:4.6rem;height:5.8rem}}
   .sp-title{margin:.3rem 0 0;font-size:1rem;font-weight:600;color:var(--accent)}
   .sp-creds{margin:.15rem 0 0;font-size:.85rem;color:var(--ink-soft)}
-  /* one box for both: a divider between the icons, and whichever is open
-     grows the box to show its number or address */
-  .sp-icons{
+  /* two boxes, each with its own icon and kept apart; whichever is open
+     grows to show its number or address right after the icon */
+  .sp-icons{display:flex;flex-wrap:wrap;gap:.7rem;margin:.7rem 0 .1rem}
+  .sp-ic{
     display:inline-flex;align-items:stretch;
-    margin:.7rem 0 .1rem;
     border:1px solid var(--line);border-radius:2px;
     background:var(--card-hover);
     transition:border-color .15s ease,box-shadow .15s ease;
   }
-  .sp-icons:hover,.sp-icons:focus-within{border-color:var(--accent);box-shadow:var(--shadow)}
-  .sp-ic{display:inline-flex;align-items:stretch}
-  .sp-ic + .sp-ic{border-left:1px solid var(--line)}
-  .sp-ic:hover,.sp-ic:focus-within,.sp-ic.is-open{background:color-mix(in srgb,var(--accent) 8%,transparent)}
+  .sp-ic:hover,.sp-ic:focus-within,.sp-ic.is-open{border-color:var(--accent);box-shadow:var(--shadow)}
   .sp-ico{display:grid;place-items:center;width:2.4rem;height:2.4rem;padding:0;color:var(--accent);background:transparent;border:0;cursor:pointer}
   .sp-ico svg{width:1.2rem;height:1.2rem}
   .sp-ico:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
