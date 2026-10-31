@@ -443,15 +443,19 @@
   @media (max-width:520px){.sp-photo{width:5rem;height:5rem;border-radius:1.1rem}}
   .sp-title{margin:.3rem 0 0;font-size:1rem;font-weight:600;color:var(--accent)}
   .sp-creds{
-    display:inline-block;
-    margin:.5rem 0 0;
-    padding:.35rem .8rem;
-    font-size:.85rem;font-weight:600;letter-spacing:.02em;
+    display:inline-flex;align-items:stretch;
+    margin:.5rem 0 0;padding:0;
+    font-size:.88rem;font-weight:700;letter-spacing:.02em;
     color:var(--ink);
     background:var(--card-hover);
-    border:1px solid var(--line);
+    border:1px solid var(--accent);
     border-radius:2px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
   }
+  .sp-creds > span:last-child{padding:.45rem .9rem;display:flex;align-items:center}
+  .sp-cico{display:grid;place-items:center;padding:0 .7rem;background:var(--accent)}
+  .sp-cico svg{width:1.5rem;height:1.5rem}
   /* two boxes, each with its own icon and kept apart; whichever is open
      grows to show its number or address right after the icon */
   .sp-icons{display:flex;flex-wrap:wrap;gap:.7rem;margin:.7rem 0 .1rem}
@@ -1987,7 +1991,11 @@ function renderSpare() {
       '<div class="sp-head"><span class="sp-photo"><span class="sp-init" aria-hidden="true">HA</span>' +
         '<img src="photo.jpg" alt="' + esc(ME.name) + '" onerror="this.remove()"></span><div class="sp-who">' +
       "<h2>" + esc(ME.name) + "</h2>" +
-      '<p class="sp-creds">' + esc(R.creds) + "</p>" +
+      '<p class="sp-creds"><span class="sp-cico" aria-hidden="true">' +
+        '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="11" rx="1.3" fill="#fff"/>' +
+        '<rect x="5.8" y="6.8" width="12.4" height="7.4" rx=".5" style="fill:var(--accent)"/>' +
+        '<path d="M1.8 18h20.4l-1.5 1.9H3.3z" fill="#fff"/></svg></span>' +
+        "<span>" + esc(R.creds) + "</span></p>" +
       '<div class="sp-icons">' +
         ico("Title", "AI Chief Specialist", null,
           // a solid briefcase: handle, body, the curve of the flap and the buckle
