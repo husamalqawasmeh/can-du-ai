@@ -1639,40 +1639,15 @@ const RESUME = {
       ]
     },
     {
-      role: "Program Manager, IT Governance & Controls", when: "Feb 2012 – Dec 2015",
+      role: "Program Manager, Enterprise Service Delivery – IT Governance & Controls", when: "Oct 2005 – Dec 2015",
       org: "Mashreq Bank / Mindscape IT, Dubai, UAE",
       points: [
-        "Program manager for the IT governance and controls program, including IT compliance checks and reviews.",
-        "Focal point for IT audits from internal and external auditors and the central bank.",
-        "Managed the technology change management process, including the Change Control Board.",
-        "Major incident management coordination; internal transformation and project risk governance.",
-        "Coordinator for the Technology Steering Committee and the Technology Management Committee.",
-        "IT applications inventory, review, roadmap and controls management."
-      ]
-    },
-    {
-      role: "Program Manager, Enterprise Service Delivery", when: "Sep 2008 – Jan 2012",
-      org: "Mashreq Bank / Mindscape IT, Dubai, UAE",
-      points: [
-        "IT project manager for key high-impact enterprise projects such as business process outsourcing.",
-        "Project manager for the data center relocation and applications move, including data center readiness review and audit.",
-        "Managed corporate data center hosting services and enterprise customer relationships.",
-        "Managed the enterprise architecture function.",
-        "Closed a complex, critical network delivery and support project for a government entity.",
-        "Managed key platforms for project delivery: enterprise systems management (HP OpenView) and IT application delivery (Citrix)."
-      ]
-    },
-    {
-      role: "Senior Project Manager, Infrastructure Management", when: "Oct 2005 – Aug 2008",
-      org: "Mashreq Bank / Mindscape IT, Dubai, UAE",
-      points: [
-        "Project planning, including solution design, budgeting, ordering and resources.",
-        "Business support such as requirements analysis and telecom cost analysis for projects.",
-        "Planning, building and supporting maintenance and business development projects.",
-        "Project management for voice and telecom projects, including resource allocation.",
-        "Service management, including vendor management of Nortel and Cisco.",
-        "Technical management focal point for the voice and telecom side, including cost management.",
-        "Management of telecom service providers (Etisalat, du and others) and their services."
+        "Infrastructure projects: planning, solution design, budgeting and resources; requirements and telecom cost analysis; management of Nortel, Cisco and the telecom providers (Etisalat, du and others).",
+        "IT project manager for key high-impact enterprise projects, such as business process outsourcing and a complex, critical network delivery and support project for a government entity.",
+        "Led the data center relocation and applications move, with readiness review and audit; managed data center hosting services and enterprise customer relationships.",
+        "Managed the enterprise architecture function and key delivery platforms: HP OpenView and Citrix.",
+        "Program manager for IT governance and controls: compliance checks and reviews; focal point for IT audits from internal and external auditors and the central bank.",
+        "Ran technology change management (including the Change Control Board), major incident coordination, project risk governance and the Technology Steering and Management committees; IT applications inventory, roadmap and controls."
       ]
     },
     {
@@ -1744,8 +1719,8 @@ const RES_TAGS = {
 };
 // one row per role in RESUME.jobs, in the same order
 const RES_JOB_TAGS = [
-  ["ai", "gov", "pm"], ["gov", "pm"], ["pm", "dc"], ["pm", "tel"], ["tel"],
-  ["tel"], ["tel"], ["tel"], ["tel"], ["dc"]
+  ["ai", "gov", "pm"], ["gov", "pm", "dc", "tel"], ["tel"], ["tel"], ["tel"],
+  ["tel"], ["tel"], ["dc"]
 ];
 const RES_TABS = [
   ["exp", "Experience"], ["str", "Strengths"], ["ach", "Achievements"], ["edu", "Education"]
@@ -1857,11 +1832,11 @@ function renderResume() {
    is read out of RESUME and the file it came from; the employer line is
    drawn from the dates, to scale. */
 const SP_EMP = [
-  { k: "mash1", n: "Mashreq Bank", a: 1990.45, b: 1997.8, y: "1990 – 1997", c: "#7E5F3A", jobs: [9, 8] },
-  { k: "hsbc",  n: "HSBC",         a: 1998.0,  b: 1998.5, y: "1998",        c: "#B25A2A", jobs: [7] },
-  { k: "icbc",  n: "ICBC",         a: 1998.5,  b: 2002.8, y: "1998 – 2002", c: "#2F6B4F", jobs: [6, 5] },
-  { k: "emaar", n: "Emaar",        a: 2002.95, b: 2005.8, y: "2002 – 2005", c: "#7A4E8C", jobs: [4] },
-  { k: "mash2", n: "Mashreq Bank", a: 2005.8,  b: 2015.95, y: "2005 – 2015", c: "#7E5F3A", jobs: [3, 2, 1] },
+  { k: "mash1", n: "Mashreq Bank", a: 1990.45, b: 1997.8, y: "1990 – 1997", c: "#7E5F3A", jobs: [7, 6] },
+  { k: "hsbc",  n: "HSBC",         a: 1998.0,  b: 1998.5, y: "1998",        c: "#B25A2A", jobs: [5] },
+  { k: "icbc",  n: "ICBC",         a: 1998.5,  b: 2002.8, y: "1998 – 2002", c: "#2F6B4F", jobs: [4, 3] },
+  { k: "emaar", n: "Emaar",        a: 2002.95, b: 2005.8, y: "2002 – 2005", c: "#7A4E8C", jobs: [2] },
+  { k: "mash2", n: "Mashreq Bank", a: 2005.8,  b: 2015.95, y: "2005 – 2015", c: "#7E5F3A", jobs: [1] },
   { k: "rta",   n: "RTA",          a: 2016.0,  b: 2026.8, y: "2016 – Present", c: "#1F3A63", jobs: [0] }
 ];
 
