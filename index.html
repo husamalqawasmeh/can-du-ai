@@ -421,6 +421,23 @@
   }
   .sp-num{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 .6rem}
   .sp-sec h2{margin:0;font-size:clamp(1.5rem,1.1rem + 1.6vw,2.2rem);font-weight:700;font-stretch:110%;letter-spacing:-.02em;line-height:1.05}
+  /* an oval for the portrait, ahead of the name; initials show until there is
+     a photo.jpg beside the page to cover them */
+  .sp-head{display:flex;align-items:center;gap:1.2rem}
+  .sp-who{min-width:0}
+  .sp-photo{
+    position:relative;flex:0 0 auto;
+    width:6rem;height:7.6rem;
+    border-radius:50%;
+    overflow:hidden;
+    border:2px solid var(--accent);
+    box-shadow:var(--shadow);
+    background:var(--card-hover);
+    display:grid;place-items:center;
+  }
+  .sp-init{font-size:1.8rem;font-weight:700;font-stretch:110%;letter-spacing:.02em;color:var(--accent)}
+  .sp-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 25%}
+  @media (max-width:520px){.sp-photo{width:4.6rem;height:5.8rem}}
   .sp-title{margin:.3rem 0 0;font-size:1rem;font-weight:600;color:var(--accent)}
   .sp-creds{margin:.15rem 0 0;font-size:.85rem;color:var(--ink-soft)}
   /* one box for both: a divider between the icons, and whichever is open
@@ -1954,6 +1971,8 @@ function renderSpare() {
 
     // 1 — who
     '<section class="sp-sec" id="sp-profile"><p class="sp-num">1 · Profile</p>' +
+      '<div class="sp-head"><span class="sp-photo"><span class="sp-init" aria-hidden="true">HA</span>' +
+        '<img src="photo.jpg" alt="' + esc(ME.name) + '" onerror="this.remove()"></span><div class="sp-who">' +
       "<h2>" + esc(ME.name) + "</h2>" +
       '<p class="sp-title">AI Chief Specialist · RTA (Road and Transport Authority), Dubai, U.A.E.</p>' +
       '<div class="sp-icons">' +
@@ -1962,7 +1981,7 @@ function renderSpare() {
         ico("Phone", ME.phone, "tel:" + ME.tel,
           '<path d="M6.6 3.5h3l1.4 4-2 1.4a11 11 0 0 0 6.1 6.1l1.4-2 4 1.4v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/>') +
       "</div>" +
-      '<p class="sp-creds">' + esc(R.creds) + "</p>" +
+      '<p class="sp-creds">' + esc(R.creds) + "</p></div></div>" +
       '<p class="sp-lead">' + esc(R.summary) + "</p>" +
       '<div class="sp-stats">' + stat("36", "years") + stat("5", "employers") + stat(R.jobs.length, "roles") +
         stat("2", "countries") + "</div></section>" +
