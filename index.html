@@ -29,9 +29,11 @@
     --card-hover:#FFFDF9;
     --shadow:0 1px 2px rgba(60,44,20,.06), 0 14px 30px -18px rgba(60,44,20,.45);
 
-    /* the three navigation buttons */
-    --btn:#1F3A63;
-    --btn-hover:#2B4E82;
+    /* The three navigation buttons: a beige brown out of the same family as
+       the mark, with cream lettering. 4.99:1 at rest and 6.43:1 hovered,
+       both over the 4.5 that thirteen-pixel bold type needs. */
+    --btn:#7E5F3A;
+    --btn-hover:#6B4F2E;
     --btn-ink:#F6ECD8;
 
     --c-community:#B25A2A;
@@ -74,38 +76,25 @@
     flex-direction:column;
   }
 
-  /* ---------- the top row (fixed) ----------
-     Three columns: the way back on the left, the mark in the middle, the two
-     standing buttons on the right. The middle column is sized to the mark and
-     the two outer ones share what is left equally, which is what keeps the
-     mark on the centre of the page rather than on the centre of the gap
-     between the buttons. */
+  /* ---------- the top of the page (fixed) ----------
+     The mark sits in the top left corner and the middle of the top is left
+     empty. The three buttons take their own line below it — the way back on
+     the left, the two standing ones on the right. */
   .topline{
     flex:0 0 auto;
-    display:grid;
-    grid-template-columns:1fr auto 1fr;
-    align-items:center;
-    gap:1rem;
-    padding:.85rem 1.5rem 0;
+    padding:.7rem 1.5rem 0;
   }
-  .top-left{justify-self:start;min-width:0}
-  .top-right{
-    justify-self:end;
+  .topbuttons{
     display:flex;
-    gap:.9rem;
-    min-width:0;
+    align-items:center;
+    justify-content:space-between;
+    gap:1rem;
+    margin-top:.35rem;
   }
-  /* Not enough width for three across: the mark takes its own line and the
-     buttons sit under it, still in their order. */
-  @media (max-width:1040px){
-    .topline{
-      grid-template-columns:1fr;
-      justify-items:center;
-      gap:.55rem;
-      padding-bottom:.2rem;
-    }
-    .masthead{order:-1}
-    .top-left,.top-right{justify-self:center}
+  .top-left,.top-right{min-width:0}
+  .top-right{display:flex;gap:.9rem}
+  @media (max-width:640px){
+    .topbuttons{flex-wrap:wrap;justify-content:center;gap:.5rem}
     .top-right{flex-wrap:wrap;justify-content:center}
   }
 
@@ -117,8 +106,8 @@
   .masthead{
     flex:0 0 auto;
     display:flex;
-    justify-content:center;
-    padding:clamp(.5rem,1.6vh,1rem) 0 .2rem;
+    justify-content:flex-start;
+    padding:clamp(.4rem,1.2vh,.8rem) 0 0;
   }
   .mast-mark{
     display:inline-block;
@@ -157,6 +146,9 @@
      own screen */
   .is-intro main,
   main.centred{justify-content:center}
+  /* and on the way in it must not clip: the mark flies up out of this box into
+     the masthead, and a scrolling main would cut it off at its top edge */
+  .is-intro main{overflow:visible}
   .pane{
     width:100%;
     max-width:64rem;
@@ -364,8 +356,8 @@
     text-transform:uppercase;
     color:var(--btn-ink);
     text-decoration:none;
-    padding:.62rem 1.65rem;
-    min-width:11.5rem;
+    padding:.5rem 1.5rem;
+    min-width:11rem;
     max-width:100%;
     justify-content:center;
     border:1px solid var(--btn);
@@ -390,7 +382,7 @@
   }
   .crumb:hover .crumb-arrow{transform:translateX(-3px)}
   @media (max-width:640px){
-    .crumb{min-width:0;width:100%;padding:.62rem 1.2rem}
+    .crumb{min-width:0;width:100%;padding:.5rem 1.1rem}
   }
 
   .list{
@@ -537,8 +529,8 @@
     background:var(--btn);
     border:1px solid var(--btn);
     border-radius:999px;
-    padding:.62rem 1.65rem;
-    min-width:11.5rem;
+    padding:.5rem 1.5rem;
+    min-width:11rem;
     max-width:100%;
     text-align:center;
     cursor:pointer;
@@ -546,7 +538,7 @@
     transition:background .18s ease,border-color .18s ease,transform .18s ease;
   }
   @media (max-width:640px){
-    .bar-btn{min-width:0;flex:1 1 9rem;padding:.62rem 1.2rem}
+    .bar-btn{min-width:0;flex:1 1 9rem;padding:.5rem 1.1rem}
   }
   .bar-btn:hover,.bar-btn:focus-visible{
     background:var(--btn-hover);
@@ -940,16 +932,17 @@
     opacity:0;
     transform:translateX(calc(var(--i,0) * var(--sw)));
     /* short, because there are a good many swaps to get through before the
-       name is finished and each one has to land before the next is called */
-    transition:transform .3s cubic-bezier(.4,0,.2,1),color .3s ease;
+       name is finished and each one has to land before the next is called —
+       and at twice the old pace, shorter still */
+    transition:transform .15s cubic-bezier(.4,0,.2,1),color .2s ease;
   }
   /* Written on one letter at a time, left to right across the columns. Only
      the fade is staggered — a delay on the transform would hold a letter
      back mid-swap for the rest of the sequence. */
   .is-letters .by-l{
     opacity:1;
-    transition:transform .3s cubic-bezier(.4,0,.2,1),
-               color .3s ease,
+    transition:transform .15s cubic-bezier(.4,0,.2,1),
+               color .2s ease,
                opacity .3s ease calc(var(--d,0) * 80ms);
   }
   /* Home, and staying there. Green, and dark enough to hold 5.3:1 on the
@@ -1063,16 +1056,17 @@
 <div class="page">
 
   <div class="topline">
-    <div class="top-left"><span id="backSlot"></span></div>
-
     <header class="masthead">
       <h1 class="sr-only">Can-Du-AI — an AI portfolio by Husam Al-Qawasmeh</h1>
       <a class="mast-mark" href="#/" id="mastLink" aria-label="Can-Du-AI, by Husam Al-Qawasmeh"></a>
     </header>
 
-    <div class="top-right">
-      <button type="button" class="bar-btn" id="linksOpen">Useful links</button>
-      <button type="button" class="bar-btn" id="commentOpen">Leave a comment</button>
+    <div class="topbuttons">
+      <div class="top-left"><span id="backSlot"></span></div>
+      <div class="top-right">
+        <button type="button" class="bar-btn" id="linksOpen">Useful links</button>
+        <button type="button" class="bar-btn" id="commentOpen">Leave a comment</button>
+      </div>
     </div>
   </div>
 
@@ -1674,7 +1668,7 @@ function startByline(stage, shuffle, onSolved) {
     while (b === a) b = pick();              // free.length is at least two
     const t = at[a]; at[a] = at[b]; at[b] = t;
     place();
-    byTimer = setTimeout(swap, 330 + Math.random() * 260);
+    byTimer = setTimeout(swap, 165 + Math.random() * 130);
   };
   // Nothing moves until the last letter has been written
   byTimer = setTimeout(swap, 2100);
