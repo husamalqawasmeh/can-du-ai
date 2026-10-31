@@ -1966,18 +1966,20 @@ function renderSpare() {
     SP_EMP.map((e) => e.n + " " + e.y).join("; ") + '">';
   for (let y = 1990; y <= 2025; y += 5) {
     svg += '<line x1="' + x(y).toFixed(1) + '" y1="64" x2="' + x(y).toFixed(1) + '" y2="132" stroke="currentColor" stroke-opacity=".15"/>' +
-      '<text x="' + x(y).toFixed(1) + '" y="152" text-anchor="middle" font-size="13" fill="currentColor" fill-opacity=".7"' +
+      '<text x="' + x(y).toFixed(1) + '" y="152" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor"' +
       ' font-family="IBM Plex Mono,monospace">' + y + "</text>";
   }
   svg += '<line x1="' + X0 + '" y1="132" x2="' + X1 + '" y2="132" stroke="currentColor" stroke-opacity=".5"/>';
   SP_EMP.forEach((e) => {
-    const l = x(e.a), w = Math.max(x(e.b) - l, 5), mid = l + w / 2;
+    // each bar is drawn a little inside its dates, so a clear gap shows between neighbours
+    const GAP = 3;
+    const l = x(e.a) + GAP, w = Math.max(x(e.b) - x(e.a) - 2 * GAP, 6), mid = l + w / 2;
     svg += '<g class="seg" data-emp="' + e.k + '" tabindex="0" role="button" aria-label="' + esc(e.n + ", " + e.y) + '">' +
       "<title>" + esc(e.n + " · " + e.y) + "</title>" +
       '<rect x="' + l.toFixed(1) + '" y="70" width="' + w.toFixed(1) + '" height="54" rx="3" fill="' + e.c + '"/>';
     if (w > 60) {
       svg += '<text x="' + mid.toFixed(1) + '" y="93" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">' + esc(e.n) + "</text>" +
-        '<text x="' + mid.toFixed(1) + '" y="112" text-anchor="middle" font-size="12" fill="#fff" fill-opacity=".9">' + esc(e.y) + "</text>";
+        '<text x="' + mid.toFixed(1) + '" y="112" text-anchor="middle" font-size="' + (w < 90 ? "10" : "12") + '" fill="#fff" fill-opacity=".9">' + esc(e.y) + "</text>";
     } else {                                   // too narrow to hold a name: label it above
       svg += '<line x1="' + mid.toFixed(1) + '" y1="70" x2="' + mid.toFixed(1) + '" y2="40" stroke="' + e.c + '" stroke-width="2"/>' +
         '<text x="' + mid.toFixed(1) + '" y="30" text-anchor="middle" font-size="15" font-weight="700" fill="' + e.c + '">' + esc(e.n) + " " + esc(e.y) + "</text>";
