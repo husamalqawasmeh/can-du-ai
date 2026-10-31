@@ -1893,9 +1893,10 @@ function renderSpare() {
   let svg = '<svg viewBox="0 0 1000 134" role="img" aria-label="Career timeline, 1990 to today: ' +
     SP_EMP.map((e) => e.n + " " + e.y).join("; ") + '">';
   // 2025 is left out: it would sit on top of 2026, a year to its right
-  for (const y of [1990, 1995, 2000, 2005, 2010, 2015, 2020, 2026]) {
-    svg += '<line x1="' + x(y).toFixed(1) + '" y1="34" x2="' + x(y).toFixed(1) + '" y2="102" stroke="currentColor" stroke-opacity=".15"/>' +
-      '<text x="' + x(y).toFixed(1) + '" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor"' +
+  for (const y of [1990, 1995, 1998, 2000, 2005, 2010, 2015, 2020, 2026]) {
+    const red = y === 1998;                     // HSBC's year, kept in its red
+    svg += '<line x1="' + x(y).toFixed(1) + '" y1="34" x2="' + x(y).toFixed(1) + '" y2="102" stroke="' + (red ? "#DB0011" : "currentColor") + '" stroke-opacity="' + (red ? ".5" : ".15") + '"/>' +
+      '<text x="' + x(y).toFixed(1) + '" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="' + (red ? "#DB0011" : "currentColor") + '"' +
       ' font-family="IBM Plex Mono,monospace">' + y + "</text>";
   }
   svg += '<line x1="' + X0 + '" y1="102" x2="' + X1 + '" y2="102" stroke="currentColor" stroke-opacity=".5"/>';
