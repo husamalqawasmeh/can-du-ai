@@ -503,7 +503,7 @@
   }
   .sp-stats{display:flex;flex-wrap:wrap;gap:.6rem 2rem;margin:1rem 0 0;padding-top:.8rem;border-top:1px solid var(--line)}
   .sp-stat b{display:block;font-size:1.5rem;line-height:1;font-stretch:110%;color:var(--ink)}
-  .sp-stat span{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+  .sp-stat span{display:block;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
   .sp-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:.7rem}
   .sp-card{
     padding:.7rem .9rem;
@@ -2018,7 +2018,8 @@ function renderSpare() {
     'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + it.path + "</svg>";
   const icoBtn = (it) => '<button type="button" class="sp-ico" data-k="' + it.k + '" aria-label="' + it.label +
     '" title="' + it.label + '" aria-expanded="false">' + svgOf(it) + "</button>";
-  const stat = (n, l) => '<div class="sp-stat"><b>' + n + "</b><span>" + l + "</span></div>";
+  const stat = (n, l, sub) => '<div class="sp-stat"><b>' + n + "</b><span>" + l + "</span>" +
+    (sub ? "<span>" + sub + "</span>" : "") + "</div>";
 
   view.innerHTML =
     '<div class="pane"><div class="sp" style="--accent:var(--c-enterprise)">' +
@@ -2035,8 +2036,9 @@ function renderSpare() {
       '<div class="sp-row"><div class="sp-icons" id="spIcons">' + SP_ITEMS.map(icoBtn).join("") + "</div>" +
       '<div class="sp-open" id="spOpen" aria-live="polite"></div></div></div>' +
       '<p class="sp-lead">' + esc(R.summary) + "</p>" +
-      '<div class="sp-stats">' + stat("36", "years") + stat("5", "employers") + stat(R.jobs.length, "roles") +
-        stat("2", "countries") + "</div></section>" +
+      '<div class="sp-stats">' + stat("36", "Years of Professional Experience") +
+        stat("5", "Reputed Enterprise Employers") + stat(R.jobs.length, "Specialized Roles") +
+        stat("2", "Countries", "UAE &amp; Canada") + "</div></section>" +
 
     // 2 — education
     '<section class="sp-sec" id="sp-education"><div class="sp-cols">' +
