@@ -1914,7 +1914,7 @@ function renderSpare() {
         '<text x="' + mid.toFixed(1) + '" y="82" text-anchor="middle" font-size="' + (w < 90 ? "10" : "12") + '" fill="' + (e.tc || "#fff") + '" fill-opacity=".9">' + esc(e.y) + "</text>";
     } else {                                   // too narrow to hold a name: label it above
       svg += '<line x1="' + mid.toFixed(1) + '" y1="40" x2="' + mid.toFixed(1) + '" y2="22" stroke="' + e.c + '" stroke-width="2"/>' +
-        '<text x="' + mid.toFixed(1) + '" y="15" text-anchor="middle" font-size="15" font-weight="700" fill="' + e.c + '">' + esc(e.n) + " " + esc(e.y) + "</text>";
+        '<text x="' + mid.toFixed(1) + '" y="15" text-anchor="middle" font-size="15" font-weight="700" fill="' + e.c + '">' + esc(e.n) + "</text>";
     }
     svg += "</g>";
   });
