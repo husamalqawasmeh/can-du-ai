@@ -1847,11 +1847,11 @@ function renderResume() {
    is read out of RESUME and the file it came from; the employer line is
    drawn from the dates, to scale. */
 const SP_EMP = [
-  { k: "mash1", logoOnly: true, logo: "mashreq", n: "Mashreq Bank", a: 1989.9, b: 1997.85, y: "1990 – 1997", c: "#E4501E", mark: true, jobs: [7, 6] },
+  { k: "mash1", logoOnly: true, logo: "mashreq", n: "Mashreq Bank", a: 1989.9, b: 1997.85, y: "1990 – 1997", c: "#E4501E", jobs: [7, 6] },
   { k: "hsbc", logoOnly: true, logo: "hsbc",  n: "HSBC",         a: 1997.9,  b: 1998.6, y: "1998",        c: "#DB0011", jobs: [5] },
   { k: "icbc", logo: "icbc",  n: "ICBC",         a: 1998.6,  b: 2002.8, y: "1998 – 2002", c: "#00AEEF", tc: "#0A2A3D", jobs: [4, 3] },
   { k: "emaar", logoOnly: true, logo: "emaar", logo2: "sahm", alt2: "Sahm Technologies", n: "Emaar",        a: 2002.95, b: 2005.8, y: "2002 – 2005", c: "#1C3687", top: "#E04B1C", jobs: [2] },
-  { k: "mash2", logoOnly: true, logo: "mashreq", n: "Mashreq Bank", a: 2005.8,  b: 2015.95, y: "2005 – 2015", c: "#E4501E", mark: true, jobs: [1] },
+  { k: "mash2", logoOnly: true, logo: "mashreq", n: "Mashreq Bank", a: 2005.8,  b: 2015.95, y: "2005 – 2015", c: "#E4501E", jobs: [1] },
   { k: "rta", logo: "rta",   n: "RTA",          a: 2016.0,  b: 2027.6, y: "2016 – Present", c: "#E4241D", jobs: [0] }
 ];
 
@@ -1920,7 +1920,6 @@ function renderSpare() {
       svg += '<line x1="' + mid.toFixed(1) + '" y1="40" x2="' + mid.toFixed(1) + '" y2="22" stroke="' + e.c + '" stroke-width="2"/>' +
         '<text x="' + mid.toFixed(1) + '" y="15" text-anchor="middle" font-size="15" font-weight="700" fill="' + e.c + '">' + esc(e.n) + "</text>";
     }
-    if (e.mark) svg += '<image href="logos/mashreq-mark.png" x="' + (l + 5).toFixed(1) + '" y="48" width="41" height="35" aria-hidden="true"/>';
     svg += "</g>";
   });
   svg += "</svg>";
