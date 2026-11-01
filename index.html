@@ -1850,7 +1850,7 @@ const SP_EMP = [
   { k: "mash1", logoOnly: true, logo: "mashreq", n: "Mashreq Bank", a: 1989.9, b: 1997.85, y: "1990 – 1997", c: "#E4501E", jobs: [7, 6] },
   { k: "hsbc", logoOnly: true, logo: "hsbc",  n: "HSBC",         a: 1997.9,  b: 1998.6, y: "1998",        c: "#DB0011", jobs: [5] },
   { k: "icbc", logo: "icbc",  n: "ICBC",         a: 1998.6,  b: 2002.8, y: "1998 – 2002", c: "#00AEEF", tc: "#0A2A3D", jobs: [4, 3] },
-  { k: "emaar", logoOnly: true, logo: "emaar", logo2: "sahm", alt2: "Sahm Technologies", n: "Emaar",        a: 2002.95, b: 2005.8, y: "2002 – 2005", c: "#1C3687", jobs: [2] },
+  { k: "emaar", logoOnly: true, logo: "emaar", logo2: "sahm", alt2: "Sahm Technologies", n: "Emaar",        a: 2002.95, b: 2005.8, y: "2002 – 2005", c: "#1C3687", top: "#E04B1C", jobs: [2] },
   { k: "mash2", logoOnly: true, logo: "mashreq", n: "Mashreq Bank", a: 2005.8,  b: 2015.95, y: "2005 – 2015", c: "#E4501E", jobs: [1] },
   { k: "rta", logo: "rta",   n: "RTA",          a: 2016.0,  b: 2027.6, y: "2016 – Present", c: "#E4241D", jobs: [0] }
 ];
@@ -1909,7 +1909,11 @@ function renderSpare() {
     svg += '<g class="seg" data-emp="' + e.k + '" tabindex="0" role="button" aria-label="' + esc(e.n + ", " + e.y) + '">' +
       "<title>" + esc(e.n + " · " + e.y) + "</title>" +
       '<rect x="' + l.toFixed(1) + '" y="40" width="' + w.toFixed(1) + '" height="54" rx="3" fill="' + e.c + '"/>';
-    if (w > 60) {
+    if (e.top) {                                // Emaar's blue below, Sahm's orange above, no name
+      svg += '<clipPath id="cp-' + e.k + '"><rect x="' + l.toFixed(1) + '" y="40" width="' + w.toFixed(1) + '" height="54" rx="3"/></clipPath>' +
+        '<rect x="' + l.toFixed(1) + '" y="40" width="' + w.toFixed(1) + '" height="26" fill="' + e.top + '" clip-path="url(#cp-' + e.k + ')"/>' +
+        '<text x="' + mid.toFixed(1) + '" y="83" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">' + esc(e.y) + "</text>";
+    } else if (w > 60) {
       svg += '<text x="' + mid.toFixed(1) + '" y="63" text-anchor="middle" font-size="15" font-weight="700" fill="' + (e.tc || "#fff") + '">' + esc(e.n) + "</text>" +
         '<text x="' + mid.toFixed(1) + '" y="82" text-anchor="middle" font-size="' + (w < 90 ? "10" : "12") + '" fill="' + (e.tc || "#fff") + '" fill-opacity=".9">' + esc(e.y) + "</text>";
     } else {                                   // too narrow to hold a name: label it above
