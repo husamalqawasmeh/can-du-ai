@@ -561,6 +561,9 @@
     display:flex;
     flex-direction:column;
     gap:.6rem;
+    /* a fixed drop, so the four rows sit near the middle of the page and
+       still hold their place when one opens */
+    margin-top:clamp(0rem,12vh,7rem);
   }
   .group{--accent:var(--ink)}
   .group-head{
@@ -684,6 +687,8 @@
     gap:.65rem;
   }
   @media (max-width:640px){ .list.two-col{grid-template-columns:1fr} }
+  /* half a row is narrow: the tag drops under the name instead of pushing it onto two lines */
+  .list.two-col .row:not(.compact) .row-tag{display:block;margin:.1rem 0 0;white-space:normal}
 
   .row{
     display:grid;
@@ -2095,7 +2100,7 @@ function renderGroups(openKey) {
         '</button>' +
         // rendered either way, so the button always controls something real
         '<div class="group-body" id="g-' + key + '"' + (open ? "" : " hidden") + '>' +
-          '<ul class="list' + (compact ? " two-col" : "") + '">' + rows + '</ul>' +
+          '<ul class="list two-col">' + rows + '</ul>' +
         '</div>' +
       '</section>';
   }).join("");
