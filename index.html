@@ -1541,30 +1541,11 @@ const ME = {
   tel: "+971506245809"
 };
 
-/* The landing page: three buttons and nothing else.
-
-   The first carries the contact details and opens where it stands, in the
-   same way the groups do. The other two are links, because they go
-   somewhere. */
-function renderLanding(openContact) {
+/* The landing page: two links and nothing else. */
+function renderLanding() {
   document.title = "Can-Du-AI";
   view.innerHTML =
     '<div class="pane"><div class="hub">' +
-      '<section class="hub-item' + (openContact ? " is-open" : "") +
-        '" style="--accent:var(--c-community)">' +
-        '<button type="button" class="hub-btn" id="hubContact"' +
-          ' aria-expanded="' + (openContact ? "true" : "false") + '" aria-controls="hubCard">' +
-          '<span>' + esc(ME.name) + '</span>' +
-          '<span class="hub-mark" aria-hidden="true">' +
-            (openContact ? "&#9660;" : "&#9654;") + '</span>' +
-        '</button>' +
-        '<div class="hub-body" id="hubCard"' + (openContact ? "" : " hidden") + '>' +
-          '<p class="hub-line"><span class="hub-key">Email</span>' +
-            '<a class="hub-val" href="mailto:' + ME.email + '">' + esc(ME.email) + '</a></p>' +
-          '<p class="hub-line"><span class="hub-key">Phone</span>' +
-            '<a class="hub-val" href="tel:' + ME.tel + '">' + esc(ME.phone) + '</a></p>' +
-        '</div>' +
-      '</section>' +
       '<section class="hub-item" style="--accent:var(--c-enterprise)">' +
         '<a class="hub-btn" href="#/resume">' +
           '<span>My Resume</span>' +
@@ -1578,12 +1559,6 @@ function renderLanding(openContact) {
         '</a>' +
       '</section>' +
     '</div></div>';
-
-  const btn = document.getElementById("hubContact");
-  // through the hash, so the back button closes what the click opened
-  if (btn) btn.addEventListener("click", () => {
-    location.hash = openContact ? "#/" : "#/contact";
-  });
 }
 
 /* The resume, from the file it was written in. Typos in that file are
@@ -2604,7 +2579,7 @@ function route() {
 
   // anything else is the front door, with the contact line open or shut
   view.classList.add("centred");
-  renderLanding(key === "contact");
+  renderLanding();
   setBack(null);
   view.scrollTop = 0;
 }
