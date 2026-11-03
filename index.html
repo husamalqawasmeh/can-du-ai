@@ -687,6 +687,10 @@
     gap:.65rem;
   }
   @media (max-width:640px){ .list.two-col{grid-template-columns:1fr} }
+  /* every box the height of the tallest */
+  .list.two-col{grid-auto-rows:1fr}
+  .list.two-col > li{display:flex}
+  .list.two-col > li > .row{flex:1;min-width:0}
   /* half a row is narrow: the tag drops under the name instead of pushing it onto two lines */
   .list.two-col .row:not(.compact) .row-tag{display:block;margin:.1rem 0 0;white-space:normal}
 
