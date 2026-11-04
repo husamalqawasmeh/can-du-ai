@@ -522,6 +522,13 @@
     background:var(--card-hover);
     border:1px solid var(--accent);border-radius:4px;
   }
+  .sp-view{
+    display:inline-flex;align-items:center;gap:.6rem;margin-top:1.1rem;padding:.8rem 1.3rem;
+    font-weight:600;font-stretch:105%;color:var(--ink);text-decoration:none;
+    background:var(--card-hover);border:1px solid var(--accent);border-radius:4px;box-shadow:var(--shadow);
+  }
+  .sp-view:hover,.sp-view:focus-visible{background:color-mix(in srgb,var(--accent) 10%,var(--card-hover))}
+  .sp-view span{color:var(--accent)}
   .sp-stats{display:flex;flex-wrap:wrap;gap:.6rem 2rem;margin:1rem 0 0;padding-top:.8rem;border-top:1px solid var(--line)}
   .sp-stat b{display:block;font-size:1.9rem;font-weight:700;line-height:1;font-stretch:110%;color:var(--ink)}
   .sp-stat-map{display:flex;align-items:center;gap:.6rem}
@@ -2032,7 +2039,7 @@ function renderSpare() {
       '<div class="sp-stats">' + stat("36", "Years of Professional Experience") +
         stat("5", "Reputed Enterprise Employers") + stat(R.jobs.length, "Specialized Roles") +
         '<div class="sp-stat sp-stat-map"><img class="sp-map" src="world-map.png" alt=""><span>UAE &amp; Canada</span></div>' +
-      "</div></section>" +
+      '</div><a class="sp-view" href="resume.pdf" target="_blank" rel="noopener">View my resume (PDF)<span aria-hidden="true">&#8599;</span></a></section>' +
 
     // 2 — education
     '<section class="sp-sec" id="sp-education"><div class="sp-cols sp-edu">' +
