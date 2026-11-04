@@ -83,6 +83,7 @@
   .topline{
     flex:0 0 auto;
     padding:.7rem 1.5rem 0;
+    position:relative;
   }
   .topbuttons{
     display:flex;
@@ -92,12 +93,13 @@
     margin-top:.35rem;
   }
   .top-left,.top-right{min-width:0}
-  .top-right{display:flex;gap:.9rem}
+  /* the two standing buttons ride up to the logo's line, on the right */
+  .top-right{display:flex;gap:.9rem;position:absolute;top:2.4rem;right:1.5rem}
   /* the resume pages carry no links or comment buttons */
   .on-resume .top-right{display:none}
   @media (max-width:640px){
     .topbuttons{flex-wrap:wrap;justify-content:center;gap:.5rem}
-    .top-right{flex-wrap:wrap;justify-content:center}
+    .top-right{position:static;flex-wrap:wrap;justify-content:center}
   }
 
   /* ---------- masthead ----------
