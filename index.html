@@ -255,26 +255,40 @@
   }
   .hub-val:hover,.hub-val:focus-visible{border-bottom-color:var(--accent)}
 
-  /* a pick inside Picks of the Day: a line that opens its content */
-  .pick{margin:.45rem 0;border:1px solid var(--line);border-radius:2px;background:var(--card)}
-  .pick summary{
-    cursor:pointer;list-style:none;padding:.8rem 1.1rem;
-    font-weight:600;font-stretch:105%;letter-spacing:-.01em;
-    display:flex;justify-content:space-between;gap:1rem;
+  /* a pick under Picks of the Day: a line that goes to its own screen */
+  .pick{
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+    margin:.45rem 0;padding:.8rem 1.1rem;
+    font-weight:600;font-stretch:105%;letter-spacing:-.01em;color:inherit;text-decoration:none;
+    border:1px solid var(--line);border-radius:2px;background:var(--card);
   }
-  .pick summary::-webkit-details-marker{display:none}
-  .pick summary::after{content:"\25B6";font-size:.75rem;color:var(--accent)}
-  .pick[open] summary::after{content:"\25BC"}
-  .pick[open]{background:var(--card-hover);border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
-  .pick summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-  .pick-body{padding:.2rem 1.1rem 1rem;font-size:.95rem;line-height:1.6;color:var(--ink-soft)}
+  .pick:hover,.pick:focus-visible{background:var(--card-hover);border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+  .pick:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  /* the screen of a pick: today's on the left, earlier ones on the right */
+  .picks{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:1.5rem;align-items:start}
+  @media (max-width:760px){.picks{grid-template-columns:1fr}}
+  .picks h2{margin:0 0 .7rem;font-size:1.05rem;font-weight:700;font-stretch:105%}
+  .pick-main,.pick-side{padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-top:2px solid var(--accent);border-radius:2px}
+  .pick-body{font-size:.95rem;line-height:1.6;color:var(--ink-soft)}
   .pick-body p{margin:.4rem 0}
   .pick-body ul{margin:.4rem 0 0;padding-left:1.1rem}
   .pick-body li{margin:.45rem 0}
   .pick-body li b{color:var(--ink)}
   .pick-video{position:relative;aspect-ratio:16/9;background:#000;border-radius:2px;overflow:hidden}
-  .pick-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .pick-video iframe,.pick-video video{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .pick-link{margin:.6rem 0 0;font-size:.9rem}
   .pick-link a{color:var(--accent);overflow-wrap:anywhere}
+  .pick-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.6rem}
+  .pick-item{
+    width:100%;display:flex;flex-direction:column;gap:.4rem;padding:.5rem;text-align:left;
+    font:inherit;font-weight:600;color:var(--ink);cursor:pointer;
+    background:var(--card-hover);border:1px solid var(--line);border-radius:2px;
+  }
+  .pick-item:hover,.pick-item:focus-visible,.pick-item.is-on{border-color:var(--accent)}
+  .pick-item img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:2px}
+  .pick-none{color:var(--ink-soft);font-size:.9rem}
+  .pick-today{font:inherit;color:var(--accent);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
 
   /* ---------- the resume ---------- */
   .sheet{
@@ -1585,6 +1599,13 @@ const ME = {
 const PICKS = {
   videoId: "phfUjn3S3Vs",
   videoUrl: "https://www.youtube.com/watch?v=phfUjn3S3Vs",
+  // earlier picks, newest first; a video is a YouTube id or a file of our own
+  past: {
+    videos: [
+      { title: "Cast-away on the Island", src: "videos/cast-away-on-the-island.mp4", poster: "videos/cast-away-on-the-island.jpg" }
+    ],
+    quotes: []
+  },
   statement: {
     intro: 'OpenAI CEO Sam Altman stated that young people and recent college graduates today are "the luckiest kids in all of history" because artificial intelligence has unlocked unprecedented opportunities for creation and entrepreneurship.',
     lead: "Key points from his remarks include:",
@@ -1597,9 +1618,49 @@ const PICKS = {
   }
 };
 
+/* Today's pick on the left, the earlier ones in a list on the right.
+   Choosing one from the list plays or shows it in the big place. */
+function renderPicks(kind) {
+  const isVideo = kind === "video";
+  const past = isVideo ? PICKS.past.videos : PICKS.past.quotes;
+  const st = PICKS.statement;
+  document.title = (isVideo ? "Video" : "Quote") + " of the Day — Can-Du-AI";
+
+  const today = isVideo
+    ? '<div class="pick-video"><iframe src="https://www.youtube-nocookie.com/embed/' + PICKS.videoId + '"' +
+        ' title="Video of the Day" allowfullscreen allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"></iframe></div>' +
+      '<p class="pick-link"><a href="' + PICKS.videoUrl + '" target="_blank" rel="noopener">' + PICKS.videoUrl + "</a></p>"
+    : "<p>" + esc(st.intro) + "</p><p>" + esc(st.lead) + "</p><ul>" +
+      st.points.map((x) => "<li><b>" + esc(x[0]) + ":</b> " + esc(x[1]) + "</li>").join("") + "</ul>";
+
+  const list = past.length
+    ? past.map((v, i) => '<li><button type="button" class="pick-item" data-i="' + i + '">' +
+        (v.poster ? '<img src="' + v.poster + '" alt="" loading="lazy">' : "") + "<span>" + esc(v.title) + "</span></button></li>").join("")
+    : '<li class="pick-none">None yet.</li>';
+
+  view.innerHTML =
+    '<div class="pane"><div class="picks" style="--accent:var(--c-community)">' +
+      '<section class="pick-main"><h2>' + (isVideo ? "Video of the Day" : "Quote of the Day") + '</h2>' +
+        '<div class="pick-body" id="pickStage">' + today + "</div></section>" +
+      '<aside class="pick-side"><h2>' + (isVideo ? "Previous videos" : "Previous quotes") + '</h2>' +
+        '<ul class="pick-list">' + list + "</ul></aside>" +
+    "</div></div>";
+
+  if (!isVideo) return;
+  const stage = document.getElementById("pickStage");
+  const todayHTML = stage.innerHTML;
+  view.querySelectorAll(".pick-item").forEach((b) => b.addEventListener("click", () => {
+    const v = past[+b.dataset.i];
+    stage.innerHTML = '<div class="pick-video"><video src="' + v.src + '" controls autoplay playsinline' +
+      (v.poster ? ' poster="' + v.poster + '"' : "") + '></video></div>' +
+      '<p class="pick-link">' + esc(v.title) + ' · <button type="button" class="pick-today">Back to today\'s video</button></p>';
+    stage.querySelector(".pick-today").addEventListener("click", () => { stage.innerHTML = todayHTML; });
+    view.querySelectorAll(".pick-item").forEach((x) => x.classList.toggle("is-on", x === b));
+  }));
+}
+
 function renderLanding(openPicks) {
   document.title = "Can-Du-AI";
-  const st = PICKS.statement;
   const picks =
     '<section class="hub-item' + (openPicks ? " is-open" : "") + '" style="--accent:var(--c-community)">' +
       '<button type="button" class="hub-btn" id="hubPicks" aria-expanded="' + (openPicks ? "true" : "false") + '" aria-controls="hubPicksBody">' +
@@ -1607,16 +1668,8 @@ function renderLanding(openPicks) {
         '<span class="hub-mark" aria-hidden="true">' + (openPicks ? "&#9660;" : "&#9654;") + "</span>" +
       "</button>" +
       '<div class="hub-body" id="hubPicksBody"' + (openPicks ? "" : " hidden") + ">" +
-        '<details class="pick"><summary>Video of the Day</summary><div class="pick-body">' +
-          '<div class="pick-video"><iframe src="https://www.youtube-nocookie.com/embed/' + PICKS.videoId + '"' +
-            ' title="Video of the Day" loading="lazy" allowfullscreen' +
-            ' allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"></iframe></div>' +
-          '<p class="pick-link"><a href="' + PICKS.videoUrl + '" target="_blank" rel="noopener">' + PICKS.videoUrl + "</a></p>" +
-        "</div></details>" +
-        '<details class="pick"><summary>Statement of the Day</summary><div class="pick-body">' +
-          "<p>" + esc(st.intro) + "</p><p>" + esc(st.lead) + "</p><ul>" +
-          st.points.map((x) => "<li><b>" + esc(x[0]) + ":</b> " + esc(x[1]) + "</li>").join("") +
-          "</ul></div></details>" +
+        '<a class="pick" href="#/picks/video"><span>Video of the Day</span><span class="hub-mark" aria-hidden="true">&#9654;</span></a>' +
+        '<a class="pick" href="#/picks/quote"><span>Quote of the Day</span><span class="hub-mark" aria-hidden="true">&#9654;</span></a>' +
       "</div>" +
     "</section>";
   view.innerHTML =
@@ -2618,6 +2671,14 @@ function route() {
 
   introDone = true;
   document.body.classList.remove("is-intro");
+
+  if (key === "picks/video" || key === "picks/quote") {
+    view.classList.remove("centred");
+    renderPicks(key.slice(6));
+    setBack("#/picks", "Picks");
+    view.scrollTop = 0;
+    return;
+  }
 
   // The mark's own screen
   if (key === "logo") {
