@@ -253,6 +253,27 @@
   }
   .hub-val:hover,.hub-val:focus-visible{border-bottom-color:var(--accent)}
 
+  /* a pick inside Picks of the Day: a line that opens its content */
+  .pick{margin:.45rem 0;border:1px solid var(--line);border-radius:2px;background:var(--card)}
+  .pick summary{
+    cursor:pointer;list-style:none;padding:.8rem 1.1rem;
+    font-weight:600;font-stretch:105%;letter-spacing:-.01em;
+    display:flex;justify-content:space-between;gap:1rem;
+  }
+  .pick summary::-webkit-details-marker{display:none}
+  .pick summary::after{content:"\25B6";font-size:.75rem;color:var(--accent)}
+  .pick[open] summary::after{content:"\25BC"}
+  .pick[open]{background:var(--card-hover);border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+  .pick summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .pick-body{padding:.2rem 1.1rem 1rem;font-size:.95rem;line-height:1.6;color:var(--ink-soft)}
+  .pick-body p{margin:.4rem 0}
+  .pick-body ul{margin:.4rem 0 0;padding-left:1.1rem}
+  .pick-body li{margin:.45rem 0}
+  .pick-body li b{color:var(--ink)}
+  .pick-video{position:relative;aspect-ratio:16/9;background:#000;border-radius:2px;overflow:hidden}
+  .pick-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .pick-link a{color:var(--accent);overflow-wrap:anywhere}
+
   /* ---------- the resume ---------- */
   .sheet{
     width:100%;
@@ -1551,8 +1572,45 @@ const ME = {
 };
 
 /* The landing page: two links and nothing else. */
-function renderLanding() {
+/* Picks of the Day: one video and one statement, changed by hand each day. */
+const PICKS = {
+  videoId: "phfUjn3S3Vs",
+  videoUrl: "https://www.youtube.com/watch?v=phfUjn3S3Vs",
+  statement: {
+    intro: 'OpenAI CEO Sam Altman stated that young people and recent college graduates today are "the luckiest kids in all of history" because artificial intelligence has unlocked unprecedented opportunities for creation and entrepreneurship.',
+    lead: "Key points from his remarks include:",
+    points: [
+      ["The One-Person Billion-Dollar Company", "Altman argued that AI tools give a single individual the leverage to do what used to require teams of hundreds. He believes it is now possible for a one-person startup to build a product that reaches a billion-dollar valuation."],
+      ["The \"Revenge of the Idea Guy\"", "He noted that the primary bottleneck in business has shifted from execution capacity (needing large engineering or sales staff) to having a great idea and knowing how to command AI tools."],
+      ["Adaptability Over Displacement", "While acknowledging that AI will disrupt or eliminate certain entry-level white-collar jobs, Altman maintained that young people adapt to technological shifts much better than older generations. He expressed more concern for older workers who may struggle to reskill."],
+      ["Futuristic Careers", "He envisioned a future where young graduates could step into entirely new industries—such as working on space exploration missions or high-impact technical roles that previous generations could not have imagined."]
+    ]
+  }
+};
+
+function renderLanding(openPicks) {
   document.title = "Can-Du-AI";
+  const st = PICKS.statement;
+  const picks =
+    '<section class="hub-item' + (openPicks ? " is-open" : "") + '" style="--accent:var(--c-community)">' +
+      '<button type="button" class="hub-btn" id="hubPicks" aria-expanded="' + (openPicks ? "true" : "false") + '" aria-controls="hubPicksBody">' +
+        "<span>Picks of the Day</span>" +
+        '<span class="hub-mark" aria-hidden="true">' + (openPicks ? "&#9660;" : "&#9654;") + "</span>" +
+      "</button>" +
+      '<div class="hub-body" id="hubPicksBody"' + (openPicks ? "" : " hidden") + ">" +
+        '<details class="pick"><summary>Video of the Day</summary><div class="pick-body">' +
+          '<div class="pick-video"><iframe src="https://www.youtube-nocookie.com/embed/' + PICKS.videoId + '"' +
+            ' title="Video of the Day" loading="lazy" allowfullscreen' +
+            ' allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"></iframe></div>' +
+          '<p class="pick-link"><a href="' + PICKS.videoUrl + '" target="_blank" rel="noopener">' + PICKS.videoUrl + "</a></p>" +
+        "</div></details>" +
+        '<details class="pick"><summary>Statement of the Day</summary><div class="pick-body">' +
+          "<p>" + esc(st.intro) + "</p><p>" + esc(st.lead) + "</p><ul>" +
+          st.points.map((x) => "<li><b>" + esc(x[0]) + ":</b> " + esc(x[1]) + "</li>").join("") +
+          "</ul></div></details>" +
+      "</div>" +
+    "</section>";
+  view.innerHTML =
   view.innerHTML =
     '<div class="pane"><div class="hub">' +
       '<section class="hub-item" style="--accent:var(--c-enterprise)">' +
@@ -1567,7 +1625,13 @@ function renderLanding() {
           '<span class="hub-mark" aria-hidden="true">&#9654;</span>' +
         '</a>' +
       '</section>' +
+      picks +
     '</div></div>';
+
+  // through the hash, so the back button closes what the click opened
+  document.getElementById("hubPicks").addEventListener("click", () => {
+    location.hash = openPicks ? "#/" : "#/picks";
+  });
 }
 
 /* The resume, from the file it was written in. Typos in that file are
@@ -2588,7 +2652,7 @@ function route() {
 
   // anything else is the front door, with the contact line open or shut
   view.classList.add("centred");
-  renderLanding();
+  renderLanding(key === "picks");
   setBack(null);
   view.scrollTop = 0;
 }
